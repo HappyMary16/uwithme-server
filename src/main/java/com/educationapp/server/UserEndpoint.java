@@ -1,7 +1,10 @@
 package com.educationapp.server;
 
 import com.educationapp.server.models.User;
+import com.educationapp.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.ws.rs.GET;
@@ -10,28 +13,29 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import java.util.List;
 
-@Path(value = "/university")
 @RestController
 public class UserEndpoint {
 
-    @Autowired
-    private UserService userService;
+    private final UserRepository userRepository;
+
+    public UserEndpoint(final UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @GET
     @Path(value = "/user/{id:[0-9]+}")
     public User getUser(final @PathParam("id") Long id) {
-        return userService.selectById(id);
+        return userRepository.findById(id).orElse(null);
     }
 
-    @GET
-    @Path(value = "/users")
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
     public List<User> getAllUser() {
-        return userService.selectAll();
+        return (List<User>) userRepository.findAll();
     }
 
     @POST
-    @Path("/user")
+    @Path(value = "/user")
     public User createEquipment(final User user) {
-        return userService.createUser(user);
+        return userRepository.save(user);
     }
 }
