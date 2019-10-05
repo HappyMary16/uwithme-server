@@ -9,3 +9,4 @@ CREATE TABLE `Users` (
 COLLATE='utf8mb4_0900_ai_ci'
 ENGINE=InnoDB
 ;
+
