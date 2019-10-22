@@ -7,20 +7,16 @@
    http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <!--<changeSet id="create_roles" author="Maria">-->
-        <!--<sqlFile path="./changeset/001_create_roles.sql" />-->
-    <!--</changeSet>-->
+    <changeSet id="create_universities2" author="Maria">
+        <sqlFile path="./changeset/003_create_university.sql" />
+    </changeSet>
+
+    <changeSet id="create_group" author="Maria">
+        <sqlFile path="./changeset/000_study_group.sql" />
+    </changeSet>
 
     <changeSet id="create_users" author="Maria">
         <sqlFile path="./changeset/001_create_users.sql" />
     </changeSet>
-
-    <!--<changeSet id="create_halls" author="Maria">-->
-        <!--<sqlFile path="./changeset/002_create_halls.sql" />-->
-    <!--</changeSet>-->
-
-    <!--<changeSet id="create_persons" author="Maria">-->
-        <!--<sqlFile path="./changeset/005_create_persons.sql" />-->
-    <!--</changeSet>-->
 
 </databaseChangeLog>
