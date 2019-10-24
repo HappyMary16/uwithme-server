@@ -55,4 +55,28 @@
         <sqlFile path="./changeset/011_create_lectures.sql"/>
     </changeSet>
 
+    <changeSet id="012_create_chats" author="Maria">
+        <sqlFile path="./changeset/012_create_chats.sql"/>
+    </changeSet>
+
+    <changeSet id="013_create_messages" author="Maria">
+        <sqlFile path="./changeset/013_create_messages.sql"/>
+    </changeSet>
+
+    <changeSet id="014_create_chat_user" author="Maria">
+        <sqlFile path="./changeset/014_create_chat_user.sql"/>
+    </changeSet>
+
+    <changeSet id="015_creates_user_groups_for_teacher" author="Maria">
+        <sqlFile path="./changeset/015_creates_user_groups_for_teacher.sql"/>
+    </changeSet>
+
+    <changeSet id="016_create_message_for_group" author="Maria">
+        <sqlFile path="./changeset/016_create_message_for_group.sql"/>
+    </changeSet>
+
+    <changeSet id="017_create_user_group_user" author="Maria">
+        <sqlFile path="./changeset/017_create_user_group_user.sql"/>
+    </changeSet>
+
 </databaseChangeLog>
