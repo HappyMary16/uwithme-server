@@ -1,4 +1,4 @@
-package com.educationapp.server.models;
+package com.educationapp.server.model.persistence;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.UniqueElements;

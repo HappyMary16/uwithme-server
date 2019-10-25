@@ -1,4 +1,4 @@
-package com.educationapp.server.models;
+package com.educationapp.server.model.persistence;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.UniqueElements;
@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Data
 @Entity
 @Table(name = "teachers")
-public class TeachersDB implements Serializable {
+public class TeacherDB implements Serializable {
 
     private static final long serialVersionUID = 8421354192650411535L;
 

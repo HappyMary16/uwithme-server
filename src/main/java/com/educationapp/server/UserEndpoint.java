@@ -1,6 +1,6 @@
 package com.educationapp.server;
 
-import com.educationapp.server.models.UserDB;
+import com.educationapp.server.model.persistence.UserDB;
 import com.educationapp.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

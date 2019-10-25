@@ -1,4 +1,4 @@
-package com.educationapp.server.models;
+package com.educationapp.server.model;
 
 public enum UserType {
     ADMIN,

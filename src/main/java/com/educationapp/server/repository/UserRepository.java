@@ -1,6 +1,6 @@
 package com.educationapp.server.repository;
 
-import com.educationapp.server.models.UserDB;
+import com.educationapp.server.model.persistence.UserDB;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
