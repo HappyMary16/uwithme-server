@@ -1,6 +1,6 @@
 package com.educationapp.server.model;
 
-public enum UserType {
+public enum Role {
     ADMIN,
     UNIVERSITY_ADMIN,
     SCHOOL_ADMIN,

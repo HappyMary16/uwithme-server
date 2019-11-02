@@ -5,19 +5,18 @@ import com.educationapp.server.model.persistence.UserDB;
 
 public class UserMapper {
 
-    public User userDbToUser(final UserDB userDB) {
-        return User.builder()
-                   .id(userDB.getId())
-                   .firstName(userDB.getFirstName())
-                   .lastName(userDB.getLastName())
-                   .nickname(userDB.getNickname())
-                   .password(userDB.getPassword())
-                   .email(userDB.getEmail())
-                   .phone(userDB.getPhone())
-                   .build();
+    public static User userDbToUser(final UserDB userDB) {
+        return new User(userDB.getId(),
+                        userDB.getFirstName(),
+                        userDB.getLastName(),
+                        userDB.getNickname(),
+                        userDB.getPassword(),
+                        userDB.getPassword(),
+                        userDB.getEmail(),
+                        userDB.getPhone());
     }
 
-    public UserDB userToUserDB(final User user) {
+    public static UserDB userToUserDB(final User user) {
         return UserDB.builder()
                      .id(user.getId())
                      .firstName(user.getFirstName())
