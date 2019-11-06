@@ -1,5 +1,6 @@
 package com.educationapp.server.model.mapper;
 
+import com.educationapp.server.model.Role;
 import com.educationapp.server.model.domain.User;
 import com.educationapp.server.model.persistence.UserDB;
 
@@ -13,7 +14,8 @@ public class UserMapper {
                         userDB.getPassword(),
                         userDB.getPassword(),
                         userDB.getEmail(),
-                        userDB.getPhone());
+                        userDB.getPhone(),
+                        Role.USER);
     }
 
     public static UserDB userToUserDB(final User user) {

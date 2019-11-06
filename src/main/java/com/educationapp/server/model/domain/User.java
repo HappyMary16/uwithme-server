@@ -2,13 +2,15 @@ package com.educationapp.server.model.domain;
 
 import javax.validation.constraints.NotEmpty;
 
+import com.educationapp.server.model.Role;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Data
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
@@ -29,4 +31,7 @@ public class User {
     @NonNull
     @NotEmpty
     protected String email;
+    @NonNull
+    @NotEmpty
+    protected Role role;
 }

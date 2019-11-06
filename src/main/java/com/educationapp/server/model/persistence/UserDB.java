@@ -1,10 +1,6 @@
 package com.educationapp.server.model.persistence;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.UniqueElements;
+import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +9,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
@@ -36,18 +35,15 @@ public class UserDB implements Serializable {
     @Column(name = "last_name")
     private String lastName;
 
-    @UniqueElements
     @Column(name = "nickname")
     private String nickname;
 
     @Column(name = "password")
     private String password;
 
-    @UniqueElements
     @Column(name = "phone")
     private String phone;
 
-    @UniqueElements
     @Column(name = "email")
     private String email;
 }

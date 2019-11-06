@@ -2,6 +2,7 @@ package com.educationapp.server.model.domain;
 
 import javax.validation.constraints.NotEmpty;
 
+import com.educationapp.server.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +24,7 @@ public class Student extends User {
                    @NonNull @NotEmpty final String passwordConfirm, final String phone,
                    @NonNull @NotEmpty final String email, final String studyGroupId,
                    final String studentId) {
-        super(id, firstName, lastName, nickname, password, passwordConfirm, phone, email);
+        super(id, firstName, lastName, nickname, password, passwordConfirm, phone, email, Role.STUDENT);
         this.studyGroupId = studyGroupId;
         this.studentId = studentId;
     }
