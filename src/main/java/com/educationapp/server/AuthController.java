@@ -25,7 +25,7 @@ public class AuthController {
     public ResponseEntity<?> authenticateUser(@RequestBody LoginForm loginForm) {
 
         Optional<UserDB> user = userRepository.findByNickname(loginForm.username);
-        if (user.get().getPassword().equals(loginForm.password)) {
+        if (user.isPresent() && user.get().getPassword().equals(loginForm.password)) {
             System.out.println("success");
         }
         System.out.println("error");
