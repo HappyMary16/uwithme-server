@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends CrudRepository<UserDB, Long> {
 
-    UserDB findByNickname(final String nickname);
+    Optional<UserDB> findByNickname(final String nickname);
 
     Optional<UserDB> findByNicknameAndEmail(final String nickname, final String email);
 

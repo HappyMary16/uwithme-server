@@ -32,6 +32,6 @@ public class UserEndpoint {
 
     @RequestMapping(value = "/{username}", method = RequestMethod.GET)
     public UserDB getUser(@PathVariable(value = "username") String username) {
-        return userService.findByNickname(username);
+        return userService.findByNickname(username).get();
     }
 }

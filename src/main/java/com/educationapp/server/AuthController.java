@@ -1,5 +1,7 @@
 package com.educationapp.server;
 
+import java.util.Optional;
+
 import com.educationapp.server.model.persistence.UserDB;
 import com.educationapp.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 //@RequestMapping("/api/auth")
 @CrossOrigin("*")
+//@Validated
 public class AuthController {
 
     @Autowired
@@ -21,14 +24,16 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginForm loginForm) {
 
-        UserDB user = userRepository.findByNickname(loginForm.username);
-        if (user.getPassword().equals(loginForm.password)) {
-            System.out.println("jhgfds");
+        Optional<UserDB> user = userRepository.findByNickname(loginForm.username);
+        if (user.get().getPassword().equals(loginForm.password)) {
+            System.out.println("success");
         }
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
-        }
+        System.out.println("error");
+        return new ResponseEntity(HttpStatus.BAD_REQUEST);
+    }
 
     public static class LoginForm {
+
         private String username;
         private String password;
 
