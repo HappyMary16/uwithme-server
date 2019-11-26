@@ -19,12 +19,12 @@ public class Student extends User {
 
     @Builder(toBuilder = true)
     public Student(final Long id, final String firstName, final String lastName,
-                   @NonNull @NotEmpty final String nickname,
+                   @NonNull @NotEmpty final String username,
                    @NonNull @NotEmpty final String password,
                    @NonNull @NotEmpty final String passwordConfirm, final String phone,
                    @NonNull @NotEmpty final String email, final String studyGroupId,
                    final String studentId) {
-        super(id, firstName, lastName, nickname, password, passwordConfirm, phone, email, Role.STUDENT);
+        super(id, firstName, lastName, username, password, passwordConfirm, phone, email, Role.STUDENT);
         this.studyGroupId = studyGroupId;
         this.studentId = studentId;
     }

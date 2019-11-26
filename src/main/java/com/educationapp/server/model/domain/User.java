@@ -20,7 +20,7 @@ public class User {
     protected String lastName;
     @NonNull
     @NotEmpty
-    protected String nickname;
+    protected String username;
     @NonNull
     @NotEmpty
     protected String password;

@@ -18,11 +18,11 @@ public class Teacher extends User {
 
     @Builder(toBuilder = true)
     public Teacher(final Long id, final String firstName, final String lastName,
-                   @NonNull @NotEmpty final String nickname,
+                   @NonNull @NotEmpty final String username,
                    @NonNull @NotEmpty final String password,
                    @NonNull @NotEmpty final String passwordConfirm, final String phone,
                    @NonNull @NotEmpty final String email, final String departmentId) {
-        super(id, firstName, lastName, nickname, password, passwordConfirm, phone, email, Role.UNIVERSITY_ADMIN);
+        super(id, firstName, lastName, username, password, passwordConfirm, phone, email, Role.UNIVERSITY_ADMIN);
         this.departmentId = departmentId;
     }
 }

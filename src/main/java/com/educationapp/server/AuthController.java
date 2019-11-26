@@ -2,8 +2,11 @@ package com.educationapp.server;
 
 import java.util.Optional;
 
+import com.educationapp.server.model.api.LoginForm;
+import com.educationapp.server.model.domain.User;
 import com.educationapp.server.model.persistence.UserDB;
 import com.educationapp.server.repository.UserRepository;
+import com.educationapp.server.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,33 +24,23 @@ public class AuthController {
     @Autowired
     UserRepository userRepository;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginForm loginForm) {
+    @Autowired
+    UserService userService;
 
-        Optional<UserDB> user = userRepository.findByNickname(loginForm.username);
-        if (user.isPresent() && user.get().getPassword().equals(loginForm.password)) {
-            System.out.println("success");
+    @PostMapping("/login")
+    public ResponseEntity<UserDB> authenticateUser(@RequestBody LoginForm loginForm) {
+
+        Optional<UserDB> user = userRepository.findByUsername(loginForm.getUsername());
+        if (user.isPresent() && user.get().getPassword().equals(loginForm.getPassword())) {
+            return new ResponseEntity(user, HttpStatus.OK);
         }
-        System.out.println("error");
         return new ResponseEntity(HttpStatus.BAD_REQUEST);
     }
 
-    public static class LoginForm {
-
-        private String username;
-        private String password;
-
-        public LoginForm(final String username, final String password) {
-            this.username = username;
-            this.password = password;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public String getPassword() {
-            return password;
-        }
+    @PostMapping("/register")
+    public ResponseEntity<UserDB> register(@RequestBody User loginForm) {
+        User user = userService.save(loginForm);
+        return new ResponseEntity(user, HttpStatus.OK);
     }
+
 }
