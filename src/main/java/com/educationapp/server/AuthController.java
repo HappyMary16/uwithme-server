@@ -32,8 +32,10 @@ public class AuthController {
 
         Optional<UserDB> user = userRepository.findByUsername(loginForm.getUsername());
         if (user.isPresent() && user.get().getPassword().equals(loginForm.getPassword())) {
+            System.out.println("OK");
             return new ResponseEntity(user, HttpStatus.OK);
         }
+        System.out.println("BED");
         return new ResponseEntity(HttpStatus.BAD_REQUEST);
     }
 
