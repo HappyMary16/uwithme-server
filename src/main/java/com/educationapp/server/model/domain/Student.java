@@ -24,7 +24,7 @@ public class Student extends User {
                    @NonNull @NotEmpty final String passwordConfirm, final String phone,
                    @NonNull @NotEmpty final String email, final String studyGroupId,
                    final String studentId) {
-        super(id, firstName, lastName, username, password, passwordConfirm, phone, email, Role.STUDENT);
+        super(id, firstName, lastName, username, password, passwordConfirm, phone, email, Role.STUDENT.name(), null);
         this.studyGroupId = studyGroupId;
         this.studentId = studentId;
     }

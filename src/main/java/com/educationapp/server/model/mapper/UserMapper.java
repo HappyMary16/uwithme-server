@@ -15,7 +15,8 @@ public class UserMapper {
                         userDB.getPassword(),
                         userDB.getEmail(),
                         userDB.getPhone(),
-                        Role.USER);
+                        Role.USER.name(),
+                        null);
     }
 
     public static UserDB userToUserDB(final User user) {

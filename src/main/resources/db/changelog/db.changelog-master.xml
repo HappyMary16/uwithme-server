@@ -15,68 +15,68 @@
         <sqlFile path="./changeset/001_create_educational_institution.sql"/>
     </changeSet>
 
-    <changeSet id="002_create_faculties" author="Maria">
-        <sqlFile path="./changeset/002_create_faculties.sql"/>
-    </changeSet>
+<!--    <changeSet id="002_create_faculties" author="Maria">-->
+<!--        <sqlFile path="./changeset/002_create_faculties.sql"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="003_create_departments" author="Maria">
-        <sqlFile path="./changeset/003_create_departments.sql"/>
-    </changeSet>
+<!--    <changeSet id="003_create_departments" author="Maria">-->
+<!--        <sqlFile path="./changeset/003_create_departments.sql"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="004_create_faculty_department" author="Maria">
-        <sqlFile path="./changeset/004_create_faculty_department.sql"/>
-    </changeSet>
+<!--    <changeSet id="004_create_faculty_department" author="Maria">-->
+<!--        <sqlFile path="./changeset/004_create_faculty_department.sql"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="005_create_university_faculty" author="Maria">
-        <sqlFile path="./changeset/005_create_university_faculty.sql"/>
-    </changeSet>
+<!--    <changeSet id="005_create_university_faculty" author="Maria">-->
+<!--        <sqlFile path="./changeset/005_create_university_faculty.sql"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="006_create_teachers" author="Maria">
-        <sqlFile path="./changeset/006_create_teachers.sql"/>
-    </changeSet>
+<!--    <changeSet id="006_create_teachers" author="Maria">-->
+<!--        <sqlFile path="./changeset/006_create_teachers.sql"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="007_create_study_groups" author="Maria">
-        <sqlFile path="./changeset/007_create_study_groups.sql"/>
-    </changeSet>
+<!--    <changeSet id="007_create_study_groups" author="Maria">-->
+<!--        <sqlFile path="./changeset/007_create_study_groups.sql"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="008_create_students" author="Maria">
-        <sqlFile path="./changeset/008_create_students.sql"/>
-    </changeSet>
+<!--    <changeSet id="008_create_students" author="Maria">-->
+<!--        <sqlFile path="./changeset/008_create_students.sql"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="009_create_subjects" author="Maria">
-        <sqlFile path="./changeset/009_create_subjects.sql"/>
-    </changeSet>
+<!--    <changeSet id="009_create_subjects" author="Maria">-->
+<!--        <sqlFile path="./changeset/009_create_subjects.sql"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="010_create_lessons" author="Maria">
-        <sqlFile path="./changeset/010_create_lessons.sql"/>
-    </changeSet>
+<!--    <changeSet id="010_create_lessons" author="Maria">-->
+<!--        <sqlFile path="./changeset/010_create_lessons.sql"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="011_create_lectures" author="Maria">
-        <sqlFile path="./changeset/011_create_lectures.sql"/>
-    </changeSet>
+<!--    <changeSet id="011_create_lectures" author="Maria">-->
+<!--        <sqlFile path="./changeset/011_create_lectures.sql"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="012_create_chats" author="Maria">
-        <sqlFile path="./changeset/012_create_chats.sql"/>
-    </changeSet>
+<!--    <changeSet id="012_create_chats" author="Maria">-->
+<!--        <sqlFile path="./changeset/012_create_chats.sql"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="013_create_messages" author="Maria">
-        <sqlFile path="./changeset/013_create_messages.sql"/>
-    </changeSet>
+<!--    <changeSet id="013_create_messages" author="Maria">-->
+<!--        <sqlFile path="./changeset/013_create_messages.sql"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="014_create_chat_user" author="Maria">
-        <sqlFile path="./changeset/014_create_chat_user.sql"/>
-    </changeSet>
+<!--    <changeSet id="014_create_chat_user" author="Maria">-->
+<!--        <sqlFile path="./changeset/014_create_chat_user.sql"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="015_creates_user_groups_for_teacher" author="Maria">
-        <sqlFile path="./changeset/015_creates_user_groups_for_teacher.sql"/>
-    </changeSet>
+<!--    <changeSet id="015_creates_user_groups_for_teacher" author="Maria">-->
+<!--        <sqlFile path="./changeset/015_creates_user_groups_for_teacher.sql"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="016_create_message_for_group" author="Maria">
-        <sqlFile path="./changeset/016_create_message_for_group.sql"/>
-    </changeSet>
+<!--    <changeSet id="016_create_message_for_group" author="Maria">-->
+<!--        <sqlFile path="./changeset/016_create_message_for_group.sql"/>-->
+<!--    </changeSet>-->
 
-    <changeSet id="017_create_user_group_user" author="Maria">
-        <sqlFile path="./changeset/017_create_user_group_user.sql"/>
-    </changeSet>
+<!--    <changeSet id="017_create_user_group_user" author="Maria">-->
+<!--        <sqlFile path="./changeset/017_create_user_group_user.sql"/>-->
+<!--    </changeSet>-->
 
 </databaseChangeLog>
