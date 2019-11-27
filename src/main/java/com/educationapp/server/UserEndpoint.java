@@ -20,7 +20,7 @@ public class UserEndpoint {
     private UserRepository userService;
 
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/id={id}", method = RequestMethod.GET)
     public UserDB getUser(@PathVariable(value = "id") Long id) {
         return userService.findById(id).orElse(null);
     }

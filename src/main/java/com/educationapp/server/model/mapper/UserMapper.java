@@ -13,8 +13,8 @@ public class UserMapper {
                         userDB.getUsername(),
                         userDB.getPassword(),
                         userDB.getPassword(),
-                        userDB.getEmail(),
                         userDB.getPhone(),
+                        userDB.getEmail(),
                         Role.USER.name(),
                         null);
     }
