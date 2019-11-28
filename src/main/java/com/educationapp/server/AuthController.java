@@ -1,5 +1,7 @@
 package com.educationapp.server;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,10 +40,11 @@ public class AuthController {
         Optional<UserDB> user = userRepository.findByUsername(loginForm.getUsername());
         if (user.isPresent() && user.get().getPassword().equals(loginForm.getPassword())) {
             System.out.println("OK");
-            return new ResponseEntity(tokenProvider.createToken(user.get().getUsername(), List.of("ADMIN")), HttpStatus.OK);
+            return new ResponseEntity(tokenProvider.createToken(user.get().getUsername(),
+                    Collections.singletonList("ADMIN")), HttpStatus.OK);
         }
         System.out.println("BED");
-        return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED);
     }
 
     @PostMapping("/register")
