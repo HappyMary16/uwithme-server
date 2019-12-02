@@ -1,4 +1,4 @@
-package com.educationapp.server;
+package com.educationapp.server.endpoints;
 
 import java.util.List;
 
@@ -18,7 +18,6 @@ public class UserEndpoint {
 
     @Autowired
     private UserRepository userService;
-
 
     @RequestMapping(value = "/id={id}", method = RequestMethod.GET)
     public UserDB getUser(@PathVariable(value = "id") Long id) {

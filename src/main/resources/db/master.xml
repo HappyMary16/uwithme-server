@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <!-- It's an entry point for liquibase update. Each changelog should be registered here -->
+    <include file="initial_schema.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/001_create_user.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/002_add_user_primary_key.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/003_institutes_create-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/004_institutes_add_primary_key.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/005_departments_create_table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/006_departments_add_primary_key.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/007_departments_add_foreign_key.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/008_study_groups_create_table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/009_study_groups_add_primary_key.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/010_study_groups_add_foreign_key.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

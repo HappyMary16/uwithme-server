@@ -33,7 +33,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     public void configure(final WebSecurity web) {
-        web.ignoring().antMatchers("/login", "/register");
+        web.ignoring()
+           .antMatchers("/api/auth/signIn",
+                        "/api/auth/signUp",
+                        "/api/info/institutes",
+                        "/api/info/departments",
+                        "/api/info/studyGroups");
     }
 
     @Override

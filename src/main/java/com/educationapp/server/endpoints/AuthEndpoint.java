@@ -1,8 +1,8 @@
-package com.educationapp.server;
+package com.educationapp.server.endpoints;
 
-import java.util.ArrayList;
+import static com.educationapp.server.model.Role.ADMIN;
+
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import com.educationapp.server.config.JwtTokenProvider;
@@ -17,13 +17,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-//@RequestMapping("/api/auth")
+@RequestMapping("/api/auth")
 @CrossOrigin("*")
 //@Validated
-public class AuthController {
+public class AuthEndpoint {
 
     @Autowired
     JwtTokenProvider tokenProvider;
@@ -34,23 +35,23 @@ public class AuthController {
     @Autowired
     CustomUserDetailsService userService;
 
-    @PostMapping("/login")
-    public ResponseEntity authenticateUser(@RequestBody LoginForm loginForm) {
+    @PostMapping("/signIn")
+    public ResponseEntity<String> authenticateUser(@RequestBody LoginForm loginForm) {
 
         Optional<UserDB> user = userRepository.findByUsername(loginForm.getUsername());
         if (user.isPresent() && user.get().getPassword().equals(loginForm.getPassword())) {
-            System.out.println("OK");
-            return new ResponseEntity(tokenProvider.createToken(user.get().getUsername(),
-                    Collections.singletonList("ADMIN")), HttpStatus.OK);
+            return new ResponseEntity<>(tokenProvider.createToken(user.get().getUsername(),
+                                                                  Collections.singletonList(ADMIN.name())),
+                                        HttpStatus.OK);
         }
-        System.out.println("BED");
-        return new ResponseEntity(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED);
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<UserDB> register(@RequestBody User loginForm) {
+    @PostMapping("/signUp")
+    public ResponseEntity<String> register(@RequestBody User loginForm) {
         User user = userService.save(loginForm);
-        return new ResponseEntity(user, HttpStatus.OK);
+        return new ResponseEntity<>(tokenProvider.createToken(user.getUsername(),
+                                                              Collections.singletonList(ADMIN.name())),
+                                    HttpStatus.OK);
     }
-
 }

@@ -7,25 +7,9 @@
    http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <!--<changeSet id="000_create_users" author="Maria">-->
-        <!--<sqlFile path="./changeset/000_create_users.sql"/>-->
-    <!--</changeSet>-->
-
     <!--<changeSet id="001_create_educational_institution" author="Maria">-->
         <!--<sqlFile path="./changeset/001_create_educational_institution.sql"/>-->
     <!--</changeSet>-->
-
-<!--    <changeSet id="002_create_faculties" author="Maria">-->
-<!--        <sqlFile path="./changeset/002_create_faculties.sql"/>-->
-<!--    </changeSet>-->
-
-<!--    <changeSet id="003_create_departments" author="Maria">-->
-<!--        <sqlFile path="./changeset/003_create_departments.sql"/>-->
-<!--    </changeSet>-->
-
-<!--    <changeSet id="004_create_faculty_department" author="Maria">-->
-<!--        <sqlFile path="./changeset/004_create_faculty_department.sql"/>-->
-<!--    </changeSet>-->
 
 <!--    <changeSet id="005_create_university_faculty" author="Maria">-->
 <!--        <sqlFile path="./changeset/005_create_university_faculty.sql"/>-->
@@ -33,10 +17,6 @@
 
 <!--    <changeSet id="006_create_teachers" author="Maria">-->
 <!--        <sqlFile path="./changeset/006_create_teachers.sql"/>-->
-<!--    </changeSet>-->
-
-<!--    <changeSet id="007_create_study_groups" author="Maria">-->
-<!--        <sqlFile path="./changeset/007_create_study_groups.sql"/>-->
 <!--    </changeSet>-->
 
 <!--    <changeSet id="008_create_students" author="Maria">-->
