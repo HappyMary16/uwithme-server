@@ -38,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/auth/signUp",
                         "/api/info/institutes",
                         "/api/info/departments",
-                        "/api/info/studyGroups");
+                        "/api/uploadFile");
     }
 
     @Override
