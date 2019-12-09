@@ -37,8 +37,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
            .antMatchers("/api/auth/signIn",
                         "/api/auth/signUp",
                         "/api/info/institutes",
-                        "/api/info/departments",
-                        "/api/uploadFile");
+                        "/api/info/departments"
+//                   ,
+//                        "/api/uploadFile"
+                       );
     }
 
     @Override

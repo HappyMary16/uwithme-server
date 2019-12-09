@@ -6,5 +6,6 @@
     <!-- It's an entry point for liquibase update. Each changelog should be registered here -->
     <include file="initial_schema.xml" relativeToChangelogFile="true"/>
     <include file="changelog/001_university_structure/001.00_master.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/002_files/002.00_master.xml" relativeToChangelogFile="true"/>
+    <!--<include file="changelog/002_files/002.00_master.xml" relativeToChangelogFile="true"/>-->
+    <include file="changelog/003_users/003.00_master.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

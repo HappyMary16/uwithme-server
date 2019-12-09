@@ -25,6 +25,7 @@ public class SaveFileEndpoint {
 //
 //        return new UploadFileResponse(fileName, fileDownloadUri,
 //                                      file.getContentType(), file.getSize());
+        System.out.println("jkh");
         return new ResponseEntity<>(HttpStatus.OK);
     }
 //    @PostMapping("/saveFile")
