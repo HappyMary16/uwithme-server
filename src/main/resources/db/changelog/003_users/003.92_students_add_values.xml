@@ -3,5 +3,13 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <include file="002.01_subject_create_table.xml" relativeToChangelogFile="true"/>
+    <changeSet author="mborodin" id="003.92">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="teachers"/>
+        </preConditions>
+        <insert tableName="students">
+            <column name="id" value="1"/>
+            <column name="study_group_id" value="1"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

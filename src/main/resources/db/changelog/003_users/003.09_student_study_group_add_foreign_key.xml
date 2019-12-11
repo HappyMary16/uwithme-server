@@ -3,17 +3,17 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet author="mborodin" id="001.05">
+    <changeSet author="mborodin" id="003.09">
         <preConditions onFail="MARK_RAN">
             <not>
-                <foreignKeyConstraintExists foreignKeyName="fk_department_institute"/>
+                <foreignKeyConstraintExists foreignKeyName="fk_student_study_group"/>
             </not>
         </preConditions>
 
-        <addForeignKeyConstraint baseTableName="departments"
-                                 baseColumnNames="institute_id"
-                                 constraintName="fk_department_institute"
-                                 referencedTableName="institutes"
+        <addForeignKeyConstraint baseTableName="students"
+                                 baseColumnNames="study_group_id"
+                                 constraintName="fk_student_study_group"
+                                 referencedTableName="study_groups"
                                  referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>

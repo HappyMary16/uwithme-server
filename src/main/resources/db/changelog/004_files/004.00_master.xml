@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <include file="004.01_subjects_create_table.xml" relativeToChangelogFile="true"/>
+    <include file="004.02_subjects_add_primary_key.xml" relativeToChangelogFile="true"/>
+    <include file="004.03_subject_teacher_add_foreign_key.xml" relativeToChangelogFile="true"/>
+    <include file="004.04_files_create_table.xml" relativeToChangelogFile="true"/>
+    <include file="004.05_files_add_primary_key.xml" relativeToChangelogFile="true"/>
+    <include file="004.06_file_subject_add_foreign_key.xml" relativeToChangelogFile="true"/>
+    <include file="004.07_file_type_add_foreign_key.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

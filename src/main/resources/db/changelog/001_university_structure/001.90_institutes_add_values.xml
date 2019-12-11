@@ -3,17 +3,15 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet id="003.02" author="mborodin">
+    <changeSet author="mborodin" id="001.90">
         <preConditions onFail="MARK_RAN">
-            <not>
-                <primaryKeyExists tableName="users"/>
-            </not>
+            <tableExists tableName="institutes"/>
         </preConditions>
-        <addPrimaryKey tableName="users"
-                       columnNames="id"
-                       constraintName="user_pk"/>
-        <addAutoIncrement tableName="users"
-                          columnName="id"
-                          columnDataType="INTEGER"/>
+        <insert tableName="institutes">
+            <column name="name" value="I"/>
+        </insert>
+        <insert tableName="institutes">
+            <column name="name" value="KIT"/>
+        </insert>
     </changeSet>
 </databaseChangeLog>

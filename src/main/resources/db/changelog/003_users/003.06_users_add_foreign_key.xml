@@ -3,17 +3,17 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet id="003.02" author="mborodin">
+    <changeSet author="mborodin" id="003.06">
         <preConditions onFail="MARK_RAN">
             <not>
-                <primaryKeyExists tableName="users"/>
+                <foreignKeyConstraintExists foreignKeyName="fk_user_type"/>
             </not>
         </preConditions>
-        <addPrimaryKey tableName="users"
-                       columnNames="id"
-                       constraintName="user_pk"/>
-        <addAutoIncrement tableName="users"
-                          columnName="id"
-                          columnDataType="INTEGER"/>
+
+        <addForeignKeyConstraint baseTableName="users"
+                                 baseColumnNames="type"
+                                 constraintName="fk_user_type"
+                                 referencedTableName="user_types"
+                                 referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>

@@ -3,7 +3,7 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet author="mborodin" id="001">
+    <changeSet author="mborodin" id="003.01">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="users"/>
@@ -19,6 +19,9 @@
             <column name="last_name" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="surname" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
             <column name="username" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
@@ -29,6 +32,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="email" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>

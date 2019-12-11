@@ -63,17 +63,23 @@ public class SaveFileEndpoint {
         try {
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
         } catch (IOException ex) {
-            //logger.info("Could not determine file type.");
-        }
+            //logger.info("Could not determine file type.");        }
 
-        // Fallback to the default content type if type could not be determined
-        if(contentType == null) {
-            contentType = "application/octet-stream";
-        }
+            // Fallback to the default content type if type could not be determined
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
 
+            return ResponseEntity.ok()
+                                 .contentType(MediaType.parseMediaType(contentType))
+                                 .header(HttpHeaders.CONTENT_DISPOSITION,
+                                         "attachment; filename=\"" + resource.getFilename() + "\"")
+                                 .body(resource);
+        }
         return ResponseEntity.ok()
-                             .contentType(MediaType.parseMediaType(contentType))
-                             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                             .body(resource);
+                            .contentType(MediaType.parseMediaType(contentType))
+                            .header(HttpHeaders.CONTENT_DISPOSITION,
+                                    "attachment; filename=\"" + resource.getFilename() + "\"")
+                            .body(resource);
     }
 }
