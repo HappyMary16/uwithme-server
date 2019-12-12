@@ -34,7 +34,7 @@
             <column name="email" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="type" type="INTEGER">
+            <column name="role" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>

@@ -3,9 +3,9 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <include file="000.01_user_types_create_table.xml" relativeToChangelogFile="true"/>
-    <include file="000.02_user_types_add_primary_key.xml" relativeToChangelogFile="true"/>
-    <include file="000.03_user_types_add_values.xml" relativeToChangelogFile="true"/>
+    <include file="000.01_user_roles_create_table.xml" relativeToChangelogFile="true"/>
+    <include file="000.02_user_roles_add_primary_key.xml" relativeToChangelogFile="true"/>
+    <include file="000.03_user_roles_add_values.xml" relativeToChangelogFile="true"/>
     <include file="000.04_science_degrees_create_table.xml" relativeToChangelogFile="true"/>
     <include file="000.05_science_degrees_add_primary_key.xml" relativeToChangelogFile="true"/>
     <include file="000.06_science_degrees_add_values.xml" relativeToChangelogFile="true"/>
