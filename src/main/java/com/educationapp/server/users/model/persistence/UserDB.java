@@ -35,7 +35,7 @@ public class UserDB implements Serializable {
     @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "last_name")
+    @Column(name = "surname")
     private String surname;
 
     @Column(name = "username")

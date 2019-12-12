@@ -15,7 +15,7 @@
             <column name="password" value="student"/>
             <column name="phone" value="student"/>
             <column name="email" value="student"/>
-            <column name="type" value="1"/>
+            <column name="role" value="1"/>
         </insert>
         <insert tableName="users">
             <column name="first_name" value="teacher"/>
@@ -25,7 +25,7 @@
             <column name="password" value="teacher"/>
             <column name="phone" value="teacher"/>
             <column name="email" value="teacher"/>
-            <column name="type" value="2"/>
+            <column name="role" value="2"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

@@ -20,14 +20,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @Data
 @EqualsAndHashCode
-@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {
 
     protected Long id;
 
+    @NonNull
+    @NotEmpty
     protected String firstName;
+
 
     protected String lastName;
 
