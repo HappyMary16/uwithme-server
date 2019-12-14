@@ -11,10 +11,13 @@
         </preConditions>
         <createTable tableName="students">
             <column name="id" type="INTEGER">
-                <constraints nullable="false"/>
+                <constraints nullable="false" unique="true"/>
             </column>
             <column name="study_group_id" type="INTEGER">
                 <constraints nullable="false"/>
+            </column>
+            <column name="student_id" type="VARCHAR(50)">
+                <constraints nullable="true"/>
             </column>
         </createTable>
     </changeSet>

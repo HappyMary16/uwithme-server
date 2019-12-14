@@ -24,7 +24,6 @@ public class TeacherDB implements Serializable {
     private static final long serialVersionUID = 8421354192650411535L;
 
     @Id
-    @UniqueElements
     @Column(name = "id")
     private Long id;
 

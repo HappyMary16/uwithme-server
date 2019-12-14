@@ -17,7 +17,6 @@ import com.educationapp.server.authorization.servises.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,7 +50,10 @@ public class AuthEndpoint {
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<String> register(@RequestBody @Valid RegisterApi registerApi) {
+    public ResponseEntity<String> register(@RequestBody RegisterApi registerApi) {
+        System.out.println();
+        System.out.println(registerApi.toString());
+        System.out.println();
         User user = userService.save(registerApi);
         return new ResponseEntity<>(tokenProvider.createToken(user.getUsername(),
                                                               Collections.singletonList(ADMIN.name())),

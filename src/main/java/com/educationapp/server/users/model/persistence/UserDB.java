@@ -51,5 +51,5 @@ public class UserDB implements Serializable {
     private String email;
 
     @Column(name = "role")
-    private int role;
+    private Integer role;
 }

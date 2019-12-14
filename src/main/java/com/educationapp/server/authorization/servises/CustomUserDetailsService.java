@@ -39,6 +39,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                                 .password(user.getPassword())
                                 .phone(user.getPhone())
                                 .email(user.getEmail())
+                                .role(user.getRole())
                                 .build();
         UserDB created = userRepository.save(toCreate);
 

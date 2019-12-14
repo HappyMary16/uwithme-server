@@ -10,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import java.io.Serializable;
 
@@ -24,14 +25,15 @@ public class StudentDB implements Serializable {
     private static final long serialVersionUID = 1147071389117659854L;
 
     @Id
-    @UniqueElements
     @Column(name = "id")
+    @NotNull
     private Long id;
 
     @Column(name = "study_group_id")
-    private String studyGroupId;
+    @NotNull
+    private Long studyGroupId;
 
-    @UniqueElements
     @Column(name = "student_id")
+    @NotNull
     private String studentId;
 }
