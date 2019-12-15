@@ -6,7 +6,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
-import com.educationapp.server.authorization.servises.CustomUserDetailsService;
+import com.educationapp.server.authorization.servises.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
@@ -25,7 +25,7 @@ public class JwtTokenProvider {
     private long validityInMilliseconds = 3600000 * 24; // 1h
 
     @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private UserService userDetailsService;
 
     @PostConstruct
     protected void init() {

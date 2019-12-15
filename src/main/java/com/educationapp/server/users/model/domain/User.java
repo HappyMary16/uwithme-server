@@ -10,7 +10,6 @@ import javax.validation.constraints.NotEmpty;
 
 import com.educationapp.server.enums.Role;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

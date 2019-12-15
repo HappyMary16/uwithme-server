@@ -48,7 +48,7 @@ public class RegisterApi {
 
     private Long studyGroupId;
 
-    private String departmentId;
+    private Long departmentId;
 
-    private String scienceDegreeId;
+    private Long scienceDegreeId;
 }

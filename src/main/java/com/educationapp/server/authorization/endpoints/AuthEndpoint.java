@@ -1,19 +1,16 @@
 package com.educationapp.server.authorization.endpoints;
 
-import static com.educationapp.server.enums.Role.ADMIN;
-
 import java.util.Collections;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
-import com.educationapp.server.authorization.models.RegisterApi;
-import com.educationapp.server.authorization.security.JwtTokenProvider;
 import com.educationapp.server.authorization.models.LoginApi;
+import com.educationapp.server.authorization.models.RegisterApi;
+import com.educationapp.server.authorization.models.UserApi;
+import com.educationapp.server.authorization.security.JwtTokenProvider;
+import com.educationapp.server.authorization.servises.UserService;
 import com.educationapp.server.users.model.domain.User;
-import com.educationapp.server.users.model.persistence.UserDB;
 import com.educationapp.server.users.repositories.UserRepository;
-import com.educationapp.server.authorization.servises.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,28 +32,26 @@ public class AuthEndpoint {
     UserRepository userRepository;
 
     @Autowired
-    CustomUserDetailsService userService;
+    UserService userService;
 
     @PostMapping("/signIn")
-    public ResponseEntity<String> authenticateUser(@RequestBody @Valid LoginApi loginApi) {
+    public ResponseEntity<UserApi> authenticateUser(@RequestBody @Valid LoginApi loginApi) {
+        UserApi user = userService.findByUserName(loginApi.getUsername());
 
-        Optional<UserDB> user = userRepository.findByUsername(loginApi.getUsername());
-        if (user.isPresent() && user.get().getPassword().equals(loginApi.getPassword())) {
-            return new ResponseEntity<>(tokenProvider.createToken(user.get().getUsername(),
-                                                                  Collections.singletonList(ADMIN.name())),
-                                        HttpStatus.OK);
+        if (user.getPassword().equals(loginApi.getPassword())) {
+            user.setToken(tokenProvider.createToken(loginApi.getUsername(),
+                                                    Collections.singletonList(user.getRole().toString())));
+
+            return new ResponseEntity<>(user, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<String> register(@RequestBody RegisterApi registerApi) {
-        System.out.println();
-        System.out.println(registerApi.toString());
-        System.out.println();
+    public ResponseEntity<LoginApi> register(@RequestBody RegisterApi registerApi) {
         User user = userService.save(registerApi);
-        return new ResponseEntity<>(tokenProvider.createToken(user.getUsername(),
-                                                              Collections.singletonList(ADMIN.name())),
-                                    HttpStatus.OK);
+        LoginApi loginApi = new LoginApi(user.getUsername(), user.getPassword());
+
+        return new ResponseEntity<>(loginApi, HttpStatus.OK);
     }
 }

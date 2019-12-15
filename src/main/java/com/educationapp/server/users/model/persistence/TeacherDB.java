@@ -28,8 +28,8 @@ public class TeacherDB implements Serializable {
     private Long id;
 
     @Column(name = "department_id")
-    private String departmentId;
+    private Long departmentId;
 
     @Column(name = "science_degree_id")
-    private String scienceDegreeId;
+    private Long scienceDegreeId;
 }

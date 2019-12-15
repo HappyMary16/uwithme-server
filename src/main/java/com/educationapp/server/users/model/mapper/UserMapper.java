@@ -10,8 +10,8 @@ public class UserMapper {
         return new User(userDB.getId(),
                         userDB.getFirstName(),
                         userDB.getLastName(),
+                        userDB.getSurname(),
                         userDB.getUsername(),
-                        userDB.getPassword(),
                         userDB.getPassword(),
                         userDB.getPhone(),
                         userDB.getEmail(),
@@ -24,6 +24,7 @@ public class UserMapper {
                      .id(user.getId())
                      .firstName(user.getFirstName())
                      .lastName(user.getLastName())
+                     .surname(user.getSurname())
                      .username(user.getUsername())
                      .password(user.getPassword())
                      .email(user.getEmail())
