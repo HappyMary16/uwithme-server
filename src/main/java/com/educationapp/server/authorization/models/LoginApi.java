@@ -2,6 +2,11 @@ package com.educationapp.server.authorization.models;
 
 import javax.validation.constraints.NotNull;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public class LoginApi {
 
     @NotNull
@@ -9,17 +14,4 @@ public class LoginApi {
 
     @NotNull
     private String password;
-
-    public LoginApi(final String username, final String password) {
-        this.username = username;
-        this.password = password;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 }
