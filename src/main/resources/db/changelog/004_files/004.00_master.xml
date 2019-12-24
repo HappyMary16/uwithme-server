@@ -10,4 +10,8 @@
     <include file="004.05_files_add_primary_key.xml" relativeToChangelogFile="true"/>
     <include file="004.06_file_subject_add_foreign_key.xml" relativeToChangelogFile="true"/>
     <include file="004.07_file_type_add_foreign_key.xml" relativeToChangelogFile="true"/>
+    <include file="004.08_study_group_file_create_table.xml" relativeToChangelogFile="true"/>
+    <include file="004.09_study_group_file_add_foreign_key.xml" relativeToChangelogFile="true"/>
+    <include file="004.10_study_group_file_id_add_foreign_key.xml" relativeToChangelogFile="true"/>
+    <include file="004.11_study_group_file_add_primary_key.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

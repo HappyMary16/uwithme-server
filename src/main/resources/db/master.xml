@@ -10,6 +10,7 @@
     <include file="changelog/001_university_structure/001.00_master.xml" relativeToChangelogFile="true"/>
     <include file="changelog/003_users/003.00_master.xml" relativeToChangelogFile="true"/>
     <include file="changelog/004_files/004.00_master.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/005_schedule/005.00_master.xml" relativeToChangelogFile="true"/>
 
     <include file="" relativeToChangelogFile="true"/>
 </databaseChangeLog>

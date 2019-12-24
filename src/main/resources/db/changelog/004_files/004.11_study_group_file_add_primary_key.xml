@@ -3,17 +3,17 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet author="mborodin" id="004.03">
+    <changeSet id="004.11" author="mborodin">
         <preConditions onFail="MARK_RAN">
             <not>
-                <foreignKeyConstraintExists foreignKeyName="fk_subject_teacher"/>
+                <primaryKeyExists tableName="study_group_file"/>
             </not>
         </preConditions>
-
-        <addForeignKeyConstraint baseTableName="subjects"
-                                 baseColumnNames="teacher_id"
-                                 constraintName="fk_subject_teacher"
-                                 referencedTableName="users"
-                                 referencedColumnNames="id"/>
+        <addPrimaryKey tableName="study_group_file"
+                       columnNames="id"
+                       constraintName="study_group_file_pk"/>
+        <addAutoIncrement tableName="study_group_file"
+                          columnName="id"
+                          columnDataType="INTEGER"/>
     </changeSet>
 </databaseChangeLog>

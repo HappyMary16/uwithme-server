@@ -1,21 +1,19 @@
 package com.educationapp.server.files.models;
 
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.web.multipart.MultipartFile;
 
 @AllArgsConstructor
 @Getter
-public class SaveFileApi {
+public class AccessToFileApi {
 
     @NotNull
-    private String subjectName;
+    private List<Long> fileIds;
 
     @NotNull
-    private Long fileTypeId;
-
-    @NotNull
-    private MultipartFile[] files;
+    private Long groupId;
 }

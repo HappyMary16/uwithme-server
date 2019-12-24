@@ -19,7 +19,6 @@ import com.educationapp.server.university.data.repositories.InstituteRepository;
 import com.educationapp.server.university.data.repositories.ScienceDegreeRepository;
 import com.educationapp.server.university.data.repositories.StudyGroupRepository;
 import com.educationapp.server.users.model.domain.User;
-import com.educationapp.server.users.model.mapper.UserMapper;
 import com.educationapp.server.users.model.persistence.StudentDB;
 import com.educationapp.server.users.model.persistence.TeacherDB;
 import com.educationapp.server.users.model.persistence.UserDB;
@@ -85,7 +84,7 @@ public class UserService implements UserDetailsService {
             teacherRepository.save(teacherToCreate);
         }
 
-        return UserMapper.userDbToUser(created);
+        return userDbToUser(created);
     }
 
     public UserApi findByUserName(final String username) {
@@ -141,6 +140,20 @@ public class UserService implements UserDetailsService {
                 userRepository.findByUsername(username)
                               .orElseThrow(() -> new UsernameNotFoundException(String.format(USERNAME_NOT_FOUND,
                                                                                              username)));
-        return UserMapper.userDbToUser(user);
+        return userDbToUser(user);
     }
+
+    private static User userDbToUser(final UserDB userDB) {
+        return new User(userDB.getId(),
+                        userDB.getFirstName(),
+                        userDB.getLastName(),
+                        userDB.getSurname(),
+                        userDB.getUsername(),
+                        userDB.getPassword(),
+                        userDB.getPhone(),
+                        userDB.getEmail(),
+                        Role.getById(userDB.getRole()),
+                        null);
+    }
+
 }

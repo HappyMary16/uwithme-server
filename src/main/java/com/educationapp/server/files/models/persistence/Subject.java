@@ -15,29 +15,17 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "files")
-public class File {
-
-    public File(final String path, final String subjectName, final Long fileTypeId) {
-        this.path = path;
-        this.subjectName = subjectName;
-        this.fileTypeId = fileTypeId;
-    }
+@Table(name = "subjects")
+public class Subject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "path")
     private String name;
 
-    @Column(name = "path")
-    private String path;
-
     @Column(name = "subject_id")
-    private String  subjectName;
-
-    @Column(name = "type_id")
-    private Long fileTypeId;
+    private Long teacherId;
 }

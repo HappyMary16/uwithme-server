@@ -1,5 +1,7 @@
 package com.educationapp.server.files.models.persistence;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,13 +17,13 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "files")
-public class File {
+@Table(name = "study_group_file")
+public class AccessToFile {
 
-    public File(final String path, final String subjectName, final Long fileTypeId) {
-        this.path = path;
-        this.subjectName = subjectName;
-        this.fileTypeId = fileTypeId;
+    public AccessToFile(final Long studyGroupId, final Long fileId, final Date dateAddAccess) {
+        this.studyGroupId = studyGroupId;
+        this.fileId = fileId;
+        this.dateAddAccess = dateAddAccess;
     }
 
     @Id
@@ -29,15 +31,12 @@ public class File {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "study_group_id")
+    private Long studyGroupId;
 
-    @Column(name = "path")
-    private String path;
+    @Column(name = "file_id")
+    private Long fileId;
 
-    @Column(name = "subject_id")
-    private String  subjectName;
-
-    @Column(name = "type_id")
-    private Long fileTypeId;
+    @Column(name = "date_add_access")
+    private Date dateAddAccess;
 }
