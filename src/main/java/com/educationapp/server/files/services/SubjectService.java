@@ -1,7 +1,6 @@
 package com.educationapp.server.files.services;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.educationapp.server.files.models.persistence.Subject;
 import com.educationapp.server.files.repositories.SubjectRepository;
@@ -18,12 +17,15 @@ public class SubjectService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<String> findSubjectNamesByTeacherUsername(final String username) {
+    public List<Subject> findSubjectNamesByTeacherUsername(final String username) {
         final Long teacherId = userRepository.findByUsername(username).get().getId();
 
-        return subjectRepository.findAllByTeacherId(teacherId)
-                                .stream()
-                                .map(Subject::getName)
-                                .collect(Collectors.toList());
+        return subjectRepository.findAllByTeacherId(teacherId);
+    }
+
+    public void save(final String username, final String subject) {
+        final Long teacherId = userRepository.findByUsername(username).get().getId();
+
+        subjectRepository.save(new Subject(subject, teacherId));
     }
 }

@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FileRepository extends CrudRepository<File, Long> {
 
-    List<File> findBySubjectName(final String subjectName);
+    List<File> findBySubjectId(final Long subjectId);
 }

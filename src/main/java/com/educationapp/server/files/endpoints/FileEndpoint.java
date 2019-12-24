@@ -15,6 +15,7 @@ import com.educationapp.server.files.models.FileApi;
 import com.educationapp.server.files.models.SaveFileApi;
 import com.educationapp.server.files.models.UploadFileResponse;
 import com.educationapp.server.files.models.persistence.File;
+import com.educationapp.server.files.models.persistence.Subject;
 import com.educationapp.server.files.repositories.FileRepository;
 import com.educationapp.server.files.services.FileService;
 import com.educationapp.server.files.services.SubjectService;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -48,23 +50,25 @@ public class FileEndpoint {
     private SubjectService subjectService;
 
     @PostMapping("/uploadFile")
-    public UploadFileResponse uploadFile(@RequestBody SaveFileApi file) {
-        String fileName = fileService.saveFile(file);
+    public UploadFileResponse uploadFile(@RequestBody SaveFileApi saveFileApi) {
+        String fileName = fileService.saveFile(saveFileApi);
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                                                             .path("/downloadFile/")
                                                             .path(fileName)
                                                             .toUriString();
 
         return new UploadFileResponse(fileName, fileDownloadUri,
-                                      file.getFiles()[0].getContentType(), file.getFiles()[0].getSize());
+                                      saveFileApi.getFile().getContentType(), saveFileApi.getFile().getSize());
     }
 
-    @PostMapping("/uploadMultipleFiles")
-    public List<UploadFileResponse> uploadMultipleFiles(@RequestBody SaveFileApi files) {
-        return Arrays.stream(files.getFiles())
-                     .map(file -> uploadFile(new SaveFileApi(files.getSubjectName(),
-                                                             files.getFileTypeId(),
-                                                             new MultipartFile[]{file})))
+    @PostMapping("/uploadMultipleFiles/{subjectId:[1-9]+}/{fileType:[1-9]}")
+    public List<UploadFileResponse> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files,
+                                                        @PathVariable("subjectId") final Long subjectId,
+                                                        @PathVariable("fileType") final Long fileType) {
+        return Arrays.stream(files)
+                     .map(file -> uploadFile(new SaveFileApi(subjectId,
+                                                             fileType,
+                                                             file)))
                      .collect(Collectors.toList());
     }
 
@@ -96,13 +100,13 @@ public class FileEndpoint {
                              .body(resource);
     }
 
-    @GetMapping("/files/{subjectName:[1-9]+}")
-    public ResponseEntity<List<File>> getFiles(@PathVariable("subjectName") final String subjectName) {
-        return new ResponseEntity<>(fileRepository.findBySubjectName(subjectName), OK);
+    @GetMapping("/files/{subjectId:[1-9]+}")
+    public ResponseEntity<List<File>> getFiles(@PathVariable("subjectId") final Long subjectId) {
+        return new ResponseEntity<>(fileRepository.findBySubjectId(subjectId), OK);
     }
 
     @GetMapping("/subjects/{teacherUsername:.+}")
-    public ResponseEntity<List<String>> getSubjects(@PathVariable("teacherUsername") final String teacherUsername) {
+    public ResponseEntity<List<Subject>> getSubjects(@PathVariable("teacherUsername") final String teacherUsername) {
         return new ResponseEntity<>(subjectService.findSubjectNamesByTeacherUsername(teacherUsername), OK);
     }
 
@@ -116,5 +120,12 @@ public class FileEndpoint {
     public ResponseEntity<List<FileApi>> getFiles(@PathVariable("subjectName") final String subjectName,
                                                   @PathVariable("username") final String username) {
         return new ResponseEntity<>(fileService.findByUsernameAndSubjectName(username, subjectName), OK);
+    }
+
+    @PostMapping("/subject/{username:.+}/{subjectName:.+}")
+    public ResponseEntity<List<FileApi>> saveSubject(@PathVariable("subjectName") final String subjectName,
+                                                     @PathVariable("username") final String username) {
+        subjectService.save(username, subjectName);
+        return new ResponseEntity<>(OK);
     }
 }

@@ -18,14 +18,19 @@ import lombok.NoArgsConstructor;
 @Table(name = "subjects")
 public class Subject {
 
+    public Subject(final String name, final Long teacherId) {
+        this.name = name;
+        this.teacherId = teacherId;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "path")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "subject_id")
+    @Column(name = "teacher_id")
     private Long teacherId;
 }

@@ -18,9 +18,10 @@ import lombok.NoArgsConstructor;
 @Table(name = "files")
 public class File {
 
-    public File(final String path, final String subjectName, final Long fileTypeId) {
+    public File(final String path, final String name, final Long subjectId, final Long fileTypeId) {
         this.path = path;
-        this.subjectName = subjectName;
+        this.name = name;
+        this.subjectId = subjectId;
         this.fileTypeId = fileTypeId;
     }
 
@@ -36,7 +37,7 @@ public class File {
     private String path;
 
     @Column(name = "subject_id")
-    private String  subjectName;
+    private Long subjectId;
 
     @Column(name = "type_id")
     private Long fileTypeId;

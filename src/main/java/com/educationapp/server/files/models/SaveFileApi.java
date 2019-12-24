@@ -11,11 +11,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class SaveFileApi {
 
     @NotNull
-    private String subjectName;
+    private Long subjectId;
 
     @NotNull
     private Long fileTypeId;
 
     @NotNull
-    private MultipartFile[] files;
+    private MultipartFile file;
 }

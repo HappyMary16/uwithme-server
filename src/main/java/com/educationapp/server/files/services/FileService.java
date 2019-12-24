@@ -16,10 +16,12 @@ import com.educationapp.server.exception.FileStorageException;
 import com.educationapp.server.files.models.AccessToFileApi;
 import com.educationapp.server.files.models.FileApi;
 import com.educationapp.server.files.models.persistence.AccessToFile;
+import com.educationapp.server.files.models.persistence.Subject;
 import com.educationapp.server.files.repositories.AccessToFileRepository;
 import com.educationapp.server.files.repositories.FileRepository;
 import com.educationapp.server.files.models.SaveFileApi;
 import com.educationapp.server.files.models.persistence.File;
+import com.educationapp.server.files.repositories.SubjectRepository;
 import com.educationapp.server.users.repositories.StudentRepository;
 import com.educationapp.server.users.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,9 @@ public class FileService {
     private StudentRepository studentRepository;
 
     @Autowired
+    private SubjectRepository subjectService;
+
+    @Autowired
     public FileService() {
         this.fileStorageLocation = Paths.get("D:\\Programming\\Projects\\EducationAppServer\\src")
                                         .toAbsolutePath()
@@ -60,7 +65,7 @@ public class FileService {
     }
 
     public String saveFile(final SaveFileApi file) {
-        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFiles()[0].getOriginalFilename()));
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()));
 
         try {
             if (fileName.contains("..")) {
@@ -68,9 +73,10 @@ public class FileService {
             }
 
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
-            Files.copy(file.getFiles()[0].getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(file.getFile().getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            fileRepository.save(new File(targetLocation.toString(), file.getSubjectName(), file.getFileTypeId()));
+
+            fileRepository.save(new File(targetLocation.toString(), fileName.split("\\.")[0], file.getSubjectId(), file.getFileTypeId()));
             return fileName;
         } catch (IOException ex) {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
@@ -105,11 +111,13 @@ public class FileService {
                                      .stream()
                                      .map(accessToFile -> {
                                          final File file = fileRepository.findById(accessToFile.getFileId()).get();
+                                         final Subject subject = subjectService.findById(file.getSubjectId()).get();
                                          return new FileApi(accessToFile.getFileId(),
                                                             file.getName(),
-                                                            file.getSubjectName(),
+                                                            subject.getName(),
                                                             accessToFile.getDateAddAccess());
                                      })
+                                     .filter(file -> file.getSubjectName().equals(subjectName))
                                      .collect(Collectors.toList());
     }
 
