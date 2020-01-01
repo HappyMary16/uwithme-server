@@ -1,4 +1,4 @@
-package com.educationapp.server.files.models;
+package com.educationapp.server.common.api;
 
 import java.util.Date;
 

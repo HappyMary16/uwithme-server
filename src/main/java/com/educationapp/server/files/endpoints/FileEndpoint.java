@@ -10,12 +10,12 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.educationapp.server.files.models.AccessToFileApi;
-import com.educationapp.server.files.models.FileApi;
-import com.educationapp.server.files.models.SaveFileApi;
+import com.educationapp.server.common.api.AccessToFileApi;
+import com.educationapp.server.common.api.FileApi;
+import com.educationapp.server.common.api.SaveFileApi;
 import com.educationapp.server.files.models.UploadFileResponse;
-import com.educationapp.server.files.models.persistence.File;
-import com.educationapp.server.files.models.persistence.Subject;
+import com.educationapp.server.files.models.persistence.FileDB;
+import com.educationapp.server.files.models.persistence.SubjectDB;
 import com.educationapp.server.files.repositories.FileRepository;
 import com.educationapp.server.files.services.FileService;
 import com.educationapp.server.files.services.SubjectService;
@@ -101,12 +101,12 @@ public class FileEndpoint {
     }
 
     @GetMapping("/files/{subjectId:[1-9]+}")
-    public ResponseEntity<List<File>> getFiles(@PathVariable("subjectId") final Long subjectId) {
+    public ResponseEntity<List<FileDB>> getFiles(@PathVariable("subjectId") final Long subjectId) {
         return new ResponseEntity<>(fileRepository.findBySubjectId(subjectId), OK);
     }
 
     @GetMapping("/subjects/{teacherUsername:.+}")
-    public ResponseEntity<List<Subject>> getSubjects(@PathVariable("teacherUsername") final String teacherUsername) {
+    public ResponseEntity<List<SubjectDB>> getSubjects(@PathVariable("teacherUsername") final String teacherUsername) {
         return new ResponseEntity<>(subjectService.findSubjectNamesByTeacherUsername(teacherUsername), OK);
     }
 

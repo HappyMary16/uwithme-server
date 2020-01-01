@@ -18,9 +18,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "study_group_file")
-public class AccessToFile {
+public class AccessToFileDB {
 
-    public AccessToFile(final Long studyGroupId, final Long fileId, final Date dateAddAccess) {
+    public AccessToFileDB(final Long studyGroupId, final Long fileId, final Date dateAddAccess) {
         this.studyGroupId = studyGroupId;
         this.fileId = fileId;
         this.dateAddAccess = dateAddAccess;

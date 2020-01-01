@@ -1,15 +1,15 @@
-package com.educationapp.server.authorization.servises;
+package com.educationapp.server.users.servises;
 
-import static com.educationapp.server.enums.Role.STUDENT;
-import static com.educationapp.server.enums.Role.TEACHER;
-import static com.educationapp.server.exception.ExceptionsMessages.USERNAME_NOT_FOUND;
+import static com.educationapp.server.common.enums.Role.STUDENT;
+import static com.educationapp.server.common.enums.Role.TEACHER;
+import static com.educationapp.server.common.exception.ExceptionsMessages.USERNAME_NOT_FOUND;
 
 import java.util.Objects;
 
-import com.educationapp.server.authorization.models.RegisterApi;
-import com.educationapp.server.authorization.models.UserApi;
-import com.educationapp.server.enums.Role;
-import com.educationapp.server.exception.ResourceNotFoundException;
+import com.educationapp.server.common.api.RegisterApi;
+import com.educationapp.server.common.api.UserApi;
+import com.educationapp.server.common.enums.Role;
+import com.educationapp.server.common.exception.ResourceNotFoundException;
 import com.educationapp.server.university.data.models.Department;
 import com.educationapp.server.university.data.models.Institute;
 import com.educationapp.server.university.data.models.ScienceDegree;
@@ -18,7 +18,7 @@ import com.educationapp.server.university.data.repositories.DepartmentRepository
 import com.educationapp.server.university.data.repositories.InstituteRepository;
 import com.educationapp.server.university.data.repositories.ScienceDegreeRepository;
 import com.educationapp.server.university.data.repositories.StudyGroupRepository;
-import com.educationapp.server.users.model.domain.User;
+import com.educationapp.server.users.model.User;
 import com.educationapp.server.users.model.persistence.StudentDB;
 import com.educationapp.server.users.model.persistence.TeacherDB;
 import com.educationapp.server.users.model.persistence.UserDB;
@@ -155,5 +155,4 @@ public class UserService implements UserDetailsService {
                         Role.getById(userDB.getRole()),
                         null);
     }
-
 }

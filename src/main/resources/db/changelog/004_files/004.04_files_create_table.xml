@@ -14,7 +14,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="name" type="VARCHAR(100)">
-                <constraints nullable="true"/>
+                <constraints nullable="false"/>
             </column>
             <column name="path" type="VARCHAR(100)">
                 <constraints nullable="false"/>

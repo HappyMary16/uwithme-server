@@ -4,12 +4,12 @@ import java.util.Collections;
 
 import javax.validation.Valid;
 
-import com.educationapp.server.authorization.models.LoginApi;
-import com.educationapp.server.authorization.models.RegisterApi;
-import com.educationapp.server.authorization.models.UserApi;
+import com.educationapp.server.common.api.LoginApi;
+import com.educationapp.server.common.api.RegisterApi;
+import com.educationapp.server.common.api.UserApi;
 import com.educationapp.server.authorization.security.JwtTokenProvider;
-import com.educationapp.server.authorization.servises.UserService;
-import com.educationapp.server.users.model.domain.User;
+import com.educationapp.server.users.servises.UserService;
+import com.educationapp.server.users.model.User;
 import com.educationapp.server.users.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package com.educationapp.server.exception;
+package com.educationapp.server.common.exception;
 
 public class ExceptionsMessages {
 

@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "subjects")
-public class Subject {
+public class SubjectDB {
 
-    public Subject(final String name, final Long teacherId) {
+    public SubjectDB(final String name, final Long teacherId) {
         this.name = name;
         this.teacherId = teacherId;
     }

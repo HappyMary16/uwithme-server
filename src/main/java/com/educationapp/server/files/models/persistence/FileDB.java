@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "files")
-public class File {
+public class FileDB {
 
-    public File(final String path, final String name, final Long subjectId, final Long fileTypeId) {
+    public FileDB(final String path, final String name, final Long subjectId, final Long fileTypeId) {
         this.path = path;
         this.name = name;
         this.subjectId = subjectId;

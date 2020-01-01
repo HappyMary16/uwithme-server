@@ -1,4 +1,4 @@
-package com.educationapp.server.users.model.domain;
+package com.educationapp.server.users.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,7 +8,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.FetchType;
 import javax.validation.constraints.NotEmpty;
 
-import com.educationapp.server.enums.Role;
+import com.educationapp.server.common.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

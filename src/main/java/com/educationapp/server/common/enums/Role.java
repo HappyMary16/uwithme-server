@@ -1,4 +1,4 @@
-package com.educationapp.server.enums;
+package com.educationapp.server.common.enums;
 
 import lombok.Getter;
 

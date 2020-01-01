@@ -1,4 +1,6 @@
-package com.educationapp.server.authorization.models;
+package com.educationapp.server.common.api;
+
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -7,11 +9,11 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class LoginApi {
+public class AccessToFileApi {
 
     @NotNull
-    private String username;
+    private List<Long> fileIds;
 
     @NotNull
-    private String password;
+    private Long groupId;
 }

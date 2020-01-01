@@ -1,4 +1,4 @@
-package com.educationapp.server.authorization.models;
+package com.educationapp.server.common.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

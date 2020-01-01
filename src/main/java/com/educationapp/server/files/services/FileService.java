@@ -12,15 +12,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.educationapp.server.exception.FileStorageException;
-import com.educationapp.server.files.models.AccessToFileApi;
-import com.educationapp.server.files.models.FileApi;
-import com.educationapp.server.files.models.persistence.AccessToFile;
-import com.educationapp.server.files.models.persistence.Subject;
+import com.educationapp.server.common.exception.FileStorageException;
+import com.educationapp.server.common.api.AccessToFileApi;
+import com.educationapp.server.common.api.FileApi;
+import com.educationapp.server.files.models.persistence.AccessToFileDB;
+import com.educationapp.server.files.models.persistence.SubjectDB;
 import com.educationapp.server.files.repositories.AccessToFileRepository;
 import com.educationapp.server.files.repositories.FileRepository;
-import com.educationapp.server.files.models.SaveFileApi;
-import com.educationapp.server.files.models.persistence.File;
+import com.educationapp.server.common.api.SaveFileApi;
+import com.educationapp.server.files.models.persistence.FileDB;
 import com.educationapp.server.files.repositories.SubjectRepository;
 import com.educationapp.server.users.repositories.StudentRepository;
 import com.educationapp.server.users.repositories.UserRepository;
@@ -76,7 +76,7 @@ public class FileService {
             Files.copy(file.getFile().getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
 
-            fileRepository.save(new File(targetLocation.toString(), fileName.split("\\.")[0], file.getSubjectId(), file.getFileTypeId()));
+            fileRepository.save(new FileDB(targetLocation.toString(), fileName.split("\\.")[0], file.getSubjectId(), file.getFileTypeId()));
             return fileName;
         } catch (IOException ex) {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
@@ -90,18 +90,18 @@ public class FileService {
             if (resource.exists()) {
                 return resource;
             } else {
-                throw new FileNotFoundException("File not found " + fileName);
+                throw new FileNotFoundException("FileDB not found " + fileName);
             }
         } catch (MalformedURLException ex) {
-            throw new FileNotFoundException("File not found " + fileName);
+            throw new FileNotFoundException("FileDB not found " + fileName);
         }
     }
 
     public void saveAccessToFile(final AccessToFileApi accessToFileApi) {
         accessToFileApi.getFileIds()
-                       .forEach(fileId -> accessToFileRepository.save(new AccessToFile(accessToFileApi.getGroupId(),
-                                                                                       fileId,
-                                                                                       new Date())));
+                       .forEach(fileId -> accessToFileRepository.save(new AccessToFileDB(accessToFileApi.getGroupId(),
+                                                                                         fileId,
+                                                                                         new Date())));
     }
 
     public List<FileApi> findByUsernameAndSubjectName(final String username, final String subjectName) {
@@ -109,13 +109,14 @@ public class FileService {
         final Long studyGroupId = studentRepository.findById(userId).get().getStudyGroupId();
         return accessToFileRepository.findAllByStudyGroupId(studyGroupId)
                                      .stream()
-                                     .map(accessToFile -> {
-                                         final File file = fileRepository.findById(accessToFile.getFileId()).get();
-                                         final Subject subject = subjectService.findById(file.getSubjectId()).get();
-                                         return new FileApi(accessToFile.getFileId(),
-                                                            file.getName(),
-                                                            subject.getName(),
-                                                            accessToFile.getDateAddAccess());
+                                     .map(accessToFileDB -> {
+                                         final FileDB fileDB = fileRepository.findById(accessToFileDB.getFileId()).get();
+                                         final SubjectDB
+                                                 subjectDB = subjectService.findById(fileDB.getSubjectId()).get();
+                                         return new FileApi(accessToFileDB.getFileId(),
+                                                            fileDB.getName(),
+                                                            subjectDB.getName(),
+                                                            accessToFileDB.getDateAddAccess());
                                      })
                                      .filter(file -> file.getSubjectName().equals(subjectName))
                                      .collect(Collectors.toList());

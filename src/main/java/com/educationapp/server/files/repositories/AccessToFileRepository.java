@@ -2,10 +2,10 @@ package com.educationapp.server.files.repositories;
 
 import java.util.List;
 
-import com.educationapp.server.files.models.persistence.AccessToFile;
+import com.educationapp.server.files.models.persistence.AccessToFileDB;
 import org.springframework.data.repository.CrudRepository;
 
-public interface AccessToFileRepository extends CrudRepository<AccessToFile, Long> {
+public interface AccessToFileRepository extends CrudRepository<AccessToFileDB, Long> {
 
-    List<AccessToFile> findAllByStudyGroupId(final Long studyGroupId);
+    List<AccessToFileDB> findAllByStudyGroupId(final Long studyGroupId);
 }

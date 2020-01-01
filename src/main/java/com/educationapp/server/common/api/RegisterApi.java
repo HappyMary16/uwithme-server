@@ -1,4 +1,4 @@
-package com.educationapp.server.authorization.models;
+package com.educationapp.server.common.api;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

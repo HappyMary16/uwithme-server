@@ -1,10 +1,10 @@
-package com.educationapp.server.users.model.domain;
+package com.educationapp.server.users.model;
 
 import java.util.Collections;
 
 import javax.validation.constraints.NotEmpty;
 
-import com.educationapp.server.enums.Role;
+import com.educationapp.server.common.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
