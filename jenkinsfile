@@ -1,21 +1,21 @@
-node {
-// Clean workspace before doing anything
-deleteDir()
-                
+pipeline {
+
+  deleteDir()
+  agent any
+
 try {
     stage ('Clone') {
-       checkout scm
+
        }
 
     stage ('Build') {
-       timeout(time: 10, unit: 'MINUTES') {
             printStepName("BUILDING THE EDUCATION APP SERVER")
             dir('source-code') {
-                withEnv(["JAVA_HOME=${JAVA_PATH}"]) {
+                withMaven(maven: 'maven' {
                 sh 'mvn clean install'
                 }
             }
-        }
+
     }
 
     stage ('Tests') {
@@ -42,4 +42,4 @@ try {
     currentBuild.result = 'FAILED'
     throw err
 }
-                }
+}
