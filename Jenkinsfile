@@ -9,7 +9,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                bat 'java -Dfile.encoding=utf-8 -jar  -Xmx1536m target/server-0.0.1-SNAPSHOT.jar & true'
+                bat 'java -Dfile.encoding=utf-8 -jar  -Xmx1536m target/server-0.0.1-SNAPSHOT.jar & false'
             }
         }
 
