@@ -78,14 +78,12 @@ public class FileEndpoint {
 
         Resource resource = fileService.loadFileAsResource(fileName);
 
-        String contentType = null;
+        String contentType;
         try {
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
         } catch (IOException ex) {
 
-            if (contentType == null) {
-                contentType = "application/octet-stream";
-            }
+            contentType = "application/octet-stream";
 
             return ResponseEntity.ok()
                                  .contentType(MediaType.parseMediaType(contentType))
