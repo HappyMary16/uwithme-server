@@ -1,5 +1,8 @@
 package com.educationapp.server.files.services;
 
+import static com.educationapp.server.common.enums.Role.STUDENT;
+import static com.educationapp.server.common.enums.Role.TEACHER;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -12,16 +15,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.educationapp.server.common.exception.FileStorageException;
 import com.educationapp.server.common.api.AccessToFileApi;
 import com.educationapp.server.common.api.FileApi;
+import com.educationapp.server.common.api.SaveFileApi;
+import com.educationapp.server.common.exception.FileStorageException;
 import com.educationapp.server.files.models.persistence.AccessToFileDB;
-import com.educationapp.server.files.models.persistence.SubjectDB;
+import com.educationapp.server.files.models.persistence.FileDB;
 import com.educationapp.server.files.repositories.AccessToFileRepository;
 import com.educationapp.server.files.repositories.FileRepository;
-import com.educationapp.server.common.api.SaveFileApi;
-import com.educationapp.server.files.models.persistence.FileDB;
-import com.educationapp.server.files.repositories.SubjectRepository;
+import com.educationapp.server.users.model.persistence.UserDB;
 import com.educationapp.server.users.repositories.StudentRepository;
 import com.educationapp.server.users.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,11 +50,8 @@ public class FileService {
     private StudentRepository studentRepository;
 
     @Autowired
-    private SubjectRepository subjectService;
-
-    @Autowired
     public FileService() {
-        this.fileStorageLocation = Paths.get("D:\\Programming\\Projects\\EducationAppServer\\src")
+        this.fileStorageLocation = Paths.get("D:\\Programming\\Projects\\EducationAppServer")
                                         .toAbsolutePath()
                                         .normalize();
 
@@ -65,35 +64,46 @@ public class FileService {
     }
 
     public String saveFile(final SaveFileApi file) {
-        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()));
-
+        final String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()));
+        final String fileLocation = new StringBuilder().append(file.getSubjectId())
+                                                       .append("\\")
+                                                       .append(file.getFileTypeId())
+                                                       .append("\\")
+                                                       .toString();
         try {
-            if (fileName.contains("..")) {
-                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
+            if (fileLocation.contains("..")) {
+                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileLocation);
             }
 
-            Path targetLocation = this.fileStorageLocation.resolve(fileName);
+            Path directory = this.fileStorageLocation.resolve(fileLocation);
+            if (Files.notExists(directory)) {
+                Files.createDirectories(directory);
+            }
+
+            Path targetLocation = this.fileStorageLocation.resolve(fileLocation.concat(fileName));
             Files.copy(file.getFile().getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-
-            fileRepository.save(new FileDB(targetLocation.toString(), fileName.split("\\.")[0], file.getSubjectId(), file.getFileTypeId()));
-            return fileName;
+            fileRepository.save(new FileDB(fileLocation,
+                                           fileName,
+                                           file.getSubjectId(),
+                                           file.getFileTypeId()));
+            return fileLocation;
         } catch (IOException ex) {
-            throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+            throw new FileStorageException("Could not store file " + fileLocation + ". Please try again!", ex);
         }
     }
 
-    public Resource loadFileAsResource(String fileName) throws FileNotFoundException {
+    public Resource loadFileAsResource(final FileDB file) throws FileNotFoundException {
         try {
-            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            Path filePath = this.fileStorageLocation.resolve(file.getPath()).normalize();
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 return resource;
             } else {
-                throw new FileNotFoundException("FileDB not found " + fileName);
+                throw new FileNotFoundException(String.format("File with id %s not found", file.getId()));
             }
         } catch (MalformedURLException ex) {
-            throw new FileNotFoundException("FileDB not found " + fileName);
+            throw new FileNotFoundException(String.format("File with id %s not found", file.getId()));
         }
     }
 
@@ -104,22 +114,34 @@ public class FileService {
                                                                                          new Date())));
     }
 
-    public List<FileApi> findByUsernameAndSubjectName(final String username, final String subjectName) {
-        final Long userId = userRepository.findByUsername(username).get().getId();
-        final Long studyGroupId = studentRepository.findById(userId).get().getStudyGroupId();
-        return accessToFileRepository.findAllByStudyGroupId(studyGroupId)
-                                     .stream()
-                                     .map(accessToFileDB -> {
-                                         final FileDB fileDB = fileRepository.findById(accessToFileDB.getFileId()).get();
-                                         final SubjectDB
-                                                 subjectDB = subjectService.findById(fileDB.getSubjectId()).get();
-                                         return new FileApi(accessToFileDB.getFileId(),
-                                                            fileDB.getName(),
-                                                            subjectDB.getName(),
-                                                            accessToFileDB.getDateAddAccess());
-                                     })
-                                     .filter(file -> file.getSubjectName().equals(subjectName))
-                                     .collect(Collectors.toList());
-    }
+    public List<FileApi> findByUsernameAndSubjectName(final String username, final Long subjectId) {
+        final UserDB user = userRepository.findByUsername(username).get();
+        if (user.getRole().equals(STUDENT.getId())) {
+            final Long studyGroupId = studentRepository.findById(user.getId()).get().getStudyGroupId();
+            return accessToFileRepository.findAllByStudyGroupId(studyGroupId)
+                                         .stream()
+                                         .map(accessToFileDB -> {
+                                             final FileDB fileDB =
+                                                     fileRepository.findById(accessToFileDB.getFileId()).get();
+                                             return new FileApi(accessToFileDB.getFileId(),
+                                                                fileDB.getName(),
+                                                                fileDB.getFileTypeId(),
+                                                                fileDB.getSubjectId(),
+                                                                accessToFileDB.getDateAddAccess()); })
+                                         .filter(file -> file.getSubjectId().equals(subjectId))
+                                         .collect(Collectors.toList());
+        } else if (user.getRole().equals(TEACHER.getId())) {
+            return fileRepository.findBySubjectId(subjectId)
+                                 .stream()
+                                 .map(fileDB ->
+                                              new FileApi(fileDB.getId(),
+                                                          fileDB.getName(),
+                                                          fileDB.getFileTypeId(),
+                                                          fileDB.getSubjectId(),
+                                                          fileDB.getCreateDate()))
+                                 .collect(Collectors.toList());
+        }
 
+        throw new UnsupportedOperationException();
+    }
 }

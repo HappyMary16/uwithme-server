@@ -72,11 +72,12 @@ public class FileEndpoint {
                      .collect(Collectors.toList());
     }
 
-    @GetMapping("/downloadFile/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) throws
+    @GetMapping("/downloadFile/{fileId:.+}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId, HttpServletRequest request) throws
             FileNotFoundException {
 
-        Resource resource = fileService.loadFileAsResource(fileName);
+        final FileDB fileDB = fileRepository.findById(fileId).orElse(new FileDB());
+        Resource resource = fileService.loadFileAsResource(fileDB);
 
         String contentType;
         try {
@@ -84,7 +85,6 @@ public class FileEndpoint {
         } catch (IOException ex) {
 
             contentType = "application/octet-stream";
-
             return ResponseEntity.ok()
                                  .contentType(MediaType.parseMediaType(contentType))
                                  .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -114,10 +114,10 @@ public class FileEndpoint {
         return new ResponseEntity<>(OK);
     }
 
-    @GetMapping("/files/{username:.+}/{subjectName:[1-9]+}")
-    public ResponseEntity<List<FileApi>> getFiles(@PathVariable("subjectName") final String subjectName,
+    @GetMapping("/files/{username:.+}/{subjectId:[1-9]+}")
+    public ResponseEntity<List<FileApi>> getFiles(@PathVariable("subjectId") final Long subjectId,
                                                   @PathVariable("username") final String username) {
-        return new ResponseEntity<>(fileService.findByUsernameAndSubjectName(username, subjectName), OK);
+        return new ResponseEntity<>(fileService.findByUsernameAndSubjectName(username, subjectId), OK);
     }
 
     @PostMapping("/subject/{username:.+}/{subjectName:.+}")

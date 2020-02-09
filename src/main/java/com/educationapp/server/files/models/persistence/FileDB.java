@@ -1,5 +1,7 @@
 package com.educationapp.server.files.models.persistence;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -41,4 +43,7 @@ public class FileDB {
 
     @Column(name = "type_id")
     private Long fileTypeId;
+
+    @Column(name = "create_date")
+    private Date createDate;
 }

@@ -18,7 +18,10 @@ public class FileApi {
     private String fileName;
 
     @NotNull
-    private String subjectName;
+    private Long type;
+
+    @NotNull
+    private Long subjectId;
 
     @NotNull
     private Date timeStartAccess;
