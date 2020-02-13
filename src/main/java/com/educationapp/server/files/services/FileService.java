@@ -51,7 +51,7 @@ public class FileService {
 
     @Autowired
     public FileService() {
-        this.fileStorageLocation = Paths.get("D:\\Programming\\Projects\\EducationAppServer")
+        fileStorageLocation = Paths.get("D:\\Programming\\Projects\\EducationAppServer")
                                         .toAbsolutePath()
                                         .normalize();
 
@@ -95,7 +95,7 @@ public class FileService {
 
     public Resource loadFileAsResource(final FileDB file) throws FileNotFoundException {
         try {
-            Path filePath = this.fileStorageLocation.resolve(file.getPath()).normalize();
+            Path filePath = fileStorageLocation.resolve(file.getPath() + file.getName()).normalize();
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 return resource;

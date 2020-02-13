@@ -4,6 +4,9 @@ import static org.springframework.http.HttpStatus.OK;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +52,10 @@ public class FileEndpoint {
     @Autowired
     private SubjectService subjectService;
 
+    private Path fileStorageLocation = Paths.get("D:\\Programming\\Projects\\EducationAppServer")
+            .toAbsolutePath()
+                                        .normalize();
+
     @PostMapping("/uploadFile")
     public UploadFileResponse uploadFile(@RequestBody SaveFileApi saveFileApi) {
         String fileName = fileService.saveFile(saveFileApi);
@@ -81,7 +88,8 @@ public class FileEndpoint {
 
         String contentType;
         try {
-            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+            contentType = Files.probeContentType(
+                    fileStorageLocation.resolve(fileDB.getPath() + fileDB.getName()).normalize());
         } catch (IOException ex) {
 
             contentType = "application/octet-stream";
