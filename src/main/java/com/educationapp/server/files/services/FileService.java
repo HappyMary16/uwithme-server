@@ -21,6 +21,7 @@ import com.educationapp.server.common.api.SaveFileApi;
 import com.educationapp.server.common.exception.FileStorageException;
 import com.educationapp.server.files.models.persistence.AccessToFileDB;
 import com.educationapp.server.files.models.persistence.FileDB;
+import com.educationapp.server.files.models.persistence.SubjectDB;
 import com.educationapp.server.files.repositories.AccessToFileRepository;
 import com.educationapp.server.files.repositories.FileRepository;
 import com.educationapp.server.users.model.persistence.UserDB;
@@ -50,10 +51,13 @@ public class FileService {
     private StudentRepository studentRepository;
 
     @Autowired
+    SubjectService subjectService;
+
+    @Autowired
     public FileService() {
         fileStorageLocation = Paths.get("D:\\Programming\\Projects\\EducationAppServer")
-                                        .toAbsolutePath()
-                                        .normalize();
+                                   .toAbsolutePath()
+                                   .normalize();
 
         try {
             Files.createDirectories(this.fileStorageLocation);
@@ -65,7 +69,14 @@ public class FileService {
 
     public String saveFile(final SaveFileApi file) {
         final String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()));
-        final String fileLocation = new StringBuilder().append(file.getSubjectId())
+        final Long subjectId = subjectService.findSubjectsByTeacherUsername(file.getUsername())
+                                             .stream()
+                                             .filter(subject -> subject.getName().equals(file.getSubjectName()))
+                                             .findFirst()
+                                             .orElse(new SubjectDB())
+                                             .getId();
+
+        final String fileLocation = new StringBuilder().append(subjectId)
                                                        .append("\\")
                                                        .append(file.getFileTypeId())
                                                        .append("\\")
@@ -85,7 +96,7 @@ public class FileService {
 
             fileRepository.save(new FileDB(fileLocation,
                                            fileName,
-                                           file.getSubjectId(),
+                                           subjectId,
                                            file.getFileTypeId()));
             return fileLocation;
         } catch (IOException ex) {
@@ -127,7 +138,8 @@ public class FileService {
                                                                 fileDB.getName(),
                                                                 fileDB.getFileTypeId(),
                                                                 fileDB.getSubjectId(),
-                                                                accessToFileDB.getDateAddAccess()); })
+                                                                accessToFileDB.getDateAddAccess());
+                                         })
                                          .filter(file -> file.getSubjectId().equals(subjectId))
                                          .collect(Collectors.toList());
         } else if (user.getRole().equals(TEACHER.getId())) {

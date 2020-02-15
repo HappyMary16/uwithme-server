@@ -11,17 +11,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.educationapp.server.common.api.AccessToFileApi;
 import com.educationapp.server.common.api.FileApi;
 import com.educationapp.server.common.api.SaveFileApi;
 import com.educationapp.server.files.models.UploadFileResponse;
 import com.educationapp.server.files.models.persistence.FileDB;
-import com.educationapp.server.files.models.persistence.SubjectDB;
 import com.educationapp.server.files.repositories.FileRepository;
 import com.educationapp.server.files.services.FileService;
-import com.educationapp.server.files.services.SubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -49,12 +45,9 @@ public class FileEndpoint {
     @Autowired
     private FileRepository fileRepository;
 
-    @Autowired
-    private SubjectService subjectService;
-
     private Path fileStorageLocation = Paths.get("D:\\Programming\\Projects\\EducationAppServer")
-            .toAbsolutePath()
-                                        .normalize();
+                                            .toAbsolutePath()
+                                            .normalize();
 
     @PostMapping("/uploadFile")
     public UploadFileResponse uploadFile(@RequestBody SaveFileApi saveFileApi) {
@@ -64,74 +57,73 @@ public class FileEndpoint {
                                                             .path(fileName)
                                                             .toUriString();
 
-        return new UploadFileResponse(fileName, fileDownloadUri,
-                                      saveFileApi.getFile().getContentType(), saveFileApi.getFile().getSize());
+        return new UploadFileResponse(fileName,
+                                      fileDownloadUri,
+                                      saveFileApi.getFile().getContentType(),
+                                      saveFileApi.getFile().getSize());
     }
 
-    @PostMapping("/uploadMultipleFiles/{subjectId:[1-9]+}/{fileType:[1-9]}")
+    @PostMapping("/uploadMultipleFiles/{username}/{subjectName}/{fileType:[1-9]}")
     public List<UploadFileResponse> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files,
-                                                        @PathVariable("subjectId") final Long subjectId,
+                                                        @PathVariable("username") final String username,
+                                                        @PathVariable("subjectName") final String subjectName,
                                                         @PathVariable("fileType") final Long fileType) {
         return Arrays.stream(files)
-                     .map(file -> uploadFile(new SaveFileApi(subjectId,
+                     .map(file -> uploadFile(new SaveFileApi(username,
+                                                             subjectName,
                                                              fileType,
                                                              file)))
                      .collect(Collectors.toList());
     }
 
     @GetMapping("/downloadFile/{fileId:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId, HttpServletRequest request) throws
-            FileNotFoundException {
-
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) throws FileNotFoundException {
         final FileDB fileDB = fileRepository.findById(fileId).orElse(new FileDB());
-        Resource resource = fileService.loadFileAsResource(fileDB);
+        final Resource resource = fileService.loadFileAsResource(fileDB);
 
         String contentType;
         try {
             contentType = Files.probeContentType(
                     fileStorageLocation.resolve(fileDB.getPath() + fileDB.getName()).normalize());
         } catch (IOException ex) {
-
+            //TODO add log
             contentType = "application/octet-stream";
-            return ResponseEntity.ok()
-                                 .contentType(MediaType.parseMediaType(contentType))
-                                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                                         "attachment; filename=\"" + resource.getFilename() + "\"")
-                                 .body(resource);
         }
+
         return ResponseEntity.ok()
                              .contentType(MediaType.parseMediaType(contentType))
                              .header(HttpHeaders.CONTENT_DISPOSITION,
-                                     "attachment; filename=\"" + resource.getFilename() + "\"")
+                                     "attachment; filename=\"" + fileDB.getName() + "\"")
                              .body(resource);
     }
 
+    /**
+     * For teachers
+     *
+     * @param subjectId
+     * @return
+     */
     @GetMapping("/files/{subjectId:[1-9]+}")
     public ResponseEntity<List<FileDB>> getFiles(@PathVariable("subjectId") final Long subjectId) {
         return new ResponseEntity<>(fileRepository.findBySubjectId(subjectId), OK);
     }
 
-    @GetMapping("/subjects/{teacherUsername:.+}")
-    public ResponseEntity<List<SubjectDB>> getSubjects(@PathVariable("teacherUsername") final String teacherUsername) {
-        return new ResponseEntity<>(subjectService.findSubjectNamesByTeacherUsername(teacherUsername), OK);
-    }
-
-    @PostMapping("/addAccess")
-    public ResponseEntity addAccessToFiles(@RequestBody final AccessToFileApi accessToFileApi) {
-        fileService.saveAccessToFile(accessToFileApi);
-        return new ResponseEntity<>(OK);
-    }
-
+    /**
+     * For students
+     *
+     * @param subjectId
+     * @param username
+     * @return
+     */
     @GetMapping("/files/{username:.+}/{subjectId:[1-9]+}")
     public ResponseEntity<List<FileApi>> getFiles(@PathVariable("subjectId") final Long subjectId,
                                                   @PathVariable("username") final String username) {
         return new ResponseEntity<>(fileService.findByUsernameAndSubjectName(username, subjectId), OK);
     }
 
-    @PostMapping("/subject/{username:.+}/{subjectName:.+}")
-    public ResponseEntity<List<FileApi>> saveSubject(@PathVariable("subjectName") final String subjectName,
-                                                     @PathVariable("username") final String username) {
-        subjectService.save(username, subjectName);
+    @PostMapping("/addAccess")
+    public ResponseEntity addAccessToFiles(@RequestBody final AccessToFileApi accessToFileApi) {
+        fileService.saveAccessToFile(accessToFileApi);
         return new ResponseEntity<>(OK);
     }
 }

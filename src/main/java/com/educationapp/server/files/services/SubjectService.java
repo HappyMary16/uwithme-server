@@ -17,7 +17,7 @@ public class SubjectService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<SubjectDB> findSubjectNamesByTeacherUsername(final String username) {
+    public List<SubjectDB> findSubjectsByTeacherUsername(final String username) {
         final Long teacherId = userRepository.findByUsername(username).get().getId();
 
         return subjectRepository.findAllByTeacherId(teacherId);
