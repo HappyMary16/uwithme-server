@@ -24,9 +24,9 @@ public class SubjectEndpoint {
     @Autowired
     private SubjectService subjectService;
 
-    @GetMapping("/subjects/{teacherUsername:.+}")
-    public ResponseEntity<List<SubjectDB>> getSubjects(@PathVariable("teacherUsername") final String teacherUsername) {
-        return new ResponseEntity<>(subjectService.findSubjectsByTeacherUsername(teacherUsername), OK);
+    @GetMapping("/subjects/{username:.+}")
+    public ResponseEntity<List<SubjectDB>> getSubjects(@PathVariable("username") final String username) {
+        return new ResponseEntity<>(subjectService.findSubjectsByTeacherUsername(username), OK);
     }
 
     @PostMapping("/subject/{username:.+}/{subjectName:.+}")

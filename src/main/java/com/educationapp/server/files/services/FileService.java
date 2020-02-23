@@ -119,10 +119,13 @@ public class FileService {
     }
 
     public void saveAccessToFile(final AccessToFileApi accessToFileApi) {
-        accessToFileApi.getFileIds()
-                       .forEach(fileId -> accessToFileRepository.save(new AccessToFileDB(accessToFileApi.getGroupId(),
-                                                                                         fileId,
-                                                                                         new Date())));
+        accessToFileApi
+                .getFileIds()
+                .forEach(fileId -> accessToFileApi
+                        .getGroupIds()
+                        .forEach(groupId -> accessToFileRepository.save(new AccessToFileDB(groupId,
+                                                                                           fileId,
+                                                                                           new Date()))));
     }
 
     public List<FileApi> findByUsernameAndSubjectName(final String username, final Long subjectId) {

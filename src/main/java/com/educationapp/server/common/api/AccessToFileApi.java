@@ -15,5 +15,5 @@ public class AccessToFileApi {
     private List<Long> fileIds;
 
     @NotNull
-    private Long groupId;
+    private List<Long> groupIds;
 }
