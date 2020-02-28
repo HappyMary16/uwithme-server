@@ -120,6 +120,11 @@ public class FileEndpoint {
         return new ResponseEntity<>(fileService.findByUsernameAndSubjectName(username, subjectId), OK);
     }
 
+    @GetMapping("/files/{username:.+}")
+    public ResponseEntity<List<FileApi>> getFiles(@PathVariable("username") final String username) {
+        return new ResponseEntity<>(fileService.findByUsername(username), OK);
+    }
+
     @PostMapping("/addAccess")
     public ResponseEntity addAccessToFiles(@RequestBody final AccessToFileApi accessToFileApi) {
         fileService.saveAccessToFile(accessToFileApi);

@@ -159,4 +159,37 @@ public class FileService {
 
         throw new UnsupportedOperationException();
     }
+
+    public List<FileApi> findByUsername(final String username) {
+        final UserDB user = userRepository.findByUsername(username).get();
+        if (user.getRole().equals(STUDENT.getId())) {
+            final Long studyGroupId = studentRepository.findById(user.getId()).get().getStudyGroupId();
+            return accessToFileRepository.findAllByStudyGroupId(studyGroupId)
+                                         .stream()
+                                         .map(accessToFileDB -> {
+                                             final FileDB fileDB =
+                                                     fileRepository.findById(accessToFileDB.getFileId()).get();
+                                             return new FileApi(accessToFileDB.getFileId(),
+                                                                fileDB.getName(),
+                                                                fileDB.getFileTypeId(),
+                                                                fileDB.getSubjectId(),
+                                                                accessToFileDB.getDateAddAccess());
+                                         })
+                                         .collect(Collectors.toList());
+        } else if (user.getRole().equals(TEACHER.getId())) {
+            return subjectService.findSubjectsByTeacherUsername(username)
+                                 .stream()
+                                 .map(SubjectDB::getId)
+                                 .map(fileRepository::findBySubjectId)
+                                 .flatMap(List::stream)
+                                 .map(fileDB -> new FileApi(fileDB.getId(),
+                                                            fileDB.getName(),
+                                                            fileDB.getFileTypeId(),
+                                                            fileDB.getSubjectId(),
+                                                            fileDB.getCreateDate()))
+                                 .collect(Collectors.toList());
+        }
+
+        throw new UnsupportedOperationException();
+    }
 }
