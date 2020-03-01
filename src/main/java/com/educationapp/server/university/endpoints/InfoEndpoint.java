@@ -1,14 +1,13 @@
-package com.educationapp.server.university.data.endpoints;
+package com.educationapp.server.university.endpoints;
 
 import java.util.List;
 
-import com.educationapp.server.university.data.models.Department;
-import com.educationapp.server.university.data.models.Institute;
-import com.educationapp.server.university.data.models.StudyGroup;
-import com.educationapp.server.university.data.repositories.DepartmentRepository;
-import com.educationapp.server.university.data.repositories.InstituteRepository;
-import com.educationapp.server.university.data.repositories.StudyGroupRepository;
-import org.springframework.beans.factory.InitializingBean;
+import com.educationapp.server.university.models.Department;
+import com.educationapp.server.university.models.Institute;
+import com.educationapp.server.university.models.StudyGroup;
+import com.educationapp.server.university.repositories.DepartmentRepository;
+import com.educationapp.server.university.repositories.InstituteRepository;
+import com.educationapp.server.university.repositories.StudyGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/info")
 @CrossOrigin("*")
-public class InfoEndpoint implements InitializingBean {
+public class InfoEndpoint {
 
     @Autowired
     private InstituteRepository instituteRepository;
@@ -42,12 +41,5 @@ public class InfoEndpoint implements InitializingBean {
     @RequestMapping(value = "/studyGroups", method = RequestMethod.GET)
     public List<StudyGroup> getStudyGroups() {
         return (List<StudyGroup>) studyGroupRepository.findAll();
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-//        instituteRepository.save(new Institute("I"));
-//        departmentRepository.save(new Department("KMPS", 1L));
-//        studyGroupRepository.save(new StudyGroup("I-26b", 1L, 4));
     }
 }

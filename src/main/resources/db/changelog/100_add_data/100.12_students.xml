@@ -3,15 +3,13 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet author="mborodin" id="001.90">
+    <changeSet author="mborodin" id="100.12">
         <preConditions onFail="MARK_RAN">
-            <tableExists tableName="institutes"/>
+            <tableExists tableName="teachers"/>
         </preConditions>
-        <insert tableName="institutes">
-            <column name="name" value="I"/>
-        </insert>
-        <insert tableName="institutes">
-            <column name="name" value="KIT"/>
+        <insert tableName="students">
+            <column name="id" value="1"/>
+            <column name="study_group_id" value="1"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

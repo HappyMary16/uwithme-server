@@ -41,7 +41,7 @@ public class RegisterApi {
     private String email;
 
     @NotNull
-    @Size(max = 2)
+    @Size(max = 3)
     private Integer role;
 
     private String studentId;

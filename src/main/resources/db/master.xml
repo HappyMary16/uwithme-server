@@ -11,6 +11,8 @@
     <include file="changelog/003_users/003.00_master.xml" relativeToChangelogFile="true"/>
     <include file="changelog/004_files/004.00_master.xml" relativeToChangelogFile="true"/>
     <include file="changelog/005_schedule/005.00_master.xml" relativeToChangelogFile="true"/>
-
+    <include file="changelog/006_university/006.00_master.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/007_admin_role/007.00_master.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/100_add_data/100.00_master.xml" relativeToChangelogFile="true"/>
     <include file="" relativeToChangelogFile="true"/>
 </databaseChangeLog>

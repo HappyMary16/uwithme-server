@@ -52,4 +52,7 @@ public class UserDB implements Serializable {
 
     @Column(name = "role")
     private Integer role;
+
+    @Column(name = "is_admin")
+    private Boolean isAdmin;
 }

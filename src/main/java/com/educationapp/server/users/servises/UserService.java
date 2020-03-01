@@ -1,5 +1,6 @@
 package com.educationapp.server.users.servises;
 
+import static com.educationapp.server.common.enums.Role.ADMIN;
 import static com.educationapp.server.common.enums.Role.STUDENT;
 import static com.educationapp.server.common.enums.Role.TEACHER;
 import static com.educationapp.server.common.exception.ExceptionsMessages.USERNAME_NOT_FOUND;
@@ -8,16 +9,17 @@ import java.util.Objects;
 
 import com.educationapp.server.common.api.RegisterApi;
 import com.educationapp.server.common.api.UserApi;
+import com.educationapp.server.common.api.admin.AddUniversityApi;
 import com.educationapp.server.common.enums.Role;
 import com.educationapp.server.common.exception.ResourceNotFoundException;
-import com.educationapp.server.university.data.models.Department;
-import com.educationapp.server.university.data.models.Institute;
-import com.educationapp.server.university.data.models.ScienceDegree;
-import com.educationapp.server.university.data.models.StudyGroup;
-import com.educationapp.server.university.data.repositories.DepartmentRepository;
-import com.educationapp.server.university.data.repositories.InstituteRepository;
-import com.educationapp.server.university.data.repositories.ScienceDegreeRepository;
-import com.educationapp.server.university.data.repositories.StudyGroupRepository;
+import com.educationapp.server.university.models.Department;
+import com.educationapp.server.university.models.Institute;
+import com.educationapp.server.university.models.ScienceDegree;
+import com.educationapp.server.university.models.StudyGroup;
+import com.educationapp.server.university.repositories.DepartmentRepository;
+import com.educationapp.server.university.repositories.InstituteRepository;
+import com.educationapp.server.university.repositories.ScienceDegreeRepository;
+import com.educationapp.server.university.repositories.StudyGroupRepository;
 import com.educationapp.server.users.model.User;
 import com.educationapp.server.users.model.persistence.StudentDB;
 import com.educationapp.server.users.model.persistence.TeacherDB;
@@ -64,6 +66,7 @@ public class UserService implements UserDetailsService {
                                 .phone(user.getPhone())
                                 .email(user.getEmail())
                                 .role(user.getRole())
+                                .isAdmin(false)
                                 .build();
         UserDB created = userRepository.save(toCreate);
 
@@ -87,6 +90,17 @@ public class UserService implements UserDetailsService {
         return userDbToUser(created);
     }
 
+    public User save(final AddUniversityApi addUniversityApi) {
+        UserDB toCreate = UserDB.builder()
+                                .username(addUniversityApi.getUsername())
+                                .password(addUniversityApi.getPassword())
+                                .isAdmin(true)
+                                .role(ADMIN.getId())
+                                .build();
+
+        return userDbToUser(userRepository.save(toCreate));
+    }
+
     public UserApi findByUserName(final String username) {
         UserDB userDb = userRepository.findByUsername(username).orElse(null);
 
@@ -94,44 +108,47 @@ public class UserService implements UserDetailsService {
             throw new ResourceNotFoundException("User", "user name", username);
         }
 
-        UserApi userApi = UserApi.builder()
-                                 .firstName(userDb.getFirstName())
-                                 .lastName(userDb.getLastName())
-                                 .surname(userDb.getSurname())
-                                 .username(userDb.getUsername())
-                                 .password(userDb.getPassword())
-                                 .phone(userDb.getPhone())
-                                 .email(userDb.getEmail())
-                                 .role(userDb.getRole())
-                                 .build();
-
+        UserApi.UserApiBuilder userApi = UserApi.builder()
+                                                .firstName(userDb.getFirstName())
+                                                .lastName(userDb.getLastName())
+                                                .surname(userDb.getSurname())
+                                                .username(userDb.getUsername())
+                                                .password(userDb.getPassword())
+                                                .phone(userDb.getPhone())
+                                                .email(userDb.getEmail())
+                                                .role(userDb.getRole());
         Long departmentId = null;
 
         if (Role.STUDENT.getId() == userDb.getRole()) {
-            StudentDB studentDb = studentRepository.findById(userDb.getId()).orElse(null);
-            StudyGroup studyGroup = studyGroupRepository.findById(studentDb.getStudyGroupId()).orElse(null);
+            StudentDB studentDb = studentRepository.findById(userDb.getId())
+                                                   .orElse(new StudentDB());
+            StudyGroup studyGroup = studyGroupRepository.findById(studentDb.getStudyGroupId())
+                                                        .orElse(new StudyGroup());
             departmentId = studyGroup.getDepartmentId();
 
-            userApi = userApi.toBuilder()
-                             .studentId(studentDb.getStudentId())
-                             .studyGroupName(studyGroup.getName())
-                             .build();
+            userApi = userApi.studentId(studentDb.getStudentId())
+                             .studyGroupName(studyGroup.getName());
         } else if (Role.TEACHER.getId() == userDb.getRole()) {
-            TeacherDB teacherDB = teacherRepository.findById(userDb.getId()).orElse(null);
-            ScienceDegree scienceDegree = scienceDegreeRepository.findById(teacherDB.getScienceDegreeId()).orElse(null);
+            TeacherDB teacherDB = teacherRepository.findById(userDb.getId())
+                                                   .orElse(new TeacherDB());
+            ScienceDegree scienceDegree = scienceDegreeRepository.findById(teacherDB.getScienceDegreeId())
+                                                                 .orElse(new ScienceDegree());
             departmentId = teacherDB.getDepartmentId();
 
-            userApi = userApi.toBuilder()
-                             .scienceDegreeName(scienceDegree.getName())
-                             .build();
+            userApi = userApi.scienceDegreeName(scienceDegree.getName());
         }
-        Department department = departmentRepository.findById(departmentId).orElse(null);
-        Institute institute = instituteRepository.findById(department.getInstituteId()).orElse(null);
+        if (Role.STUDENT.getId() == userDb.getRole() || Role.TEACHER.getId() == userDb.getRole()) {
+            Department department = departmentRepository.findById(Objects.requireNonNull(departmentId))
+                                                        .orElse(new Department());
+            Institute institute = instituteRepository.findById(department.getInstituteId())
+                                                     .orElse(new Institute());
 
-        return userApi.toBuilder()
-                      .departmentName(department.getName())
-                      .instituteName(institute.getName())
-                      .build();
+            return userApi.departmentName(department.getName())
+                          .instituteName(institute.getName())
+                          .build();
+        } else {
+            return userApi.build();
+        }
     }
 
     @Override
@@ -153,6 +170,7 @@ public class UserService implements UserDetailsService {
                         userDB.getPhone(),
                         userDB.getEmail(),
                         Role.getById(userDB.getRole()),
+                        userDB.getIsAdmin(),
                         null);
     }
 }

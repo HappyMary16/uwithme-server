@@ -51,10 +51,6 @@ public class AuthEndpoint {
         userService.save(registerApi);
 
         LoginApi loginApi = new LoginApi(registerApi.getUsername(), registerApi.getPassword());
-        UserApi user = userService.findByUserName(loginApi.getUsername());
-        user.setToken(tokenProvider.createToken(loginApi.getUsername(),
-                                                Collections.singletonList(user.getRole().toString())));
-
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return authenticateUser(loginApi);
     }
 }

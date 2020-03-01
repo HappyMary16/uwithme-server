@@ -13,28 +13,21 @@
             <column name="id" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="first_name" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_name" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="surname" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="first_name" type="VARCHAR(50)"/>
+            <column name="last_name" type="VARCHAR(50)"/>
+            <column name="surname" type="VARCHAR(50)"/>
             <column name="username" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="password" type="VARCHAR(50)">
             <constraints nullable="false"/>
             </column>
-            <column name="phone" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="email" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="phone" type="VARCHAR(50)"/>
+            <column name="email" type="VARCHAR(50)"/>
             <column name="role" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_admin" type="BOOLEAN" defaultValue="false">
                 <constraints nullable="false"/>
             </column>
         </createTable>

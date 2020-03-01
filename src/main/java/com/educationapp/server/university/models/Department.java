@@ -1,4 +1,4 @@
-package com.educationapp.server.university.data.models;
+package com.educationapp.server.university.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

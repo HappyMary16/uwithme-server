@@ -25,10 +25,7 @@ public class User implements UserDetails {
 
     protected Long id;
 
-    @NonNull
-    @NotEmpty
     protected String firstName;
-
 
     protected String lastName;
 
@@ -44,13 +41,13 @@ public class User implements UserDetails {
 
     protected String phone;
 
-    @NonNull
-    @NotEmpty
     protected String email;
 
     @NonNull
-    @NotEmpty
     protected Role role;
+
+    @NonNull
+    protected Boolean isAdmin;
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();

@@ -1,4 +1,4 @@
-package com.educationapp.server.university.data.models;
+package com.educationapp.server.university.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,16 +11,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "science_degrees")
-public class ScienceDegree {
+@Table(name = "institutes")
+public class Institute {
 
-    public ScienceDegree(final String name) {
+    public Institute(final String name, final Integer universityId) {
         this.name = name;
+        this.universityId = universityId;
     }
 
     @Id
@@ -30,5 +30,7 @@ public class ScienceDegree {
 
     @Column(name = "name")
     private String name;
-}
 
+    @Column(name = "university_id")
+    private Integer universityId;
+}

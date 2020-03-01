@@ -36,7 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring()
            .antMatchers("/api/auth/signIn",
                         "/api/auth/signUp",
-                        "/api/info/*");
+                        "/api/info/*",
+                        "/api/university/add");
     }
 
     @Override

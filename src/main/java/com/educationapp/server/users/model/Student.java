@@ -29,6 +29,7 @@ public class Student extends User {
                    @NonNull @NotEmpty final String password,
                    final String phone,
                    @NonNull @NotEmpty final String email,
+                   final Boolean isAdmin,
                    final String studyGroupId,
                    final String studentId) {
         super(id,
@@ -40,6 +41,7 @@ public class Student extends User {
               phone,
               email,
               Role.STUDENT,
+              isAdmin,
               Collections.singletonList(Role.STUDENT.name()));
 
         this.studyGroupId = studyGroupId;

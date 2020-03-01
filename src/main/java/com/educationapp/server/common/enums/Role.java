@@ -5,9 +5,9 @@ import lombok.Getter;
 @Getter
 public enum Role {
 
-    ADMIN(0),
     STUDENT(1),
-    TEACHER(2);
+    TEACHER(2),
+    ADMIN(3);
 
     private int id;
 
@@ -16,10 +16,10 @@ public enum Role {
     }
 
     public static Role getById(final int id) {
-        if (id >= Role.values().length) {
+        if (id > Role.values().length) {
             return null;
         }
-        return Role.values()[id];
+        return Role.values()[id - 1];
     }
 
 }
