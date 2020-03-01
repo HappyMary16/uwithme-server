@@ -30,6 +30,7 @@ public class Teacher extends User {
                    final String phone,
                    @NonNull @NotEmpty final String email,
                    final Boolean isAdmin,
+                   final Long universityId,
                    final String departmentId,
                    final String scienceDegree) {
         super(id,
@@ -42,6 +43,7 @@ public class Teacher extends User {
               email,
               Role.TEACHER,
               isAdmin,
+              universityId,
               Collections.singletonList(Role.TEACHER.name()));
 
         this.departmentId = departmentId;

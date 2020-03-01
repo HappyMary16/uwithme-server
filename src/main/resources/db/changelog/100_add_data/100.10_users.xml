@@ -16,6 +16,7 @@
             <column name="phone" value="student"/>
             <column name="email" value="student"/>
             <column name="role" value="1"/>
+            <column name="university_id" value="1"/>
         </insert>
         <insert tableName="users">
             <column name="first_name" value="teacher"/>
@@ -26,6 +27,7 @@
             <column name="phone" value="teacher"/>
             <column name="email" value="teacher"/>
             <column name="role" value="2"/>
+            <column name="university_id" value="1"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

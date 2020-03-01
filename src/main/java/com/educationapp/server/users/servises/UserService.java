@@ -16,6 +16,7 @@ import com.educationapp.server.university.models.Department;
 import com.educationapp.server.university.models.Institute;
 import com.educationapp.server.university.models.ScienceDegree;
 import com.educationapp.server.university.models.StudyGroup;
+import com.educationapp.server.university.models.University;
 import com.educationapp.server.university.repositories.DepartmentRepository;
 import com.educationapp.server.university.repositories.InstituteRepository;
 import com.educationapp.server.university.repositories.ScienceDegreeRepository;
@@ -56,7 +57,7 @@ public class UserService implements UserDetailsService {
     @Autowired
     ScienceDegreeRepository scienceDegreeRepository;
 
-    public User save(final RegisterApi user) {
+    public void save(final RegisterApi user) {
         UserDB toCreate = UserDB.builder()
                                 .firstName(user.getFirstName())
                                 .lastName(user.getLastName())
@@ -67,6 +68,7 @@ public class UserService implements UserDetailsService {
                                 .email(user.getEmail())
                                 .role(user.getRole())
                                 .isAdmin(false)
+                                .universityId(user.getUniversityId())
                                 .build();
         UserDB created = userRepository.save(toCreate);
 
@@ -86,19 +88,26 @@ public class UserService implements UserDetailsService {
                                                  .build();
             teacherRepository.save(teacherToCreate);
         }
-
-        return userDbToUser(created);
     }
 
-    public User save(final AddUniversityApi addUniversityApi) {
+    public UserApi save(final AddUniversityApi addUniversityApi, final University university) {
         UserDB toCreate = UserDB.builder()
                                 .username(addUniversityApi.getUsername())
                                 .password(addUniversityApi.getPassword())
                                 .isAdmin(true)
                                 .role(ADMIN.getId())
+                                .universityId(university.getId())
                                 .build();
 
-        return userDbToUser(userRepository.save(toCreate));
+        userRepository.save(toCreate);
+
+        return UserApi.builder()
+                      .username(addUniversityApi.getUsername())
+                      .password(addUniversityApi.getPassword())
+                      .isAdmin(true)
+                      .role(ADMIN.getId())
+                      .universityId(university.getId())
+                      .build();
     }
 
     public UserApi findByUserName(final String username) {
@@ -116,7 +125,9 @@ public class UserService implements UserDetailsService {
                                                 .password(userDb.getPassword())
                                                 .phone(userDb.getPhone())
                                                 .email(userDb.getEmail())
-                                                .role(userDb.getRole());
+                                                .role(userDb.getRole())
+                                                .universityId(userDb.getUniversityId())
+                                                .isAdmin(userDb.getIsAdmin());
         Long departmentId = null;
 
         if (Role.STUDENT.getId() == userDb.getRole()) {
@@ -171,6 +182,7 @@ public class UserService implements UserDetailsService {
                         userDB.getEmail(),
                         Role.getById(userDB.getRole()),
                         userDB.getIsAdmin(),
+                        userDB.getUniversityId(),
                         null);
     }
 }

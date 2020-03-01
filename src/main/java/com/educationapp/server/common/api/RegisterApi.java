@@ -51,4 +51,7 @@ public class RegisterApi {
     private Long departmentId;
 
     private Long scienceDegreeId;
+
+    @NotNull
+    private Long universityId;
 }

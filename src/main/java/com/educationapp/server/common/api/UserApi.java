@@ -38,4 +38,9 @@ public class UserApi {
     private String scienceDegreeName;
 
     private String token;
+
+    private Long universityId;
+
+    @Builder.Default
+    private Boolean isAdmin = false;
 }

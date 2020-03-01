@@ -49,6 +49,9 @@ public class User implements UserDetails {
     @NonNull
     protected Boolean isAdmin;
 
+    @NonNull
+    protected Long universityId;
+
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
 

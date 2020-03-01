@@ -55,4 +55,7 @@ public class UserDB implements Serializable {
 
     @Column(name = "is_admin")
     private Boolean isAdmin;
+
+    @Column(name = "university_id")
+    private Long universityId;
 }
