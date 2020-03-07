@@ -58,9 +58,9 @@ public class SubjectService {
         throw new UnsupportedOperationException("Operation 'Get files' supported only for teachers and students");
     }
 
-    public void save(final String username, final String subject) {
+    public SubjectDB save(final String username, final String subject) {
         final Long teacherId = userRepository.findByUsername(username).get().getId();
 
-        subjectRepository.save(new SubjectDB(subject, teacherId));
+        return subjectRepository.save(new SubjectDB(subject, teacherId));
     }
 }

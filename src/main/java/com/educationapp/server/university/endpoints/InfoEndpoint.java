@@ -10,6 +10,7 @@ import com.educationapp.server.university.repositories.InstituteRepository;
 import com.educationapp.server.university.repositories.StudyGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,5 +42,10 @@ public class InfoEndpoint {
     @RequestMapping(value = "/studyGroups", method = RequestMethod.GET)
     public List<StudyGroup> getStudyGroups() {
         return (List<StudyGroup>) studyGroupRepository.findAll();
+    }
+
+    @RequestMapping(value = "/institutes/{universityId}", method = RequestMethod.GET)
+    public List<Institute> getInstitutesByUniversityId(@PathVariable("universityId") final Integer universityId) {
+        return instituteRepository.findByUniversityId(universityId);
     }
 }

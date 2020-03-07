@@ -29,5 +29,11 @@
             <column name="role" value="2"/>
             <column name="university_id" value="1"/>
         </insert>
+        <insert tableName="users">
+            <column name="username" value="admin"/>
+            <column name="password" value="admin"/>
+            <column name="role" value="3"/>
+            <column name="university_id" value="1"/>
+        </insert>
     </changeSet>
 </databaseChangeLog>

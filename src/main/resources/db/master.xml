@@ -4,6 +4,11 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <!-- It's an entry point for liquibase update. Each changelog should be registered here -->
+    <!--<changeSet id="101" author="mborodin">-->
+    <!--<modifySql dbms="education_app2">-->
+    <!--<append value="ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_unicode_ci"/>-->
+    <!--</modifySql>-->
+    <!--</changeSet>-->
     <include file="initial_schema.xml" relativeToChangelogFile="true"/>
 
     <include file="changelog/000_enams/000.00_master.xml" relativeToChangelogFile="true"/>
@@ -15,4 +20,5 @@
     <include file="changelog/007_admin_role/007.00_master.xml" relativeToChangelogFile="true"/>
     <include file="changelog/100_add_data/100.00_master.xml" relativeToChangelogFile="true"/>
     <include file="" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

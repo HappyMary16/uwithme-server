@@ -69,18 +69,18 @@ public class FileService {
 
     public String saveFile(final SaveFileApi file) {
         final String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()));
-        final Long subjectId = subjectService.findSubjectsByTeacherUsername(file.getUsername())
-                                             .stream()
-                                             .filter(subject -> subject.getName().equals(file.getSubjectName()))
-                                             .findFirst()
-                                             .orElse(new SubjectDB())
-                                             .getId();
+        SubjectDB subjectDb = subjectService.findSubjectsByTeacherUsername(file.getUsername())
+                                            .stream()
+                                            .filter(subject -> subject.getName().equals(file.getSubjectName()))
+                                            .findFirst()
+                                            .orElse(null);
 
-        final String fileLocation = new StringBuilder().append(subjectId)
-                                                       .append("\\")
-                                                       .append(file.getFileTypeId())
-                                                       .append("\\")
-                                                       .toString();
+        if (Objects.isNull(subjectDb)) {
+            subjectDb = subjectService.save(file.getUsername(), file.getSubjectName());
+        }
+
+        final String fileLocation = String.valueOf(subjectDb.getId()) + "\\" + file.getFileTypeId() + "\\";
+
         try {
             if (fileLocation.contains("..")) {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileLocation);
@@ -96,7 +96,7 @@ public class FileService {
 
             fileRepository.save(new FileDB(fileLocation,
                                            fileName,
-                                           subjectId,
+                                           subjectDb.getId(),
                                            file.getFileTypeId()));
             return fileLocation;
         } catch (IOException ex) {

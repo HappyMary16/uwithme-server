@@ -13,7 +13,7 @@
             <column name="id" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(50)">
+            <column name="name" type="VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci">
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="institute_id" type="INTEGER">
