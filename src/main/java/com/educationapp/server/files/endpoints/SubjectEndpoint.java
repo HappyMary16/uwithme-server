@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.educationapp.server.common.api.FileApi;
 import com.educationapp.server.files.models.persistence.SubjectDB;
+import com.educationapp.server.files.repositories.SubjectRepository;
 import com.educationapp.server.files.services.SubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +25,18 @@ public class SubjectEndpoint {
     @Autowired
     private SubjectService subjectService;
 
+    @Autowired
+    private SubjectRepository subjectRepository;
+
     @GetMapping("/subjects/{username:.+}")
     public ResponseEntity<List<SubjectDB>> getSubjects(@PathVariable("username") final String username) {
         return new ResponseEntity<>(subjectService.findSubjectsByTeacherUsername(username), OK);
+    }
+
+    @GetMapping("/university/subjects/{universityId:.+}")
+    public ResponseEntity<List<SubjectDB>> getSubjectsByUniversityId(
+            @PathVariable("universityId") final Long universityId) {
+        return new ResponseEntity<>(subjectRepository.findSubjectsByUniversityId(universityId), OK);
     }
 
     @PostMapping("/subject/{username:.+}/{subjectName:.+}")

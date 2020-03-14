@@ -18,12 +18,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "study_groups")
 public class StudyGroup {
 
-    public StudyGroup(final String name, final Long departmentId, final Integer course) {
-        this.name = name;
-        this.departmentId = departmentId;
-        this.course = course;
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

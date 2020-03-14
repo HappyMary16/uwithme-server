@@ -18,11 +18,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "institutes")
 public class Institute {
 
-    public Institute(final String name, final Integer universityId) {
-        this.name = name;
-        this.universityId = universityId;
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
