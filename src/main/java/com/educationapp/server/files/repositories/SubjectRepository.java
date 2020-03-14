@@ -16,5 +16,5 @@ public interface SubjectRepository extends CrudRepository<SubjectDB, Long> {
     @Query(value = "SELECT * FROM subjects JOIN users ON subjects.teacher_id = users.id WHERE users.university_id = " +
             ":universityId",
             nativeQuery = true)
-    List<SubjectDB> findSubjectsByUniversityId(@Param("universityId") Long universityId);
+    List<SubjectDB> findAllByUniversityId(@Param("universityId") Long universityId);
 }

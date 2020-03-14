@@ -36,7 +36,7 @@ public class SubjectEndpoint {
     @GetMapping("/university/subjects/{universityId:.+}")
     public ResponseEntity<List<SubjectDB>> getSubjectsByUniversityId(
             @PathVariable("universityId") final Long universityId) {
-        return new ResponseEntity<>(subjectRepository.findSubjectsByUniversityId(universityId), OK);
+        return new ResponseEntity<>(subjectRepository.findAllByUniversityId(universityId), OK);
     }
 
     @PostMapping("/subject/{username:.+}/{subjectName:.+}")

@@ -46,16 +46,16 @@ public class InfoEndpoint {
 
     @RequestMapping(value = "/institutes/{universityId}", method = RequestMethod.GET)
     public List<Institute> getInstitutesByUniversityId(@PathVariable("universityId") final Integer universityId) {
-        return instituteRepository.findByUniversityId(universityId);
+        return instituteRepository.findAllByUniversityId(universityId);
     }
 
     @RequestMapping(value = "/departments/{universityId}", method = RequestMethod.GET)
     public List<Department> getDepartmentsByUniversityId(@PathVariable("universityId") final Integer universityId) {
-        return departmentRepository.findDepartmentsByUniversityId(universityId);
+        return departmentRepository.findAllByUniversityId(universityId);
     }
 
     @RequestMapping(value = "/studyGroups/{universityId}", method = RequestMethod.GET)
     public List<StudyGroup> getStudyGroupsByUniversityId(@PathVariable("universityId") final Integer universityId) {
-        return (List<StudyGroup>) studyGroupRepository.findAll();//findByUniversityId(universityId);
+        return (List<StudyGroup>) studyGroupRepository.findAll();//findAllByUniversityId(universityId);
     }
 }

@@ -104,7 +104,7 @@ public class FileEndpoint {
      */
     @GetMapping("/files/{subjectId:[1-9]+}")
     public ResponseEntity<List<FileDB>> getFiles(@PathVariable("subjectId") final Long subjectId) {
-        return new ResponseEntity<>(fileRepository.findBySubjectId(subjectId), OK);
+        return new ResponseEntity<>(fileRepository.findAllBySubjectId(subjectId), OK);
     }
 
     /**

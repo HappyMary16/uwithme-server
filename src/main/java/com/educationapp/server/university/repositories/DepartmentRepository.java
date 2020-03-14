@@ -15,5 +15,5 @@ public interface DepartmentRepository extends CrudRepository<Department, Long> {
     @Query(value = "SELECT * FROM departments LEFT JOIN institutes ON departments.institute_id = institutes.id WHERE " +
             "institutes.university_id = :universityId",
             nativeQuery = true)
-    List<Department> findDepartmentsByUniversityId(@Param("universityId") Integer universityId);
+    List<Department> findAllByUniversityId(@Param("universityId") Integer universityId);
 }

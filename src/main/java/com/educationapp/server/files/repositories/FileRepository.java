@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FileRepository extends CrudRepository<FileDB, Long> {
 
-    List<FileDB> findBySubjectId(final Long subjectId);
+    List<FileDB> findAllBySubjectId(final Long subjectId);
 
     Optional<FileDB> findById(final Long id);
 }

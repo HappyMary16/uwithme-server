@@ -36,6 +36,6 @@ public class UserEndpoint {
     @GetMapping(value = "/teachers/{universityId}")
     public ResponseEntity<List<UserDB>> getTeachersByUniversityId(
             @PathVariable(value = "universityId") Long universityId) {
-        return new ResponseEntity<>(userRepository.findByRoleAndUniversityId(TEACHER.getId(), universityId), OK);
+        return new ResponseEntity<>(userRepository.findAllByRoleAndUniversityId(TEACHER.getId(), universityId), OK);
     }
 }

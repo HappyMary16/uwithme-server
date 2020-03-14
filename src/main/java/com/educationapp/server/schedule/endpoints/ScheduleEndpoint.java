@@ -1,9 +1,14 @@
 package com.educationapp.server.schedule.endpoints;
 
+import java.util.List;
+
 import com.educationapp.server.schedule.models.api.CreateLessonApi;
-import com.educationapp.server.schedule.servisec.ScheduleService;
+import com.educationapp.server.schedule.models.api.LessonApi;
+import com.educationapp.server.schedule.servises.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,9 +22,18 @@ public class ScheduleEndpoint {
     @Autowired
     private ScheduleService scheduleService;
 
-    @PostMapping("/addLesson")
+    @PostMapping("/lesson/add")
     public void addLesson(@RequestBody CreateLessonApi createLessonApi) {
         scheduleService.createLesson(createLessonApi);
     }
 
+    @GetMapping("/lessons/group/{groupId}")
+    public List<LessonApi> getLessonsByGroup(@PathVariable("groupId") Long groupId) {
+        return scheduleService.findLessonsByGroupId(groupId);
+    }
+
+    @GetMapping("/lessons/user/{userId}")
+    public List<LessonApi> getLessonsByUserId(@PathVariable("userId") Long userId) {
+        return scheduleService.findLessonsByUserId(userId);
+    }
 }

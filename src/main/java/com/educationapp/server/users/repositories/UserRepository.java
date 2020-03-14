@@ -12,5 +12,5 @@ public interface UserRepository extends CrudRepository<UserDB, Long> {
 
     Optional<UserDB> findByUsername(final String username);
 
-    List<UserDB> findByRoleAndUniversityId(final Integer role, final Long universityId);
+    List<UserDB> findAllByRoleAndUniversityId(final Integer role, final Long universityId);
 }

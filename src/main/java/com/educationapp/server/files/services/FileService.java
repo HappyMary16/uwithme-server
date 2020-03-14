@@ -146,7 +146,7 @@ public class FileService {
                                          .filter(file -> file.getSubjectId().equals(subjectId))
                                          .collect(Collectors.toList());
         } else if (user.getRole().equals(TEACHER.getId())) {
-            return fileRepository.findBySubjectId(subjectId)
+            return fileRepository.findAllBySubjectId(subjectId)
                                  .stream()
                                  .map(fileDB ->
                                               new FileApi(fileDB.getId(),
@@ -180,7 +180,7 @@ public class FileService {
             return subjectService.findSubjectsByTeacherUsername(username)
                                  .stream()
                                  .map(SubjectDB::getId)
-                                 .map(fileRepository::findBySubjectId)
+                                 .map(fileRepository::findAllBySubjectId)
                                  .flatMap(List::stream)
                                  .map(fileDB -> new FileApi(fileDB.getId(),
                                                             fileDB.getName(),
