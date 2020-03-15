@@ -32,8 +32,8 @@ public class ScheduleEndpoint {
         return scheduleService.findLessonsByGroupId(groupId);
     }
 
-    @GetMapping("/lessons/user/{userId}")
-    public List<LessonApi> getLessonsByUserId(@PathVariable("userId") Long userId) {
-        return scheduleService.findLessonsByUserId(userId);
+    @GetMapping("/lessons/user/{username}")
+    public List<LessonApi> getLessonsByUserId(@PathVariable("username") String username) {
+        return scheduleService.findLessonsByUsername(username);
     }
 }

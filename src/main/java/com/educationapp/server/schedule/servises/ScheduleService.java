@@ -94,15 +94,15 @@ public class ScheduleService {
                                  .collect(Collectors.toList());
     }
 
-    public List<LessonApi> findLessonsByUserId(final Long userId) {
-        final Optional<UserDB> user = userRepository.findById(userId);
+    public List<LessonApi> findLessonsByUsername(final String username) {
+        final Optional<UserDB> user = userRepository.findByUsername(username);
         final List<LessonApi> lessons = new ArrayList<>();
 
         if (user.isPresent() && user.get().getRole().equals(STUDENT.getId())) {
-            studentRepository.findById(userId)
+            studentRepository.findById(user.get().getId())
                              .ifPresent(student -> lessons.addAll(findLessonsByGroupId(student.getStudyGroupId())));
         } else if (user.isPresent() && user.get().getRole().equals(TEACHER.getId())) {
-            return scheduleRepository.findAllByTeacherId(userId)
+            return scheduleRepository.findAllByTeacherId(user.get().getId())
                                      .stream()
                                      .map(this::mapScheduleDbToLesson)
                                      .collect(Collectors.toList());
