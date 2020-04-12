@@ -76,9 +76,14 @@ public class FileEndpoint {
     }
 
     @GetMapping("/downloadFile/{fileId:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) throws FileNotFoundException {
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) {
         final FileDB fileDB = fileRepository.findById(fileId).orElse(new FileDB());
-        final Resource resource = fileService.loadFileAsResource(fileDB);
+        Resource resource = null;
+        try {
+            resource = fileService.loadFileAsResource(fileDB);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         String contentType;
         try {
