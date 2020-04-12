@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 @Table(name = "institutes")
 public class Institute {
 
@@ -27,5 +29,5 @@ public class Institute {
     private String name;
 
     @Column(name = "university_id")
-    private Integer universityId;
+    private Long universityId;
 }

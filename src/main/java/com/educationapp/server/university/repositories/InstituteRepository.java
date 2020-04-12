@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface InstituteRepository extends CrudRepository<Institute, Long> {
 
-    List<Institute> findAllByUniversityId(final Integer universityId);
+    List<Institute> findAllByUniversityId(final Long universityId);
 }
