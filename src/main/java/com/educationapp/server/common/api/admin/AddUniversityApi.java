@@ -11,17 +11,17 @@ import lombok.Getter;
 public class AddUniversityApi {
 
     @NotNull
-    private String universityName;
+    private final String universityName;
 
     @NotNull
     @Size(min = 3, max = 20)
-    private String username;
+    private final String username;
 
     @NotNull
     @Size(min = 6, max = 50)
-    private String password;
+    private final String password;
 
     @NotNull
     @Size(min = 6, max = 50)
-    private String confirmPassword;
+    private final String confirmPassword;
 }

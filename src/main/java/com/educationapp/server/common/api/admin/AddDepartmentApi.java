@@ -7,11 +7,14 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class AddInstituteApi {
+public class AddDepartmentApi {
 
     @NotNull
     private final Long universityId;
 
     @NotNull
     private final String instituteName;
+
+    @NotNull
+    private final String departmentName;
 }
