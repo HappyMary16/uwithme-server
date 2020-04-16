@@ -21,11 +21,11 @@ public class CreateLessonApi {
 
     private final List<Long> groups;
 
-    private final Long weekDay;
+    private final List<Long> weekDays;
 
-    private final Long lessonTime;
+    private final List<Long> lessonTimes;
 
-    private final Long weekNumber;
+    private final List<Long> weekNumbers;
 }
 
 
