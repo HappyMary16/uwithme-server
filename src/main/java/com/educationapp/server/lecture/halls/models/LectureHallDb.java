@@ -30,4 +30,7 @@ public class LectureHallDb {
 
     @Column(name = "building_id")
     private Long buildingId;
+
+    @Column(name = "place_number")
+    private Integer placeNumber;
 }
