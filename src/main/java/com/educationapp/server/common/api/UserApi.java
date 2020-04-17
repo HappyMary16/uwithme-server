@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 public class UserApi {
 
+    private Long id;
+
     private String firstName;
 
     private String lastName;
@@ -30,6 +32,8 @@ public class UserApi {
     private String studentId;
 
     private String studyGroupName;
+
+    private Long studyGroupId;
 
     private String instituteName;
 

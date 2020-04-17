@@ -24,6 +24,7 @@ import com.educationapp.server.university.repositories.StudyGroupRepository;
 import com.educationapp.server.users.model.User;
 import com.educationapp.server.users.model.persistence.StudentDB;
 import com.educationapp.server.users.model.persistence.TeacherDB;
+import com.educationapp.server.users.model.persistence.TeacherDataDb;
 import com.educationapp.server.users.model.persistence.UserDB;
 import com.educationapp.server.users.repositories.StudentRepository;
 import com.educationapp.server.users.repositories.TeacherRepository;
@@ -138,7 +139,8 @@ public class UserService implements UserDetailsService {
             departmentId = studyGroup.getDepartmentId();
 
             userApi = userApi.studentId(studentDb.getStudentId())
-                             .studyGroupName(studyGroup.getName());
+                             .studyGroupName(studyGroup.getName())
+                             .studyGroupId(studyGroup.getId());
         } else if (Role.TEACHER.getId() == userDb.getRole()) {
             TeacherDB teacherDB = teacherRepository.findById(userDb.getId())
                                                    .orElse(new TeacherDB());
@@ -160,6 +162,33 @@ public class UserService implements UserDetailsService {
         } else {
             return userApi.build();
         }
+    }
+
+    public UserApi mapTeacherDataDbToUserApi(final TeacherDataDb teacher) {
+        final Department department = departmentRepository.findById(teacher.getDepartmentId())
+                                                          .orElse(new Department());
+
+        return UserApi.builder()
+                      .id(teacher.getId())
+                      .firstName(teacher.getFirstName())
+                      .lastName(teacher.getLastName())
+                      .surname(teacher.getSurname())
+                      .username(teacher.getUsername())
+                      .password(teacher.getPassword())
+                      .phone(teacher.getPhone())
+                      .email(teacher.getEmail())
+                      .role(teacher.getRole())
+                      .universityId(teacher.getUniversityId())
+                      .scienceDegreeName(scienceDegreeRepository.findById(teacher.getScienceDegreeId())
+                                                                .map(ScienceDegree::getName)
+                                                                .orElse(null))
+                      .departmentName(department.getName())
+                      .instituteName(instituteRepository.findById(department.getInstituteId())
+                                                        .map(Institute::getName)
+                                                        .orElse(null))
+                      //TODO
+//                      .isAdmin(teacher.getIsAdmin())
+                      .build();
     }
 
     @Override
