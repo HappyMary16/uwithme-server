@@ -1,5 +1,7 @@
 package com.educationapp.server.university.endpoints;
 
+import java.util.List;
+
 import com.educationapp.server.common.api.admin.AddGroupApi;
 import com.educationapp.server.university.models.Department;
 import com.educationapp.server.university.models.Institute;
@@ -9,9 +11,11 @@ import com.educationapp.server.university.repositories.InstituteRepository;
 import com.educationapp.server.university.repositories.StudyGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -57,4 +61,13 @@ public class GroupEndpoint {
         return studyGroupRepository.save(studyGroup);
     }
 
+    @RequestMapping(value = "/{universityId}/universityId", method = RequestMethod.GET)
+    public List<StudyGroup> getStudyGroupsByUniversityId(@PathVariable("universityId") final Long universityId) {
+        return studyGroupRepository.findAllByUniversityId(universityId);
+    }
+
+    @RequestMapping(value = "/{teacherId}/teacherId", method = RequestMethod.GET)
+    public List<StudyGroup> getStudyGroupsByTeacherId(@PathVariable("teacherId") final Long teacherId) {
+        return studyGroupRepository.findAllByTeacherId(teacherId);
+    }
 }

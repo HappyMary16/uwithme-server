@@ -53,9 +53,4 @@ public class InfoEndpoint {
     public List<Department> getDepartmentsByUniversityId(@PathVariable("universityId") final Long universityId) {
         return departmentRepository.findAllByUniversityId(universityId);
     }
-
-    @RequestMapping(value = "/studyGroups/{universityId}", method = RequestMethod.GET)
-    public List<StudyGroup> getStudyGroupsByUniversityId(@PathVariable("universityId") final Long universityId) {
-        return (List<StudyGroup>) studyGroupRepository.findAll();//findAllByUniversityId(universityId);
-    }
 }

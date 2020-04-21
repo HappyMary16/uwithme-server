@@ -23,6 +23,7 @@ import com.educationapp.server.university.repositories.ScienceDegreeRepository;
 import com.educationapp.server.university.repositories.StudyGroupRepository;
 import com.educationapp.server.users.model.User;
 import com.educationapp.server.users.model.persistence.StudentDB;
+import com.educationapp.server.users.model.persistence.StudentDataDb;
 import com.educationapp.server.users.model.persistence.TeacherDB;
 import com.educationapp.server.users.model.persistence.TeacherDataDb;
 import com.educationapp.server.users.model.persistence.UserDB;
@@ -182,6 +183,35 @@ public class UserService implements UserDetailsService {
                       .scienceDegreeName(scienceDegreeRepository.findById(teacher.getScienceDegreeId())
                                                                 .map(ScienceDegree::getName)
                                                                 .orElse(null))
+                      .departmentName(department.getName())
+                      .instituteName(instituteRepository.findById(department.getInstituteId())
+                                                        .map(Institute::getName)
+                                                        .orElse(null))
+                      //TODO
+//                      .isAdmin(teacher.getIsAdmin())
+                      .build();
+    }
+
+    public UserApi mapStudentDataDbToUserApi(final StudentDataDb teacher) {
+        final StudyGroup studyGroup = studyGroupRepository.findById(teacher.getStudyGroupId())
+                                                          .orElse(new StudyGroup());
+        final Department department = departmentRepository.findById(studyGroup.getDepartmentId())
+                                                          .orElse(new Department());
+
+        return UserApi.builder()
+                      .id(teacher.getId())
+                      .firstName(teacher.getFirstName())
+                      .lastName(teacher.getLastName())
+                      .surname(teacher.getSurname())
+                      .username(teacher.getUsername())
+                      .password(teacher.getPassword())
+                      .phone(teacher.getPhone())
+                      .email(teacher.getEmail())
+                      .role(teacher.getRole())
+                      .universityId(teacher.getUniversityId())
+                      .studentId(teacher.getStudentId())
+                      .studyGroupName(studyGroup.getName())
+                      .studyGroupId(studyGroup.getId())
                       .departmentName(department.getName())
                       .instituteName(instituteRepository.findById(department.getInstituteId())
                                                         .map(Institute::getName)

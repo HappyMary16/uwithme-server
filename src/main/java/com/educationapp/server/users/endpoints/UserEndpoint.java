@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import com.educationapp.server.common.api.UserApi;
 import com.educationapp.server.users.model.persistence.UserDB;
+import com.educationapp.server.users.repositories.StudentDataRepository;
 import com.educationapp.server.users.repositories.TeacherDataRepository;
 import com.educationapp.server.users.repositories.UserRepository;
 import com.educationapp.server.users.servises.UserService;
@@ -29,6 +30,9 @@ public class UserEndpoint {
     @Autowired
     private TeacherDataRepository teacherDataRepository;
 
+    @Autowired
+    private StudentDataRepository studentDataRepository;
+
     @GetMapping(value = "/{id}")
     public UserDB getUser(@PathVariable(value = "id") Long id) {
         return userRepository.findById(id).orElse(null);
@@ -40,8 +44,7 @@ public class UserEndpoint {
     }
 
     @GetMapping(value = "/teachers/{universityId}")
-    public List<UserApi> getTeachersByUniversityId(
-            @PathVariable(value = "universityId") Long universityId) {
+    public List<UserApi> getTeachersByUniversityId(@PathVariable(value = "universityId") Long universityId) {
         return teacherDataRepository.findAllByUniversityId(universityId)
                                     .stream()
                                     .map(userService::mapTeacherDataDbToUserApi)
@@ -49,11 +52,18 @@ public class UserEndpoint {
     }
 
     @GetMapping(value = "/teachers/{groupId}/group")
-    public List<UserApi> getTeachersByGroupId(
-            @PathVariable(value = "groupId") Long groupId) {
+    public List<UserApi> getTeachersByGroupId(@PathVariable(value = "groupId") Long groupId) {
         return teacherDataRepository.findAllByGroupId(groupId)
                                     .stream()
                                     .map(userService::mapTeacherDataDbToUserApi)
+                                    .collect(Collectors.toList());
+    }
+
+    @GetMapping(value = "/students/{teacherId}/teacherId")
+    public List<UserApi> getStudentsByTeacherId(@PathVariable(value = "teacherId") Long teacherId) {
+        return studentDataRepository.findAllByTeacherId(teacherId)
+                                    .stream()
+                                    .map(userService::mapStudentDataDbToUserApi)
                                     .collect(Collectors.toList());
     }
 }
