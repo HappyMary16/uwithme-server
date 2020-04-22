@@ -104,6 +104,7 @@ public class UserService implements UserDetailsService {
         userRepository.save(toCreate);
 
         return UserApi.builder()
+                      .id(toCreate.getId())
                       .username(addUniversityApi.getUsername())
                       .password(addUniversityApi.getPassword())
                       .isAdmin(true)
@@ -120,6 +121,7 @@ public class UserService implements UserDetailsService {
         }
 
         UserApi.UserApiBuilder userApi = UserApi.builder()
+                                                .id(userDb.getId())
                                                 .firstName(userDb.getFirstName())
                                                 .lastName(userDb.getLastName())
                                                 .surname(userDb.getSurname())
@@ -192,24 +194,24 @@ public class UserService implements UserDetailsService {
                       .build();
     }
 
-    public UserApi mapStudentDataDbToUserApi(final StudentDataDb teacher) {
-        final StudyGroup studyGroup = studyGroupRepository.findById(teacher.getStudyGroupId())
+    public UserApi mapStudentDataDbToUserApi(final StudentDataDb student) {
+        final StudyGroup studyGroup = studyGroupRepository.findById(student.getStudyGroupId())
                                                           .orElse(new StudyGroup());
         final Department department = departmentRepository.findById(studyGroup.getDepartmentId())
                                                           .orElse(new Department());
 
         return UserApi.builder()
-                      .id(teacher.getId())
-                      .firstName(teacher.getFirstName())
-                      .lastName(teacher.getLastName())
-                      .surname(teacher.getSurname())
-                      .username(teacher.getUsername())
-                      .password(teacher.getPassword())
-                      .phone(teacher.getPhone())
-                      .email(teacher.getEmail())
-                      .role(teacher.getRole())
-                      .universityId(teacher.getUniversityId())
-                      .studentId(teacher.getStudentId())
+                      .id(student.getId())
+                      .firstName(student.getFirstName())
+                      .lastName(student.getLastName())
+                      .surname(student.getSurname())
+                      .username(student.getUsername())
+                      .password(student.getPassword())
+                      .phone(student.getPhone())
+                      .email(student.getEmail())
+                      .role(student.getRole())
+                      .universityId(student.getUniversityId())
+                      .studentId(student.getStudentId())
                       .studyGroupName(studyGroup.getName())
                       .studyGroupId(studyGroup.getId())
                       .departmentName(department.getName())
@@ -217,7 +219,7 @@ public class UserService implements UserDetailsService {
                                                         .map(Institute::getName)
                                                         .orElse(null))
                       //TODO
-//                      .isAdmin(teacher.getIsAdmin())
+//                      .isAdmin(student.getIsAdmin())
                       .build();
     }
 
