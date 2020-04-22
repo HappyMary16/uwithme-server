@@ -5,9 +5,11 @@ import java.util.List;
 import com.educationapp.server.university.models.Department;
 import com.educationapp.server.university.models.Institute;
 import com.educationapp.server.university.models.StudyGroup;
+import com.educationapp.server.university.models.University;
 import com.educationapp.server.university.repositories.DepartmentRepository;
 import com.educationapp.server.university.repositories.InstituteRepository;
 import com.educationapp.server.university.repositories.StudyGroupRepository;
+import com.educationapp.server.university.repositories.UniversityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +30,14 @@ public class InfoEndpoint {
 
     @Autowired
     private StudyGroupRepository studyGroupRepository;
+
+    @Autowired
+    private UniversityRepository universityRepository;
+
+    @RequestMapping(value = "/universities", method = RequestMethod.GET)
+    public List<University> getUniversities() {
+        return (List<University>) universityRepository.findAll();
+    }
 
     @RequestMapping(value = "/institutes", method = RequestMethod.GET)
     public List<Institute> getInstitutes() {

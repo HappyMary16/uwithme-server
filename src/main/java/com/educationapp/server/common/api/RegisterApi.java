@@ -14,16 +14,12 @@ public class RegisterApi {
     @Size(min = 2, max = 20)
     private String firstName;
 
-    @NotNull
-    @Size(min = 2, max = 20)
     private String lastName;
 
     @NotNull
     @Size(min = 2, max = 20)
     private String surname;
 
-    @NotNull
-    @Size(min = 3, max = 20)
     private String username;
 
     @NotNull
@@ -34,8 +30,6 @@ public class RegisterApi {
     @Size(min = 6, max = 50)
     private String confirmPassword;
 
-    @NotNull
-    @Size(min = 12)
     private String phone;
 
     private String email;

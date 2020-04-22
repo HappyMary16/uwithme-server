@@ -13,8 +13,6 @@ public interface ScheduleRepository extends CrudRepository<ScheduleDb, Long> {
 
     List<ScheduleDb> findAllByStudyGroupId(final Long groupId);
 
-    List<ScheduleDb> findAllByStudyGroupId(final List<Long> groupId);
-
     @Query(value = "SELECT * FROM schedule JOIN subjects ON schedule.subject_id = subjects.id WHERE subjects" +
             ".teacher_id = :teacherId",
             nativeQuery = true)

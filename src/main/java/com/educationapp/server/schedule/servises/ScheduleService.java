@@ -102,41 +102,38 @@ public class ScheduleService {
     }
 
     private List<ScheduleDb> buildLessons(final CreateLessonApi createLessonApi) {
-        final ScheduleDb scheduleDb = new ScheduleDb()
-                .toBuilder()
-                .auditory(createLessonApi.getLectureHall())
-                .build();
+        final ScheduleDb.ScheduleDbBuilder scheduleDb = ScheduleDb.builder()
+                                                                  .auditory(createLessonApi.getLectureHall());
 
         if (createLessonApi.getTeacherId() == null && createLessonApi.getSubjectId() == null) {
-            scheduleDb.setSubjectName(createLessonApi.getSubjectName());
-            scheduleDb.setTeacherName(createLessonApi.getTeacherName());
+            scheduleDb.subjectName(createLessonApi.getSubjectName());
+            scheduleDb.teacherName(createLessonApi.getTeacherName());
 
         } else if (createLessonApi.getTeacherId() == null) {
-            scheduleDb.setTeacherName(createLessonApi.getTeacherName());
+            scheduleDb.teacherName(createLessonApi.getTeacherName());
             subjectRepository.findById(createLessonApi.getSubjectId())
-                             .ifPresent(subject -> scheduleDb.setSubjectName(subject.getName()));
+                             .ifPresent(subject -> scheduleDb.subjectName(subject.getName()));
 
         } else if (createLessonApi.getSubjectId() == null) {
             final SubjectDB newSubject = new SubjectDB(createLessonApi.getSubjectName(),
                                                        createLessonApi.getTeacherId());
             final Long subjectId = subjectRepository.save(newSubject).getId();
-            scheduleDb.setSubjectId(subjectId);
+            scheduleDb.subjectId(subjectId);
 
         } else {
-            final Optional<SubjectDB> subjectDb = subjectRepository.findById(createLessonApi.getSubjectId());
-            subjectDb.ifPresent(subject -> {
-                if (subject.getTeacherId().equals(createLessonApi.getTeacherId())) {
-                    scheduleDb.setSubjectId(createLessonApi.getSubjectId());
-                } else {
-                    final SubjectDB newSubject = new SubjectDB(subject.getName(),
-                                                               createLessonApi.getTeacherId());
-                    final Long subjectId = subjectRepository.save(newSubject).getId();
-                    scheduleDb.setSubjectId(subjectId);
-                }
-            });
+            final Optional<SubjectDB> subjectDb =
+                    subjectRepository.findByNameAndTeacherId(createLessonApi.getSubjectName(),
+                                                             createLessonApi.getTeacherId());
+            subjectDb.ifPresentOrElse(subject -> scheduleDb.subjectId(subject.getId()),
+                                      () -> {
+                                          final SubjectDB newSubject = new SubjectDB(createLessonApi.getSubjectName(),
+                                                                                     createLessonApi.getTeacherId());
+                                          subjectRepository.save(newSubject);
+                                          scheduleDb.subjectId(newSubject.getId());
+                                      });
         }
 
-        final List<ScheduleDb.ScheduleDbBuilder> lessons = List.of(scheduleDb.toBuilder());
+        final List<ScheduleDb.ScheduleDbBuilder> lessons = List.of(scheduleDb);
 
         return lessons.stream()
                       .flatMap(lesson -> createLessonApi.getGroups()
@@ -156,10 +153,12 @@ public class ScheduleService {
     }
 
     private void filterDuplicatedEntity(final List<ScheduleDb> lessons, final List<Long> groups) {
-        final List<ScheduleDb> createdLessons = scheduleRepository.findAllByStudyGroupId(groups);
+        final List<ScheduleDb> createdLessons = groups.stream()
+                                                      .flatMap(group -> scheduleRepository.findAllByStudyGroupId(group)
+                                                                                          .stream())
+                                                      .collect(Collectors.toList());
         lessons.removeIf(lesson -> createdLessons.stream()
-                                                 .anyMatch(createdLesson -> compareLessonTime(lesson,
-                                                                                              createdLesson)));
+                                                 .anyMatch(createdLesson -> compareLessonTime(lesson, createdLesson)));
     }
 
     private boolean compareLessonTime(final ScheduleDb scheduleDb1, final ScheduleDb scheduleDb2) {

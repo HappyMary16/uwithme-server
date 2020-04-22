@@ -50,7 +50,7 @@ public class AuthEndpoint {
     public ResponseEntity<UserApi> register(@RequestBody RegisterApi registerApi) {
         userService.save(registerApi);
 
-        LoginApi loginApi = new LoginApi(registerApi.getUsername(), registerApi.getPassword());
+        LoginApi loginApi = new LoginApi(registerApi.getEmail(), registerApi.getPassword());
         return authenticateUser(loginApi);
     }
 }
