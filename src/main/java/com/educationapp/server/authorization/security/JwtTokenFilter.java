@@ -7,32 +7,27 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Component
+@AllArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    public JwtTokenFilter(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
-
     @Override
-    protected void doFilterInternal(final HttpServletRequest httpServletRequest,
-                                    final HttpServletResponse httpServletResponse,
+    protected void doFilterInternal(final HttpServletRequest request,
+                                    final HttpServletResponse response,
                                     final FilterChain filterChain) throws IOException, ServletException {
-        String token = jwtTokenProvider.resolveToken(httpServletRequest);
+        String token = jwtTokenProvider.resolveToken(request);
+
         if (token != null && jwtTokenProvider.validateToken(token)) {
             Authentication auth = jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(auth);
-
-            filterChain.doFilter(httpServletRequest, httpServletResponse);
-        } else {
-            httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
+
+        filterChain.doFilter(request, response);
     }
 }

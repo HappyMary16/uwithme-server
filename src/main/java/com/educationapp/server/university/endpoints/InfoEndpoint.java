@@ -11,7 +11,6 @@ import com.educationapp.server.university.repositories.InstituteRepository;
 import com.educationapp.server.university.repositories.StudyGroupRepository;
 import com.educationapp.server.university.repositories.UniversityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/info")
-@CrossOrigin("*")
 public class InfoEndpoint {
 
     @Autowired

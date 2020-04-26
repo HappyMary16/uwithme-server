@@ -5,7 +5,6 @@ import java.util.List;
 import com.educationapp.server.lecture.halls.models.BuildingDb;
 import com.educationapp.server.lecture.halls.repositoryes.BuildingsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/buildings")
-@CrossOrigin("*")
 public class BuildingsEndpoint {
 
     @Autowired

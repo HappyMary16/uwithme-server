@@ -16,8 +16,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@AllArgsConstructor
 @Configuration
+@AllArgsConstructor
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -44,8 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(final WebSecurity web) {
         web.ignoring()
-           .antMatchers("/api/auth/signIn",
-                        "/api/auth/signUp",
+           .antMatchers("/api/auth/*",
                         "/api/info/*",
                         "/api/university/add");
     }

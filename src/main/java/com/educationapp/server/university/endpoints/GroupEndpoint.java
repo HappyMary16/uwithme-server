@@ -10,7 +10,6 @@ import com.educationapp.server.university.repositories.DepartmentRepository;
 import com.educationapp.server.university.repositories.InstituteRepository;
 import com.educationapp.server.university.repositories.StudyGroupRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/group")
-@CrossOrigin("*")
 public class GroupEndpoint {
 
     private final InstituteRepository instituteRepository;

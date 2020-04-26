@@ -5,8 +5,7 @@ import java.util.List;
 import com.educationapp.server.schedule.models.api.CreateLessonApi;
 import com.educationapp.server.schedule.models.api.LessonApi;
 import com.educationapp.server.schedule.servises.ScheduleService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,13 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api")
-@CrossOrigin("*")
 public class ScheduleEndpoint {
 
-    @Autowired
-    private ScheduleService scheduleService;
+    private final ScheduleService scheduleService;
 
     @PostMapping("/lesson/add")
     public void addLesson(@RequestBody CreateLessonApi createLessonApi) {
