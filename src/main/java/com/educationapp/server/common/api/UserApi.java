@@ -41,7 +41,9 @@ public class UserApi {
 
     private String scienceDegreeName;
 
-    private String token;
+    private String authToken;
+
+    private String refreshToken;
 
     private Long universityId;
 
