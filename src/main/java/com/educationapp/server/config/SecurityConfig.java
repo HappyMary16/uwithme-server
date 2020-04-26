@@ -1,29 +1,39 @@
-package com.educationapp.server.authorization.security;
+package com.educationapp.server.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.educationapp.server.authorization.security.JwtTokenFilter;
+import com.educationapp.server.authorization.security.JwtTokenProvider;
+import com.educationapp.server.users.servises.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
+@AllArgsConstructor
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserService userService;
 
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+    }
+
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userService);
     }
 
     /**
@@ -42,16 +52,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        super.configure(http);
-        http.cors().and()
-            .httpBasic().disable()
-            .csrf().disable()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .authorizeRequests()
-            .antMatchers("/**").permitAll()
-            .anyRequest().authenticated()
-            .and()
-            .apply(new JwtConfigurer(jwtTokenProvider));
+        http
+                .cors()
+                    .and()
+                .httpBasic()
+                    .disable()
+                .csrf()
+                    .disable()
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .and()
+                .authorizeRequests()
+//                .antMatchers("/api/info/**")
+//                    .permitAll()
+                .anyRequest()
+                    .authenticated()
+                    .and()
+
+                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
     }
 }

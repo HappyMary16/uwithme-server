@@ -10,7 +10,7 @@ import com.educationapp.server.common.api.RegisterApi;
 import com.educationapp.server.common.api.UserApi;
 import com.educationapp.server.users.repositories.UserRepository;
 import com.educationapp.server.users.servises.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,19 +19,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin("*")
 public class AuthEndpoint {
 
-    @Autowired
-    JwtTokenProvider tokenProvider;
-
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    UserService userService;
+    private final JwtTokenProvider tokenProvider;
+    private final UserRepository userRepository;
+    private final UserService userService;
 
     @PostMapping("/signIn")
     public ResponseEntity<UserApi> authenticateUser(@RequestBody @Valid LoginApi loginApi) {

@@ -3,10 +3,10 @@ package com.educationapp.server.users.servises;
 import static com.educationapp.server.common.enums.Role.ADMIN;
 import static com.educationapp.server.common.enums.Role.STUDENT;
 import static com.educationapp.server.common.enums.Role.TEACHER;
-import static com.educationapp.server.common.exception.ExceptionsMessages.USERNAME_NOT_FOUND;
 
 import java.util.Objects;
 
+import com.educationapp.server.authorization.UserDetailsImpl;
 import com.educationapp.server.common.api.RegisterApi;
 import com.educationapp.server.common.api.UserApi;
 import com.educationapp.server.common.api.admin.AddUniversityApi;
@@ -30,34 +30,30 @@ import com.educationapp.server.users.model.persistence.UserDB;
 import com.educationapp.server.users.repositories.StudentRepository;
 import com.educationapp.server.users.repositories.TeacherRepository;
 import com.educationapp.server.users.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+@AllArgsConstructor
 @Service
 public class UserService implements UserDetailsService {
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
+    private final TeacherRepository teacherRepository;
+    private final StudyGroupRepository studyGroupRepository;
+    private final DepartmentRepository departmentRepository;
+    private final InstituteRepository instituteRepository;
+    private final ScienceDegreeRepository scienceDegreeRepository;
 
-    @Autowired
-    StudentRepository studentRepository;
-
-    @Autowired
-    TeacherRepository teacherRepository;
-
-    @Autowired
-    StudyGroupRepository studyGroupRepository;
-
-    @Autowired
-    DepartmentRepository departmentRepository;
-
-    @Autowired
-    InstituteRepository instituteRepository;
-
-    @Autowired
-    ScienceDegreeRepository scienceDegreeRepository;
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        final UserDB user = userRepository.findByUsername(username)
+                                          .orElseThrow(() -> new UsernameNotFoundException(username));
+        return new UserDetailsImpl(user);
+    }
 
     public void save(final RegisterApi user) {
         UserDB toCreate = UserDB.builder()
@@ -221,15 +217,6 @@ public class UserService implements UserDetailsService {
                       //TODO
 //                      .isAdmin(student.getIsAdmin())
                       .build();
-    }
-
-    @Override
-    public User loadUserByUsername(String username) throws UsernameNotFoundException {
-        final UserDB user =
-                userRepository.findByUsername(username)
-                              .orElseThrow(() -> new UsernameNotFoundException(String.format(USERNAME_NOT_FOUND,
-                                                                                             username)));
-        return userDbToUser(user);
     }
 
     private static User userDbToUser(final UserDB userDB) {

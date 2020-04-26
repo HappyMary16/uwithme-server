@@ -9,7 +9,7 @@ import com.educationapp.server.university.models.StudyGroup;
 import com.educationapp.server.university.repositories.DepartmentRepository;
 import com.educationapp.server.university.repositories.InstituteRepository;
 import com.educationapp.server.university.repositories.StudyGroupRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,19 +18,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/group")
 @CrossOrigin("*")
 public class GroupEndpoint {
 
-    @Autowired
-    private InstituteRepository instituteRepository;
-
-    @Autowired
-    private DepartmentRepository departmentRepository;
-
-    @Autowired
-    private StudyGroupRepository studyGroupRepository;
+    private final InstituteRepository instituteRepository;
+    private final DepartmentRepository departmentRepository;
+    private final StudyGroupRepository studyGroupRepository;
 
     @PostMapping("/add")
     public StudyGroup addGroup(@RequestBody AddGroupApi addGroupApi) {
