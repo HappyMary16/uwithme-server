@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <include file="006.01_universities_create_table.xml" relativeToChangelogFile="true"/>
+    <include file="006.02_universities_add_primary_key.xml" relativeToChangelogFile="true"/>
+    <include file="006.03_add_university_id_to_institutes.xml" relativeToChangelogFile="true"/>
+    <include file="006.04_add_university_user_fk.xml" relativeToChangelogFile="true"/>
+
+    <include file="" relativeToChangelogFile="true"/>
+    <include file="" relativeToChangelogFile="true"/>
+    <include file="" relativeToChangelogFile="true"/>
+    <include file="" relativeToChangelogFile="true"/>
+    <include file="" relativeToChangelogFile="true"/>
+    <include file="" relativeToChangelogFile="true"/>
+</databaseChangeLog>

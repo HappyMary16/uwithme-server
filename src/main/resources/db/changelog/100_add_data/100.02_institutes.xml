@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet author="mborodin" id="100.02">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="institutes"/>
+        </preConditions>
+        <insert tableName="institutes">
+            <column name="name" value="I"/>
+            <column name="university_id" value="1"/>
+        </insert>
+        <insert tableName="institutes">
+            <column name="name" value="KIT"/>
+            <column name="university_id" value="1"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

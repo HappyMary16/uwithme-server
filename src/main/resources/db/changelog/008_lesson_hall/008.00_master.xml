@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <include file="008.01_buildings_create_table.xml" relativeToChangelogFile="true"/>
+    <include file="008.02_buildings_add_primary_key.xml" relativeToChangelogFile="true"/>
+    <include file="008.03_lecture_hall_create_table.xml" relativeToChangelogFile="true"/>
+    <include file="008.04_lectures_halls_add_primary_key.xml" relativeToChangelogFile="true"/>
+    <include file="008.05_lesson_auditory_add_foreign_key.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>
