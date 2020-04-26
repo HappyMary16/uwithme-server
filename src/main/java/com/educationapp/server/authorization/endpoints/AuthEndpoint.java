@@ -4,8 +4,8 @@ import javax.validation.Valid;
 
 import com.educationapp.server.authorization.security.JwtTokenProvider;
 import com.educationapp.server.common.api.LoginApi;
-import com.educationapp.server.common.api.RefreshTokenApi;
 import com.educationapp.server.common.api.RegisterApi;
+import com.educationapp.server.common.api.TokenApi;
 import com.educationapp.server.common.api.UserApi;
 import com.educationapp.server.users.servises.UserService;
 import lombok.AllArgsConstructor;
@@ -29,7 +29,7 @@ public class AuthEndpoint {
         UserApi user = userService.findByUserName(loginApi.getUsername());
 
         if (user.getPassword().equals(loginApi.getPassword())) {
-            user.setAuthToken(tokenProvider.createToken(loginApi.getUsername()));
+            user.setAuthToken(tokenProvider.createAuthToken(loginApi.getUsername()));
             user.setRefreshToken(tokenProvider.createRefreshToken(loginApi.getUsername()));
 
             return ResponseEntity.ok(user);
@@ -42,19 +42,23 @@ public class AuthEndpoint {
         userService.save(registerApi);
 
         UserApi user = userService.findByUserName(registerApi.getUsername());
-        user.setAuthToken(tokenProvider.createToken(user.getUsername()));
+        user.setAuthToken(tokenProvider.createAuthToken(user.getUsername()));
         user.setRefreshToken(tokenProvider.createRefreshToken(user.getUsername()));
 
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PostMapping("/refreshToken")
-    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenApi refreshTokenApi) {
-        String username = tokenProvider.getUsername(refreshTokenApi.getRefreshToken());
+    public ResponseEntity<?> refreshToken(@RequestBody TokenApi refreshTokenApi) {
+        final String token = refreshTokenApi.getRefreshToken();
 
-        RefreshTokenApi refreshToken = new RefreshTokenApi(tokenProvider.createToken(username),
-                                                           tokenProvider.createRefreshToken(username));
+        if (tokenProvider.validateRefreshToken(token)) {
+            final String username = tokenProvider.getRefreshTokenUsername(token);
+            final TokenApi tokenApi = new TokenApi(tokenProvider.createAuthToken(username),
+                                             tokenProvider.createRefreshToken(username));
+            return ResponseEntity.ok(tokenApi);
+        }
 
-        return ResponseEntity.ok(refreshToken);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("");
     }
 }
