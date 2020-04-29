@@ -55,7 +55,7 @@ public class AuthEndpoint {
         if (tokenProvider.validateRefreshToken(token)) {
             final String username = tokenProvider.getRefreshTokenUsername(token);
             final TokenApi tokenApi = new TokenApi(tokenProvider.createAuthToken(username),
-                                             tokenProvider.createRefreshToken(username));
+                                                   tokenProvider.createRefreshToken(username));
             return ResponseEntity.ok(tokenApi);
         }
 

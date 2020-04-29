@@ -22,7 +22,7 @@ public class JwtTokenProvider {
     private final String refreshTokenSecretKey = "veryLongSecretKeyveryLongSecretKeyveryLongSecretKeyveryLongSecretKeyveryLongSecretKeyveryLongSecretKey";
     private final SecretKey authTokenSecretKey;
     private final long authTokenExpirationTime = 3600_000; //1h
-    private final long refreshTokenExpirationTime = 3600_000 * 7; //1 week
+    private final long refreshTokenExpirationTime = 3600_000 * 24 * 7; //1 week
 
     private final UserService userDetailsService;
 
