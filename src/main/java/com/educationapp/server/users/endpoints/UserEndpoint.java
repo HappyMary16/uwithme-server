@@ -9,26 +9,20 @@ import com.educationapp.server.users.repositories.StudentDataRepository;
 import com.educationapp.server.users.repositories.TeacherDataRepository;
 import com.educationapp.server.users.repositories.UserRepository;
 import com.educationapp.server.users.servises.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/users")
 public class UserEndpoint {
 
-    @Autowired
     private UserService userService;
-
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
     private TeacherDataRepository teacherDataRepository;
-
-    @Autowired
     private StudentDataRepository studentDataRepository;
 
     @GetMapping(value = "/{id}")
@@ -60,6 +54,14 @@ public class UserEndpoint {
     @GetMapping(value = "/students/{teacherId}/teacherId")
     public List<UserApi> getStudentsByTeacherId(@PathVariable(value = "teacherId") Long teacherId) {
         return studentDataRepository.findAllByTeacherId(teacherId)
+                                    .stream()
+                                    .map(userService::mapStudentDataDbToUserApi)
+                                    .collect(Collectors.toList());
+    }
+
+    @GetMapping(value = "/students/{groupId}/group")
+    public List<UserApi> getStudentsByGroupId(@PathVariable(value = "groupId") Long groupId) {
+        return studentDataRepository.findAllByStudyGroupId(groupId)
                                     .stream()
                                     .map(userService::mapStudentDataDbToUserApi)
                                     .collect(Collectors.toList());
