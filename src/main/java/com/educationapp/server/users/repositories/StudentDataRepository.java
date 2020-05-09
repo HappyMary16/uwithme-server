@@ -21,4 +21,6 @@ public interface StudentDataRepository extends CrudRepository<StudentDataDb, Lon
     List<StudentDataDb> findAllByUniversityId(Long groupId);
 
     List<StudentDataDb> findAllByStudyGroupId(Long groupId);
+
+    List<StudentDataDb> findAllByStudyGroupIdAndUniversityId(Long groupId, Long universityId);
 }

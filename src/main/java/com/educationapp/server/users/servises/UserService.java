@@ -191,10 +191,21 @@ public class UserService implements UserDetailsService {
     }
 
     public UserApi mapStudentDataDbToUserApi(final StudentDataDb student) {
-        final StudyGroup studyGroup = studyGroupRepository.findById(student.getStudyGroupId())
-                                                          .orElse(new StudyGroup());
-        final Department department = departmentRepository.findById(studyGroup.getDepartmentId())
-                                                          .orElse(new Department());
+        StudyGroup studyGroup;
+        if (student.getStudyGroupId() != null) {
+            studyGroup = studyGroupRepository.findById(student.getStudyGroupId())
+                                             .orElse(new StudyGroup());
+        } else {
+            studyGroup = new StudyGroup();
+        }
+
+        Department department;
+        if (studyGroup.getDepartmentId() != null) {
+            department = departmentRepository.findById(studyGroup.getDepartmentId())
+                                             .orElse(new Department());
+        } else {
+            department = new Department();
+        }
 
         return UserApi.builder()
                       .id(student.getId())
@@ -211,9 +222,11 @@ public class UserService implements UserDetailsService {
                       .studyGroupName(studyGroup.getName())
                       .studyGroupId(studyGroup.getId())
                       .departmentName(department.getName())
-                      .instituteName(instituteRepository.findById(department.getInstituteId())
-                                                        .map(Institute::getName)
-                                                        .orElse(null))
+                      .instituteName(department.getInstituteId() != null
+                                             ? instituteRepository.findById(department.getInstituteId())
+                                                                  .map(Institute::getName)
+                                                                  .orElse(null)
+                                             : null)
                       //TODO
 //                      .isAdmin(student.getIsAdmin())
                       .build();
