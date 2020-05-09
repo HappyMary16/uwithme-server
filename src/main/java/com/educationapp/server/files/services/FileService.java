@@ -79,7 +79,7 @@ public class FileService {
             subjectDb = subjectService.save(file.getUsername(), file.getSubjectName());
         }
 
-        final String fileLocation = String.valueOf(subjectDb.getId()) + "\\" + file.getFileTypeId() + "\\";
+        final String fileLocation = subjectDb.getId() + "\\" + file.getFileTypeId() + "\\";
 
         try {
             if (fileLocation.contains("..")) {

@@ -5,6 +5,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.SecondaryTables;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -18,7 +21,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Table(name = "study_groups")
-public class StudyGroup {
+@SecondaryTables({
+        @SecondaryTable(name="departments",
+                pkJoinColumns=@PrimaryKeyJoinColumn(name="id")),
+        @SecondaryTable(name="institutes",
+                pkJoinColumns=@PrimaryKeyJoinColumn(name="id"))
+})
+public class StudyGroupDataDb {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,4 +48,16 @@ public class StudyGroup {
 
     @Column(name = "is_showing_in_registration")
     private Boolean isShowingInRegistration;
+
+    @Column(table = "departments", name = "institute_id")
+    private Long instituteId;
+
+    @Column(table = "departments", name = "name")
+    private String departmentName;
+
+    @Column(table = "institutes", name = "name")
+    private String instituteName;
+
+    @Column(table = "institutes", name = "university_id")
+    private Long universityId;
 }
