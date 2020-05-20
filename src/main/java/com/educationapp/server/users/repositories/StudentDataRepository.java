@@ -18,5 +18,9 @@ public interface StudentDataRepository extends CrudRepository<StudentDataDb, Lon
             nativeQuery = true)
     List<StudentDataDb> findAllByTeacherId(@Param("teacherId") Long teacherId);
 
-    List<StudentDataDb> findAllByUniversityId(final Long groupId);
+    List<StudentDataDb> findAllByUniversityId(Long groupId);
+
+    List<StudentDataDb> findAllByStudyGroupId(Long groupId);
+
+    List<StudentDataDb> findAllByStudyGroupIdAndUniversityId(Long groupId, Long universityId);
 }

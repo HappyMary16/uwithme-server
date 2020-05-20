@@ -10,12 +10,10 @@ import javax.validation.constraints.NotEmpty;
 import com.educationapp.server.common.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Data
-@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {

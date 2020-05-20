@@ -8,13 +8,16 @@ import com.educationapp.server.university.models.Institute;
 import com.educationapp.server.university.models.StudyGroup;
 import com.educationapp.server.university.repositories.DepartmentRepository;
 import com.educationapp.server.university.repositories.InstituteRepository;
+import com.educationapp.server.university.repositories.StudyGroupDataRepository;
 import com.educationapp.server.university.repositories.StudyGroupRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
@@ -25,6 +28,7 @@ public class GroupEndpoint {
     private final InstituteRepository instituteRepository;
     private final DepartmentRepository departmentRepository;
     private final StudyGroupRepository studyGroupRepository;
+    private final StudyGroupDataRepository studyGroupDataRepository;
 
     @PostMapping("/add")
     public StudyGroup addGroup(@RequestBody AddGroupApi addGroupApi) {
@@ -55,13 +59,18 @@ public class GroupEndpoint {
         return studyGroupRepository.save(studyGroup);
     }
 
-    @RequestMapping(value = "/{universityId}/universityId", method = RequestMethod.GET)
-    public List<StudyGroup> getStudyGroupsByUniversityId(@PathVariable("universityId") final Long universityId) {
-        return studyGroupRepository.findAllByUniversityId(universityId);
+    @GetMapping(value = "/{universityId}/universityId")
+    public ResponseEntity<?> getStudyGroupsByUniversityId(@PathVariable("universityId") final Long universityId) {
+        return new ResponseEntity<>(studyGroupDataRepository.findAllByUniversityId(universityId), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{teacherId}/teacherId", method = RequestMethod.GET)
+    @GetMapping(value = "/{teacherId}/teacherId")
     public List<StudyGroup> getStudyGroupsByTeacherId(@PathVariable("teacherId") final Long teacherId) {
         return studyGroupRepository.findAllByTeacherId(teacherId);
+    }
+
+    @GetMapping(value = "/{groupId}/groupId")
+    public ResponseEntity<?> getStudyGroupById(@PathVariable("groupId") final Long groupId) {
+        return new ResponseEntity<>(studyGroupDataRepository.findById(groupId), HttpStatus.OK);
     }
 }

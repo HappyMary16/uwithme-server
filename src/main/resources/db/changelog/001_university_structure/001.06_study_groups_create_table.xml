@@ -22,6 +22,12 @@
             <column name="course" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
+            <column name="teacher_id" type="INTEGER">
+                <constraints nullable="true"/>
+            </column>
+            <column name="is_showing_in_registration" type="BOOLEAN" defaultValue="true">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 </databaseChangeLog>
