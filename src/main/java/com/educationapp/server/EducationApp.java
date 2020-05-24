@@ -8,14 +8,14 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 
 @Slf4j
 @SpringBootApplication
-public class EducationAppApplication extends SpringBootServletInitializer {
+public class EducationApp extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
-        SpringApplication.run(EducationAppApplication.class, args);
+        SpringApplication.run(EducationApp.class, args);
     }
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(EducationAppApplication.class);
+        return application.sources(EducationApp.class);
     }
 }

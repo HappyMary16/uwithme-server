@@ -19,27 +19,28 @@ import com.educationapp.server.university.repositories.StudyGroupRepository;
 import com.educationapp.server.users.model.persistence.UserDB;
 import com.educationapp.server.users.repositories.StudentRepository;
 import com.educationapp.server.users.repositories.UserRepository;
-import org.apache.commons.lang3.NotImplementedException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ScheduleService {
 
-    @Autowired
-    private ScheduleRepository scheduleRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final SubjectRepository subjectRepository;
+    private final UserRepository userRepository;
+    private final StudyGroupRepository studyGroupRepository;
+    private final StudentRepository studentRepository;
 
-    @Autowired
-    private SubjectRepository subjectRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private StudyGroupRepository studyGroupRepository;
-
-    @Autowired
-    private StudentRepository studentRepository;
+    public ScheduleService(final ScheduleRepository scheduleRepository,
+                           final SubjectRepository subjectRepository,
+                           final UserRepository userRepository,
+                           final StudyGroupRepository studyGroupRepository,
+                           final StudentRepository studentRepository) {
+        this.scheduleRepository = scheduleRepository;
+        this.subjectRepository = subjectRepository;
+        this.userRepository = userRepository;
+        this.studyGroupRepository = studyGroupRepository;
+        this.studentRepository = studentRepository;
+    }
 
     public void createLesson(final CreateLessonApi createLessonApi) {
         final List<ScheduleDb> lessonsToCreate = buildLessons(createLessonApi);
@@ -67,7 +68,7 @@ public class ScheduleService {
                                      .map(this::mapScheduleDbToLesson)
                                      .collect(Collectors.toList());
         } else {
-            throw new NotImplementedException("Schedule exist only for students and teacher");
+            throw new RuntimeException("Schedule exist only for students and teacher");
         }
 
         return lessons;
