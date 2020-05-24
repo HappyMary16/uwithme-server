@@ -14,9 +14,9 @@ This application created for management of university.
 
 ## Running the application
 
-#####You can run the application with Maven:
+##### You can run the application with Maven:
 ```bash
 mvn spring-boot:run
 ```
-#####or you can use IDE:
+##### or you can use IDE:
 Run the ```main``` method in the ```com.educationapp.server.EducationApp``` class
