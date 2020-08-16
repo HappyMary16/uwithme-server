@@ -1,8 +1,8 @@
 package com.educationapp.server.config;
 
-import com.educationapp.server.authorization.security.JwtTokenFilter;
-import com.educationapp.server.authorization.security.JwtTokenProvider;
-import com.educationapp.server.users.servises.UserService;
+import com.educationapp.server.security.JwtTokenFilter;
+import com.educationapp.server.security.JwtTokenProvider;
+import com.educationapp.server.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
