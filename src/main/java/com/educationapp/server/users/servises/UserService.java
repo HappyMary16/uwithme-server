@@ -52,7 +52,7 @@ public class UserService implements UserDetailsService {
                                 .firstName(user.getFirstName())
                                 .lastName(user.getLastName())
                                 .surname(user.getSurname())
-                                .username(user.getEmail())
+                                .username(user.getUsername())
                                 .password(user.getPassword())
                                 .phone(user.getPhone())
                                 .email(user.getEmail())
