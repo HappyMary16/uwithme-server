@@ -12,21 +12,13 @@ import com.educationapp.server.common.api.UserApi;
 import com.educationapp.server.common.api.admin.AddUniversityApi;
 import com.educationapp.server.common.enums.Role;
 import com.educationapp.server.common.exception.ResourceNotFoundException;
-import com.educationapp.server.university.models.Department;
-import com.educationapp.server.university.models.Institute;
-import com.educationapp.server.university.models.ScienceDegree;
-import com.educationapp.server.university.models.StudyGroup;
-import com.educationapp.server.university.models.University;
+import com.educationapp.server.university.models.*;
 import com.educationapp.server.university.repositories.DepartmentRepository;
 import com.educationapp.server.university.repositories.InstituteRepository;
 import com.educationapp.server.university.repositories.ScienceDegreeRepository;
 import com.educationapp.server.university.repositories.StudyGroupRepository;
 import com.educationapp.server.users.model.User;
-import com.educationapp.server.users.model.persistence.StudentDB;
-import com.educationapp.server.users.model.persistence.StudentDataDb;
-import com.educationapp.server.users.model.persistence.TeacherDB;
-import com.educationapp.server.users.model.persistence.TeacherDataDb;
-import com.educationapp.server.users.model.persistence.UserDB;
+import com.educationapp.server.users.model.persistence.*;
 import com.educationapp.server.users.repositories.StudentRepository;
 import com.educationapp.server.users.repositories.TeacherRepository;
 import com.educationapp.server.users.repositories.UserRepository;
@@ -55,7 +47,7 @@ public class UserService implements UserDetailsService {
         return new UserDetailsImpl(user);
     }
 
-    public void save(final RegisterApi user) {
+    public Long save(final RegisterApi user) {
         UserDB toCreate = UserDB.builder()
                                 .firstName(user.getFirstName())
                                 .lastName(user.getLastName())
@@ -76,7 +68,7 @@ public class UserService implements UserDetailsService {
                                                  .studentId(user.getStudentId())
                                                  .studyGroupId(user.getStudyGroupId())
                                                  .build();
-            studentRepository.save(studentToCreate);
+            return studentRepository.save(studentToCreate).getId();
 
         } else if (user.getRole() == TEACHER.getId()) {
             TeacherDB teacherToCreate = TeacherDB.builder()
@@ -84,8 +76,9 @@ public class UserService implements UserDetailsService {
                                                  .departmentId(user.getDepartmentId())
                                                  .scienceDegreeId(user.getScienceDegreeId())
                                                  .build();
-            teacherRepository.save(teacherToCreate);
+            return teacherRepository.save(teacherToCreate).getId();
         }
+        return null;
     }
 
     public UserApi save(final AddUniversityApi addUniversityApi, final University university) {

@@ -38,12 +38,18 @@ public class AuthEndpoint {
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<?> register(@RequestBody RegisterApi registerApi) {
+    public ResponseEntity<UserApi> register(@RequestBody RegisterApi registerApi) {
         userService.save(registerApi);
 
-        UserApi user = userService.findByUserName(registerApi.getUsername());
-        user.setAuthToken(tokenProvider.createAuthToken(user.getUsername()));
-        user.setRefreshToken(tokenProvider.createRefreshToken(user.getUsername()));
+        String username;
+        if (registerApi.getUsername() == null) {
+            username = registerApi.getEmail();
+        } else {
+            username = registerApi.getUsername();
+        }
+        UserApi user = userService.findByUserName(username);
+        user.setAuthToken(tokenProvider.createAuthToken(username));
+        user.setRefreshToken(tokenProvider.createRefreshToken(username));
 
         return new ResponseEntity<>(user, HttpStatus.OK);
     }

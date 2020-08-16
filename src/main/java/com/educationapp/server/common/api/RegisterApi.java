@@ -4,9 +4,11 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class RegisterApi {
 
@@ -48,4 +50,6 @@ public class RegisterApi {
 
     @NotNull
     private Long universityId;
+
+    private Long instituteId;
 }
