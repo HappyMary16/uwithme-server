@@ -11,6 +11,7 @@ import com.educationapp.server.users.servises.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,12 +39,19 @@ public class AuthEndpoint {
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<?> register(@RequestBody RegisterApi registerApi) {
+    public ResponseEntity<UserApi> register(@RequestBody RegisterApi registerApi) {
+        String username;
+        if (StringUtils.isEmpty(registerApi.getUsername())) {
+            username = registerApi.getEmail();
+        } else {
+            username = registerApi.getUsername();
+        }
+        registerApi.setUsername(username);
         userService.save(registerApi);
 
-        UserApi user = userService.findByUserName(registerApi.getUsername());
-        user.setAuthToken(tokenProvider.createAuthToken(user.getUsername()));
-        user.setRefreshToken(tokenProvider.createRefreshToken(user.getUsername()));
+        UserApi user = userService.findByUserName(username);
+        user.setAuthToken(tokenProvider.createAuthToken(username));
+        user.setRefreshToken(tokenProvider.createRefreshToken(username));
 
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
