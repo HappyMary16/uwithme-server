@@ -1,0 +1,130 @@
+package com.educationapp.server.endpoints;
+
+import static org.springframework.http.HttpStatus.OK;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.educationapp.server.models.api.AccessToFileApi;
+import com.educationapp.server.models.api.FileApi;
+import com.educationapp.server.models.api.SaveFileApi;
+import com.educationapp.server.models.api.UploadFileResponseApi;
+import com.educationapp.server.models.persistence.FileDB;
+import com.educationapp.server.repositories.FileRepository;
+import com.educationapp.server.services.FileService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+@RestController
+@RequestMapping("/api")
+public class FileEndpoint {
+
+    @Autowired
+    private FileService fileService;
+
+    @Autowired
+    private FileRepository fileRepository;
+
+    private Path fileStorageLocation = Paths.get("D:\\Programming\\Projects\\EducationAppServer")
+                                            .toAbsolutePath()
+                                            .normalize();
+
+    @PostMapping("/uploadFile")
+    public UploadFileResponseApi uploadFile(@RequestBody SaveFileApi saveFileApi) {
+        String fileName = fileService.saveFile(saveFileApi);
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                                                            .path("/downloadFile/")
+                                                            .path(fileName)
+                                                            .toUriString();
+
+        return new UploadFileResponseApi(fileName,
+                                         fileDownloadUri,
+                                         saveFileApi.getFile().getContentType(),
+                                         saveFileApi.getFile().getSize());
+    }
+
+    @PostMapping("/uploadMultipleFiles/{username}/{subjectName}/{fileType:[1-9]}")
+    public List<UploadFileResponseApi> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files,
+                                                           @PathVariable("username") final String username,
+                                                           @PathVariable("subjectName") final String subjectName,
+                                                           @PathVariable("fileType") final Long fileType) {
+        return Arrays.stream(files)
+                     .map(file -> uploadFile(new SaveFileApi(username,
+                                                             subjectName,
+                                                             fileType,
+                                                             file)))
+                     .collect(Collectors.toList());
+    }
+
+    @GetMapping("/downloadFile/{fileId:.+}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) {
+        final FileDB fileDB = fileRepository.findById(fileId).orElse(new FileDB());
+        Resource resource = null;
+        try {
+            resource = fileService.loadFileAsResource(fileDB);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        String contentType;
+        try {
+            contentType = Files.probeContentType(
+                    fileStorageLocation.resolve(fileDB.getPath() + fileDB.getName()).normalize());
+        } catch (IOException ex) {
+            //TODO add log
+            contentType = "application/octet-stream";
+        }
+
+        return ResponseEntity.ok()
+                             .contentType(MediaType.parseMediaType(contentType))
+//                             .header(HttpHeaders.CONTENT_DISPOSITION,
+//                                     "attachment; filename=\"" + fileDB.getName() + "\"")
+                             .body(resource);
+    }
+
+    /**
+     * For teachers
+     *
+     * @param subjectId
+     * @return
+     */
+    @GetMapping("/files/{subjectId:[1-9]+}")
+    public ResponseEntity<List<FileDB>> getFiles(@PathVariable("subjectId") final Long subjectId) {
+        return new ResponseEntity<>(fileRepository.findAllBySubjectId(subjectId), OK);
+    }
+
+    /**
+     * For students
+     *
+     * @param subjectId
+     * @param username
+     * @return
+     */
+    @GetMapping("/files/{username:.+}/{subjectId:[1-9]+}")
+    public ResponseEntity<List<FileApi>> getFiles(@PathVariable("subjectId") final Long subjectId,
+                                                  @PathVariable("username") final String username) {
+        return new ResponseEntity<>(fileService.findByUsernameAndSubjectName(username, subjectId), OK);
+    }
+
+    @GetMapping("/files/{username:.+}")
+    public ResponseEntity<List<FileApi>> getFiles(@PathVariable("username") final String username) {
+        return new ResponseEntity<>(fileService.findByUsername(username), OK);
+    }
+
+    @PostMapping("/addAccess")
+    public ResponseEntity addAccessToFiles(@RequestBody final AccessToFileApi accessToFileApi) {
+        fileService.saveAccessToFile(accessToFileApi);
+        return new ResponseEntity<>(OK);
+    }
+}
