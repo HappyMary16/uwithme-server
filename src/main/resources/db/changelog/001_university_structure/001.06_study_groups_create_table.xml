@@ -19,6 +19,9 @@
             <column name="department_id" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
+            <column name="institute_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
             <column name="course" type="INTEGER">
                 <constraints nullable="false"/>
             </column>

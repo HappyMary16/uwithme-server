@@ -26,7 +26,7 @@ public class GroupEndpoint {
     private final StudyGroupDataRepository studyGroupDataRepository;
 
     @PostMapping("/add")
-    public StudyGroupDb addGroup(@RequestBody AddGroupApi addGroupApi) {
+    public StudyGroupDb addGroup(@RequestBody final AddGroupApi addGroupApi) {
         final Long universityId = addGroupApi.getUniversityId();
         final String instituteName = addGroupApi.getInstituteName();
         final String departmentName = addGroupApi.getDepartmentName();
@@ -49,6 +49,8 @@ public class GroupEndpoint {
                                                     .name(addGroupApi.getGroupName())
                                                     .course(addGroupApi.getCourse())
                                                     .departmentId(departmentId)
+                                                    .instituteId(instituteId)
+                                                    .isShowingInRegistration(addGroupApi.isShowingInRegistration())
                                                     .build();
 
         return studyGroupRepository.save(studyGroup);

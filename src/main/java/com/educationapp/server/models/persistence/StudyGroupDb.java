@@ -26,6 +26,9 @@ public class StudyGroupDb {
     @Column(name = "department_id")
     private Long departmentId;
 
+    @Column(name = "institute_id")
+    private Long instituteId;
+
     @Column(name = "course")
     private Integer course;
 
@@ -33,5 +36,5 @@ public class StudyGroupDb {
     private Long teacherId;
 
     @Column(name = "is_showing_in_registration")
-    private Boolean isShowingInRegistration;
+    private boolean isShowingInRegistration;
 }

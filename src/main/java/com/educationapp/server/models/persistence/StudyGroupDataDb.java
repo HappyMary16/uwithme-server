@@ -14,10 +14,10 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @Table(name = "study_groups")
 @SecondaryTables({
-        @SecondaryTable(name="departments",
-                pkJoinColumns=@PrimaryKeyJoinColumn(name="id")),
-        @SecondaryTable(name="institutes",
-                pkJoinColumns=@PrimaryKeyJoinColumn(name="id"))
+        @SecondaryTable(name = "departments",
+                foreignKey = @ForeignKey(name = "department_id")),
+        @SecondaryTable(name = "institutes",
+                foreignKey = @ForeignKey(name = "institute_id"))
 })
 public class StudyGroupDataDb {
 
@@ -41,7 +41,7 @@ public class StudyGroupDataDb {
     @Column(name = "is_showing_in_registration")
     private Boolean isShowingInRegistration;
 
-    @Column(table = "departments", name = "institute_id")
+    @Column(name = "institute_id")
     private Long instituteId;
 
     @Column(table = "departments", name = "name")

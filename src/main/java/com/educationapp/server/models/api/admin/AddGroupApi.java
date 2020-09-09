@@ -23,4 +23,7 @@ public class AddGroupApi {
 
     @NotNull
     private final Integer course;
+
+    @NotNull
+    private final boolean isShowingInRegistration;
 }

@@ -7,6 +7,7 @@
         <preConditions onFail="MARK_RAN">
             <not>
                 <foreignKeyConstraintExists foreignKeyName="fk_study_group_department"/>
+                <foreignKeyConstraintExists foreignKeyName="fk_study_group_institute"/>
             </not>
         </preConditions>
 
@@ -14,6 +15,11 @@
                                  baseColumnNames="department_id"
                                  constraintName="fk_study_group_department"
                                  referencedTableName="departments"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="study_groups"
+                                 baseColumnNames="institute_id"
+                                 constraintName="fk_study_group_institute"
+                                 referencedTableName="institutes"
                                  referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>
