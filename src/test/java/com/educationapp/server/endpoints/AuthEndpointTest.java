@@ -45,7 +45,7 @@ public class AuthEndpointTest {
         given(userService.save(userToRegister)).willReturn(1L);
 
         //WHEN
-        final ResponseEntity<UserApi> createdStudent = unit.register(userToRegister);
+        final ResponseEntity<?> createdStudent = unit.register(userToRegister);
 
         //THEN
         assertThat(createdStudent.getStatusCodeValue()).isEqualTo(200);
@@ -70,7 +70,7 @@ public class AuthEndpointTest {
         given(userService.save(userToRegister)).willReturn(1L);
 
         //WHEN
-        final ResponseEntity<UserApi> createdStudent = unit.register(userToRegister);
+        final ResponseEntity<?> createdStudent = unit.register(userToRegister);
 
         //THEN
         assertThat(createdStudent.getStatusCodeValue()).isEqualTo(200);

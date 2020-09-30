@@ -18,14 +18,15 @@ import com.educationapp.server.exception.FileStorageException;
 import com.educationapp.server.models.api.AccessToFileApi;
 import com.educationapp.server.models.api.FileApi;
 import com.educationapp.server.models.api.SaveFileApi;
+import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.models.persistence.AccessToFileDB;
 import com.educationapp.server.models.persistence.FileDB;
 import com.educationapp.server.models.persistence.SubjectDB;
-import com.educationapp.server.models.persistence.UserDB;
 import com.educationapp.server.repositories.AccessToFileRepository;
 import com.educationapp.server.repositories.FileRepository;
 import com.educationapp.server.repositories.StudentRepository;
 import com.educationapp.server.repositories.UserRepository;
+import com.educationapp.server.security.UserContextHolder;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -74,16 +75,14 @@ public class FileService {
     }
 
     public String saveFile(final SaveFileApi file) {
+        final String username = UserContextHolder.getUser().getUsername();
         final String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()));
-        SubjectDB subjectDb = subjectService.findSubjectsByTeacherUsername(file.getUsername())
-                                            .stream()
-                                            .filter(subject -> subject.getName().equals(file.getSubjectName()))
-                                            .findFirst()
-                                            .orElse(null);
 
-        if (Objects.isNull(subjectDb)) {
-            subjectDb = subjectService.save(file.getUsername(), file.getSubjectName());
-        }
+        final SubjectDB subjectDb = subjectService.findSubjectsByTeacherUsername()
+                                                  .stream()
+                                                  .filter(subject -> subject.getName().equals(file.getSubjectName()))
+                                                  .findFirst()
+                                                  .orElse(subjectService.save(username, file.getSubjectName()));
 
         final String fileLocation = subjectDb.getId() + "\\" + file.getFileTypeId() + "\\";
 
@@ -92,12 +91,12 @@ public class FileService {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileLocation);
             }
 
-            Path directory = fileStorageLocation.resolve(fileLocation);
+            final Path directory = fileStorageLocation.resolve(fileLocation);
             if (Files.notExists(directory)) {
                 Files.createDirectories(directory);
             }
 
-            Path targetLocation = fileStorageLocation.resolve(fileLocation.concat(fileName));
+            final Path targetLocation = fileStorageLocation.resolve(fileLocation.concat(fileName));
             Files.copy(file.getFile().getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
             fileRepository.save(new FileDB(fileLocation,
@@ -110,7 +109,8 @@ public class FileService {
         }
     }
 
-    public void updateAvatar(final Long userId, final MultipartFile avatar) {
+    public void updateAvatar(final MultipartFile avatar) {
+        final Long userId = UserContextHolder.getUser().getId();
         final Path targetLocation = userAvatarStorageLocation.resolve(userId + ".jpg");
 
         try {
@@ -130,7 +130,7 @@ public class FileService {
         return loadFileByPath(filePath);
     }
 
-    public void saveAccessToFile(final AccessToFileApi accessToFileApi) {
+    public void addAccessToFile(final AccessToFileApi accessToFileApi) {
         accessToFileApi
                 .getFileIds()
                 .forEach(fileId -> accessToFileApi
@@ -140,40 +140,8 @@ public class FileService {
                                                                                            new Date()))));
     }
 
-    public List<FileApi> findByUsernameAndSubjectName(final String username, final Long subjectId) {
-        final UserDB user = userRepository.findByUsername(username).get();
-        if (user.getRole().equals(STUDENT.getId())) {
-            final Long studyGroupId = studentRepository.findById(user.getId()).get().getStudyGroupId();
-            return accessToFileRepository.findAllByStudyGroupId(studyGroupId)
-                                         .stream()
-                                         .map(accessToFileDB -> {
-                                             final FileDB fileDB =
-                                                     fileRepository.findById(accessToFileDB.getFileId()).get();
-                                             return new FileApi(accessToFileDB.getFileId(),
-                                                                fileDB.getName(),
-                                                                fileDB.getFileTypeId(),
-                                                                fileDB.getSubjectId(),
-                                                                accessToFileDB.getDateAddAccess());
-                                         })
-                                         .filter(file -> file.getSubjectId().equals(subjectId))
-                                         .collect(Collectors.toList());
-        } else if (user.getRole().equals(TEACHER.getId())) {
-            return fileRepository.findAllBySubjectId(subjectId)
-                                 .stream()
-                                 .map(fileDB ->
-                                              new FileApi(fileDB.getId(),
-                                                          fileDB.getName(),
-                                                          fileDB.getFileTypeId(),
-                                                          fileDB.getSubjectId(),
-                                                          fileDB.getCreateDate()))
-                                 .collect(Collectors.toList());
-        }
-
-        throw new UnsupportedOperationException();
-    }
-
-    public List<FileApi> findByUsername(final String username) {
-        final UserDB user = userRepository.findByUsername(username).get();
+    public List<FileApi> findAllFiles() {
+        final UserApi user = UserContextHolder.getUser();
         if (user.getRole().equals(STUDENT.getId())) {
             final Long studyGroupId = studentRepository.findById(user.getId()).get().getStudyGroupId();
             return accessToFileRepository.findAllByStudyGroupId(studyGroupId)
@@ -189,7 +157,7 @@ public class FileService {
                                          })
                                          .collect(Collectors.toList());
         } else if (user.getRole().equals(TEACHER.getId())) {
-            return subjectService.findSubjectsByTeacherUsername(username)
+            return subjectService.findSubjectsByTeacherUsername()
                                  .stream()
                                  .map(SubjectDB::getId)
                                  .map(fileRepository::findAllBySubjectId)

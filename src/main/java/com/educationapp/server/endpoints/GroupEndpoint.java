@@ -1,6 +1,7 @@
 package com.educationapp.server.endpoints;
 
-import java.util.List;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 
 import com.educationapp.server.models.api.admin.AddGroupApi;
 import com.educationapp.server.models.persistence.DepartmentDb;
@@ -10,21 +11,22 @@ import com.educationapp.server.repositories.DepartmentRepository;
 import com.educationapp.server.repositories.InstituteRepository;
 import com.educationapp.server.repositories.StudyGroupDataRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/group")
+@RequestMapping("/api/groups")
 public class GroupEndpoint {
 
     private final InstituteRepository instituteRepository;
+
     private final DepartmentRepository departmentRepository;
+
     private final StudyGroupDataRepository studyGroupDataRepository;
 
-    @PostMapping("/add")
-    public ResponseEntity<StudyGroupDataDb> addGroup(@RequestBody final AddGroupApi addGroupApi) {
+    @PostMapping
+    public ResponseEntity<?> addGroup(@RequestBody final AddGroupApi addGroupApi) {
         final Long universityId = addGroupApi.getUniversityId();
         final String instituteName = addGroupApi.getInstituteName();
         final String departmentName = addGroupApi.getDepartmentName();
@@ -46,27 +48,22 @@ public class GroupEndpoint {
                                                        .isShowingInRegistration(addGroupApi.isShowingInRegistration())
                                                        .build();
 
-        return new ResponseEntity<>(studyGroupDataRepository.save(group), HttpStatus.OK);
+        return new ResponseEntity<>(studyGroupDataRepository.save(group), OK);
     }
 
-    @GetMapping(value = "/{universityId}/universityId")
+    @GetMapping(value = "/universityId/{universityId}")
     public ResponseEntity<?> getStudyGroupsByUniversityId(@PathVariable("universityId") final Long universityId) {
-        return new ResponseEntity<>(studyGroupDataRepository.findAllByUniversityId(universityId), HttpStatus.OK);
+        return new ResponseEntity<>(studyGroupDataRepository.findAllByUniversityId(universityId), OK);
     }
 
-    @GetMapping(value = "/{teacherId}/teacherId")
-    public List<StudyGroupDataDb> getStudyGroupsByTeacherId(@PathVariable("teacherId") final Long teacherId) {
-        return studyGroupDataRepository.findAllByTeacherId(teacherId);
-    }
-
-    @GetMapping(value = "/{groupId}/groupId")
+    @GetMapping(value = "/{groupId}")
     public ResponseEntity<?> getStudyGroupById(@PathVariable("groupId") final Long groupId) {
         final StudyGroupDataDb group = studyGroupDataRepository.findById(groupId).orElse(null);
 
         if (group != null) {
-            return new ResponseEntity<>(studyGroupDataRepository.findById(groupId), HttpStatus.OK);
+            return new ResponseEntity<>(studyGroupDataRepository.findById(groupId), OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(NOT_FOUND);
         }
     }
 }

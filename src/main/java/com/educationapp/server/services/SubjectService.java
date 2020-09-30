@@ -6,11 +6,11 @@ import static com.educationapp.server.enums.Role.TEACHER;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.models.persistence.AccessToFileDB;
-import com.educationapp.server.models.persistence.StudentDB;
 import com.educationapp.server.models.persistence.SubjectDB;
-import com.educationapp.server.models.persistence.UserDB;
 import com.educationapp.server.repositories.*;
+import com.educationapp.server.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,12 +32,11 @@ public class SubjectService {
     @Autowired
     private FileRepository fileRepository;
 
-    public List<SubjectDB> findSubjectsByTeacherUsername(final String username) {
-        final UserDB user = userRepository.findByUsername(username).get();
+    public List<SubjectDB> findSubjectsByTeacherUsername() {
+        final UserApi user = UserContextHolder.getUser();
         if (user.getRole().equals(STUDENT.getId())) {
-            final StudentDB student = studentRepository.findById(user.getId()).get();
             final List<AccessToFileDB> accessToFileDBS =
-                    accessToFileRepository.findAllByStudyGroupId(student.getStudyGroupId());
+                    accessToFileRepository.findAllByStudyGroupId(user.getStudyGroupId());
 
             return accessToFileDBS.stream()
                                   .map(accessToFileDB -> fileRepository.findById(accessToFileDB.getFileId())

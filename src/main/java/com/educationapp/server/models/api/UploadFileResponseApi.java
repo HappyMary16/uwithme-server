@@ -8,7 +8,6 @@ import lombok.Data;
 public class UploadFileResponseApi {
 
     private String fileName;
-    private String fileDownloadUri;
     private String fileType;
     private long size;
 }

@@ -14,7 +14,6 @@ public class AuthEndpointTestData {
                                                                       .surname("surname")
                                                                       .email("email@email.com")
                                                                       .password("password")
-                                                                      .confirmPassword("password")
                                                                       .universityId(1L)
                                                                       .instituteId(1L)
                                                                       .departmentId(1L)
