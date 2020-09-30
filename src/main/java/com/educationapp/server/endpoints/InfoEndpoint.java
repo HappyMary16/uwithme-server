@@ -4,33 +4,27 @@ import java.util.List;
 
 import com.educationapp.server.models.persistence.DepartmentDb;
 import com.educationapp.server.models.persistence.InstituteDb;
-import com.educationapp.server.models.persistence.StudyGroupDb;
+import com.educationapp.server.models.persistence.StudyGroupDataDb;
 import com.educationapp.server.models.persistence.UniversityDb;
 import com.educationapp.server.repositories.DepartmentRepository;
 import com.educationapp.server.repositories.InstituteRepository;
-import com.educationapp.server.repositories.StudyGroupRepository;
+import com.educationapp.server.repositories.StudyGroupDataRepository;
 import com.educationapp.server.repositories.UniversityRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/info")
 public class InfoEndpoint {
 
-    @Autowired
-    private InstituteRepository instituteRepository;
-
-    @Autowired
-    private DepartmentRepository departmentRepository;
-
-    @Autowired
-    private StudyGroupRepository studyGroupRepository;
-
-    @Autowired
-    private UniversityRepository universityRepository;
+    private final InstituteRepository instituteRepository;
+    private final DepartmentRepository departmentRepository;
+    private final StudyGroupDataRepository studyGroupRepository;
+    private final UniversityRepository universityRepository;
 
     @RequestMapping(value = "/universities", method = RequestMethod.GET)
     public List<UniversityDb> getUniversities() {
@@ -48,8 +42,8 @@ public class InfoEndpoint {
     }
 
     @RequestMapping(value = "/studyGroups", method = RequestMethod.GET)
-    public List<StudyGroupDb> getStudyGroups() {
-        return (List<StudyGroupDb>) studyGroupRepository.findAll();
+    public List<StudyGroupDataDb> getStudyGroups() {
+        return (List<StudyGroupDataDb>) studyGroupRepository.findAll();
     }
 
     @RequestMapping(value = "/institutes/{universityId}", method = RequestMethod.GET)

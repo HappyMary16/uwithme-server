@@ -8,7 +8,6 @@ import java.util.Objects;
 
 import com.educationapp.server.enums.Role;
 import com.educationapp.server.exception.ResourceNotFoundException;
-import com.educationapp.server.models.User;
 import com.educationapp.server.models.api.RegisterApi;
 import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.models.api.admin.AddUniversityApi;
@@ -140,7 +139,7 @@ public class UserService implements UserDetailsService {
         if (Role.STUDENT.getId() == userDb.getRole() || Role.TEACHER.getId() == userDb.getRole()) {
             DepartmentDb department = departmentRepository.findById(Objects.requireNonNull(departmentId))
                                                           .orElse(new DepartmentDb());
-            InstituteDb institute = instituteRepository.findById(department.getInstituteId())
+            InstituteDb institute = instituteRepository.findById(department.getInstitute().getId())
                                                        .orElse(new InstituteDb());
 
             return userApi.departmentName(department.getName())
@@ -170,7 +169,7 @@ public class UserService implements UserDetailsService {
                                                                 .map(ScienceDegreeDb::getName)
                                                                 .orElse(null))
                       .departmentName(department.getName())
-                      .instituteName(instituteRepository.findById(department.getInstituteId())
+                      .instituteName(instituteRepository.findById(department.getInstitute().getId())
                                                         .map(InstituteDb::getName)
                                                         .orElse(null))
                       //TODO
@@ -210,28 +209,13 @@ public class UserService implements UserDetailsService {
                       .studyGroupName(studyGroup.getName())
                       .studyGroupId(studyGroup.getId())
                       .departmentName(department.getName())
-                      .instituteName(department.getInstituteId() != null
-                                             ? instituteRepository.findById(department.getInstituteId())
+                      .instituteName(department.getInstitute() != null
+                                             ? instituteRepository.findById(department.getId())
                                                                   .map(InstituteDb::getName)
                                                                   .orElse(null)
                                              : null)
                       //TODO
 //                      .isAdmin(student.getIsAdmin())
                       .build();
-    }
-
-    private static User userDbToUser(final UserDB userDB) {
-        return new User(userDB.getId(),
-                        userDB.getFirstName(),
-                        userDB.getLastName(),
-                        userDB.getSurname(),
-                        userDB.getUsername(),
-                        userDB.getPassword(),
-                        userDB.getPhone(),
-                        userDB.getEmail(),
-                        Role.getById(userDB.getRole()),
-                        userDB.getIsAdmin(),
-                        userDB.getUniversityId(),
-                        null);
     }
 }

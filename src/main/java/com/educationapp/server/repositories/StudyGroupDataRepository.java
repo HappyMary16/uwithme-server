@@ -19,4 +19,6 @@ public interface StudyGroupDataRepository extends CrudRepository<StudyGroupDataD
             "WHERE i.university_id = :universityId",
             nativeQuery = true)
     List<StudyGroupDataDb> findAllByUniversityId(Long universityId);
+
+    List<StudyGroupDataDb> findAllByTeacherId(Long teacherId);
 }

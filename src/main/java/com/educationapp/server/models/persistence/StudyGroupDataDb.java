@@ -16,15 +16,12 @@ import lombok.NoArgsConstructor;
 public class StudyGroupDataDb {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
     @Column(name = "name")
     private String name;
-
-    @Column(name = "department_id")
-    private Long departmentId;
 
     @Column(name = "course")
     private Integer course;
@@ -36,6 +33,6 @@ public class StudyGroupDataDb {
     private Boolean isShowingInRegistration;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "department_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "department_id", referencedColumnName = "id")
     private DepartmentDb department;
 }

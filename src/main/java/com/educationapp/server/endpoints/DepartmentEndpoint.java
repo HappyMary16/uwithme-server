@@ -30,14 +30,13 @@ public class DepartmentEndpoint {
         final String instituteName = addDepartmentApi.getInstituteName();
 
         final InstituteDb institute = instituteRepository.findByUniversityIdAndName(universityId, instituteName)
-                                                         .orElseGet(() -> instituteRepository
-                                                                 .save(InstituteDb.builder()
-                                                                                  .universityId(universityId)
-                                                                                  .name(instituteName)
-                                                                                  .build()));
+                                                         .orElseGet(() -> InstituteDb.builder()
+                                                                                     .universityId(universityId)
+                                                                                     .name(instituteName)
+                                                                                     .build());
         final DepartmentDb department = DepartmentDb.builder()
                                                     .name(addDepartmentApi.getDepartmentName())
-                                                    .instituteId(institute.getId())
+                                                    .institute(institute)
                                                     .build();
 
         return departmentRepository.save(department);
