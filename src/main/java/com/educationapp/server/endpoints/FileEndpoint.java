@@ -10,9 +10,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.educationapp.server.models.api.*;
+import com.educationapp.server.models.api.AccessToFileApi;
+import com.educationapp.server.models.api.FileApi;
+import com.educationapp.server.models.api.SaveFileApi;
+import com.educationapp.server.models.api.UploadFileResponseApi;
 import com.educationapp.server.models.persistence.FileDB;
 import com.educationapp.server.repositories.FileRepository;
+import com.educationapp.server.security.UserContextHolder;
 import com.educationapp.server.services.FileService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -121,14 +125,38 @@ public class FileEndpoint {
         return new ResponseEntity<>(OK);
     }
 
-    @PostMapping("/updateAvatar")
-    public ResponseEntity uploadAvatar(@RequestBody final UpdateAvatarApi updateAvatarApi) {
-        fileService.updateAvatar(updateAvatarApi);
+    @PostMapping("/updateAvatar/{userId:.+}")
+    public ResponseEntity uploadAvatar(@PathVariable Long userId, @RequestParam("file") MultipartFile avatar) {
+        fileService.updateAvatar(userId, avatar);
         return new ResponseEntity<>(OK);
     }
 
-    @GetMapping("/files/{userId:.+}")
+    @GetMapping("/avatar/{userId:.+}")
     public ResponseEntity<Resource> getAvatar(@PathVariable("userId") final Long userId) {
-        return new ResponseEntity<>(fileService.loadAvatar(userId), OK);
+        final Resource resource = fileService.loadAvatar(userId);
+
+        if (resource == null) {
+            //TODO change to not found or something else
+            return new ResponseEntity<>(OK);
+        } else {
+            String contentType;
+            try {
+                contentType = Files.probeContentType(Path.of(resource.getFilename()));
+            } catch (IOException ex) {
+                //TODO add log
+                contentType = "application/octet-stream";
+            }
+
+            return ResponseEntity.ok()
+                                 .contentType(MediaType.parseMediaType(contentType))
+//                             .header(HttpHeaders.CONTENT_DISPOSITION,
+//                                     "attachment; filename=\"" + fileDB.getName() + "\"")
+                                 .body(resource);
+        }
+    }
+
+    @GetMapping("/avatar")
+    public ResponseEntity<Resource> getAvatar() {
+        return getAvatar(UserContextHolder.getUser().getId());
     }
 }

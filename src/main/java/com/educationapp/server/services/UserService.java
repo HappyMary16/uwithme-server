@@ -32,6 +32,7 @@ public class UserService implements UserDetailsService {
     private final DepartmentRepository departmentRepository;
     private final InstituteRepository instituteRepository;
     private final ScienceDegreeRepository scienceDegreeRepository;
+    private final FileService fileService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -113,7 +114,8 @@ public class UserService implements UserDetailsService {
                                                 .email(userDb.getEmail())
                                                 .role(userDb.getRole())
                                                 .universityId(userDb.getUniversityId())
-                                                .isAdmin(userDb.getIsAdmin());
+                                                .isAdmin(userDb.getIsAdmin())
+                                                .avatar(fileService.loadAvatar(userDb.getId()));
         Long departmentId = null;
 
         if (Role.STUDENT.getId() == userDb.getRole()) {

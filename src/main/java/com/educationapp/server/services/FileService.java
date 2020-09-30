@@ -4,9 +4,7 @@ import static com.educationapp.server.enums.Role.STUDENT;
 import static com.educationapp.server.enums.Role.TEACHER;
 import static java.lang.String.format;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,7 +18,6 @@ import com.educationapp.server.exception.FileStorageException;
 import com.educationapp.server.models.api.AccessToFileApi;
 import com.educationapp.server.models.api.FileApi;
 import com.educationapp.server.models.api.SaveFileApi;
-import com.educationapp.server.models.api.UpdateAvatarApi;
 import com.educationapp.server.models.persistence.AccessToFileDB;
 import com.educationapp.server.models.persistence.FileDB;
 import com.educationapp.server.models.persistence.SubjectDB;
@@ -36,6 +33,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public class FileService {
@@ -112,19 +110,18 @@ public class FileService {
         }
     }
 
-    public void updateAvatar(final UpdateAvatarApi updateAvatarApi) {
-        final Path targetLocation = userAvatarStorageLocation.resolve(updateAvatarApi.getUserId().toString());
+    public void updateAvatar(final Long userId, final MultipartFile avatar) {
+        final Path targetLocation = userAvatarStorageLocation.resolve(userId + ".jpg");
 
         try {
-            Files.copy(updateAvatarApi.getFile().getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(avatar.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new FileStorageException(format("Could not store avatar for user %s. Please try again!",
-                                                  updateAvatarApi.getUserId()), e);
+            throw new FileStorageException(format("Could not store avatar for user %s. Please try again!", userId), e);
         }
     }
 
     public Resource loadAvatar(final Long userId) {
-        final Path filePath = userAvatarStorageLocation.resolve(userId.toString());
+        final Path filePath = userAvatarStorageLocation.resolve(userId + ".jpg");
         return loadFileByPath(filePath);
     }
 
@@ -218,15 +215,11 @@ public class FileService {
 
     @SneakyThrows
     private Resource loadFileByPath(final Path path) {
-        try {
-            Resource resource = new UrlResource(path.toUri());
-            if (resource.exists()) {
-                return resource;
-            } else {
-                throw new FileNotFoundException(format("File with path %s not found", path));
-            }
-        } catch (MalformedURLException ex) {
-            throw new FileNotFoundException(format("File with path %s not found", path));
+        Resource resource = new UrlResource(path.toUri());
+        if (resource.exists()) {
+            return resource;
+        } else {
+            return null;
         }
     }
 }

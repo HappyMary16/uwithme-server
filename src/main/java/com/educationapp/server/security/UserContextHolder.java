@@ -2,15 +2,15 @@ package com.educationapp.server.security;
 
 import com.educationapp.server.models.api.UserApi;
 
-public class SecurityContextHolder {
+public class UserContextHolder {
 
     private static final InheritableThreadLocal<UserApi> threadLocalScope = new InheritableThreadLocal<>();
 
-    public final static UserApi getLoggedUser() {
+    public static UserApi getUser() {
         return threadLocalScope.get();
     }
 
-    public final static void setLoggedUser(UserApi user) {
+    public static void setUser(UserApi user) {
         threadLocalScope.set(user);
     }
 }

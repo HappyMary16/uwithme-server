@@ -2,6 +2,7 @@ package com.educationapp.server.config;
 
 import com.educationapp.server.security.JwtTokenFilter;
 import com.educationapp.server.security.JwtTokenProvider;
+import com.educationapp.server.security.UserInitialisationFilter;
 import com.educationapp.server.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -53,21 +54,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(final HttpSecurity http) throws Exception {
         http
                 .cors()
-                    .and()
+                .and()
                 .httpBasic()
-                    .disable()
+                .disable()
                 .csrf()
-                    .disable()
+                .disable()
                 .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .authorizeRequests()
 //                .antMatchers("/api/info/**")
 //                    .permitAll()
                 .anyRequest()
-                    .authenticated()
-                    .and()
+                .authenticated()
+                .and()
 
-                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new UserInitialisationFilter(jwtTokenProvider, userService), JwtTokenFilter.class);
+
+        //TODO add filter for deletion user from UserContextHolder
     }
 }
