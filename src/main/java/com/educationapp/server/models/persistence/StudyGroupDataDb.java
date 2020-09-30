@@ -13,16 +13,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Table(name = "study_groups")
-@SecondaryTables({
-        @SecondaryTable(name = "departments",
-                foreignKey = @ForeignKey(name = "department_id")),
-        @SecondaryTable(name = "institutes",
-                foreignKey = @ForeignKey(name = "institute_id"))
-})
 public class StudyGroupDataDb {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
@@ -41,15 +35,7 @@ public class StudyGroupDataDb {
     @Column(name = "is_showing_in_registration")
     private Boolean isShowingInRegistration;
 
-    @Column(name = "institute_id")
-    private Long instituteId;
-
-    @Column(table = "departments", name = "name")
-    private String departmentName;
-
-    @Column(table = "institutes", name = "name")
-    private String instituteName;
-
-    @Column(table = "institutes", name = "university_id")
-    private Long universityId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "department_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private DepartmentDb department;
 }

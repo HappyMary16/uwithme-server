@@ -5,6 +5,7 @@ import java.util.List;
 import com.educationapp.server.models.api.admin.AddGroupApi;
 import com.educationapp.server.models.persistence.DepartmentDb;
 import com.educationapp.server.models.persistence.InstituteDb;
+import com.educationapp.server.models.persistence.StudyGroupDataDb;
 import com.educationapp.server.models.persistence.StudyGroupDb;
 import com.educationapp.server.repositories.DepartmentRepository;
 import com.educationapp.server.repositories.InstituteRepository;
@@ -49,7 +50,6 @@ public class GroupEndpoint {
                                                     .name(addGroupApi.getGroupName())
                                                     .course(addGroupApi.getCourse())
                                                     .departmentId(departmentId)
-                                                    .instituteId(instituteId)
                                                     .isShowingInRegistration(addGroupApi.isShowingInRegistration())
                                                     .build();
 
@@ -68,6 +68,12 @@ public class GroupEndpoint {
 
     @GetMapping(value = "/{groupId}/groupId")
     public ResponseEntity<?> getStudyGroupById(@PathVariable("groupId") final Long groupId) {
-        return new ResponseEntity<>(studyGroupDataRepository.findById(groupId), HttpStatus.OK);
+        final StudyGroupDataDb group = studyGroupDataRepository.findById(groupId).orElse(null);
+
+        if (group != null) {
+            return new ResponseEntity<>(studyGroupDataRepository.findById(groupId), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

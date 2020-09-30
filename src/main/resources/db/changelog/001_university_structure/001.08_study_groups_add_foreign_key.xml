@@ -16,10 +16,5 @@
                                  constraintName="fk_study_group_department"
                                  referencedTableName="departments"
                                  referencedColumnNames="id"/>
-        <addForeignKeyConstraint baseTableName="study_groups"
-                                 baseColumnNames="institute_id"
-                                 constraintName="fk_study_group_institute"
-                                 referencedTableName="institutes"
-                                 referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>

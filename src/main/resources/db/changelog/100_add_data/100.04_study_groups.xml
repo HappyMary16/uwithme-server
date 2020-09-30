@@ -11,14 +11,12 @@
             <column name="name" value="I-26b"/>
             <column name="department_id" value="1"/>
             <column name="course" value="1"/>
-            <column name="institute_id" value="1"/>
             <column name="is_showing_in_registration" valueBoolean="false"/>
         </insert>
         <insert tableName="study_groups">
             <column name="name" value="I-26a"/>
             <column name="department_id" value="1"/>
             <column name="course" value="1"/>
-            <column name="institute_id" value="1"/>
             <column name="is_showing_in_registration" valueBoolean="true"/>
         </insert>
     </changeSet>

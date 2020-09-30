@@ -26,9 +26,6 @@ public class StudyGroupDb {
     @Column(name = "department_id")
     private Long departmentId;
 
-    @Column(name = "institute_id")
-    private Long instituteId;
-
     @Column(name = "course")
     private Integer course;
 

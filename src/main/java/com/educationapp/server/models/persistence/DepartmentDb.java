@@ -25,4 +25,8 @@ public class DepartmentDb {
 
     @Column(name = "institute_id")
     private Long instituteId;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "institute_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private InstituteDb institute;
 }
