@@ -2,10 +2,9 @@ package com.educationapp.server.services;
 
 import static com.educationapp.server.enums.Role.STUDENT;
 import static com.educationapp.server.enums.Role.TEACHER;
+import static java.lang.String.format;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,44 +26,51 @@ import com.educationapp.server.repositories.AccessToFileRepository;
 import com.educationapp.server.repositories.FileRepository;
 import com.educationapp.server.repositories.StudentRepository;
 import com.educationapp.server.repositories.UserRepository;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-@Service
+@Component
 public class FileService {
 
     private final Path fileStorageLocation;
+    private final Path userAvatarStorageLocation;
+    private final FileRepository fileRepository;
+    private final AccessToFileRepository accessToFileRepository;
+    private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
+    private final SubjectService subjectService;
 
     @Autowired
-    private FileRepository fileRepository;
-
-    @Autowired
-    private AccessToFileRepository accessToFileRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private StudentRepository studentRepository;
-
-    @Autowired
-    SubjectService subjectService;
-
-    @Autowired
-    public FileService() {
+    public FileService(final FileRepository fileRepository,
+                       final AccessToFileRepository accessToFileRepository,
+                       final UserRepository userRepository,
+                       final StudentRepository studentRepository,
+                       final SubjectService subjectService,
+                       @Value("${file.upload.directory}") final String fileUploadDirectory,
+                       @Value("${user.avatar.upload.directory}") final String userAvatarUploadDirectory) {
         fileStorageLocation = Paths.get("D:\\Programming\\Projects\\EducationAppServer")
+                                   .resolve(fileUploadDirectory)
                                    .toAbsolutePath()
                                    .normalize();
+        userAvatarStorageLocation = Paths.get("D:\\Programming\\Projects\\EducationAppServer")
+                                         .resolve(userAvatarUploadDirectory)
+                                         .toAbsolutePath()
+                                         .normalize();
 
-        try {
-            Files.createDirectories(this.fileStorageLocation);
-        } catch (Exception ex) {
-            throw new FileStorageException("Could not create the directory where the uploaded files will be stored.",
-                                           ex);
-        }
+        createDirectorySuppressException(fileStorageLocation);
+        createDirectorySuppressException(userAvatarStorageLocation);
+
+        this.fileRepository = fileRepository;
+        this.accessToFileRepository = accessToFileRepository;
+        this.userRepository = userRepository;
+        this.studentRepository = studentRepository;
+        this.subjectService = subjectService;
     }
 
     public String saveFile(final SaveFileApi file) {
@@ -86,12 +92,12 @@ public class FileService {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileLocation);
             }
 
-            Path directory = this.fileStorageLocation.resolve(fileLocation);
+            Path directory = fileStorageLocation.resolve(fileLocation);
             if (Files.notExists(directory)) {
                 Files.createDirectories(directory);
             }
 
-            Path targetLocation = this.fileStorageLocation.resolve(fileLocation.concat(fileName));
+            Path targetLocation = fileStorageLocation.resolve(fileLocation.concat(fileName));
             Files.copy(file.getFile().getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
             fileRepository.save(new FileDB(fileLocation,
@@ -99,23 +105,29 @@ public class FileService {
                                            subjectDb.getId(),
                                            file.getFileTypeId()));
             return fileLocation;
-        } catch (IOException ex) {
-            throw new FileStorageException("Could not store file " + fileLocation + ". Please try again!", ex);
+        } catch (IOException e) {
+            throw new FileStorageException("Could not store file " + fileLocation + ". Please try again!", e);
         }
     }
 
-    public Resource loadFileAsResource(final FileDB file) throws FileNotFoundException {
+    public void updateAvatar(final Long userId, final MultipartFile avatar) {
+        final Path targetLocation = userAvatarStorageLocation.resolve(userId + ".jpg");
+
         try {
-            Path filePath = fileStorageLocation.resolve(file.getPath() + file.getName()).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
-            if (resource.exists()) {
-                return resource;
-            } else {
-                throw new FileNotFoundException(String.format("File with id %s not found", file.getId()));
-            }
-        } catch (MalformedURLException ex) {
-            throw new FileNotFoundException(String.format("File with id %s not found", file.getId()));
+            Files.copy(avatar.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new FileStorageException(format("Could not store avatar for user %s. Please try again!", userId), e);
         }
+    }
+
+    public Resource loadAvatar(final Long userId) {
+        final Path filePath = userAvatarStorageLocation.resolve(userId + ".jpg");
+        return loadFileByPath(filePath);
+    }
+
+    public Resource loadFile(final FileDB file) {
+        Path filePath = fileStorageLocation.resolve(file.getPath() + file.getName()).normalize();
+        return loadFileByPath(filePath);
     }
 
     public void saveAccessToFile(final AccessToFileApi accessToFileApi) {
@@ -191,5 +203,23 @@ public class FileService {
         }
 
         throw new UnsupportedOperationException();
+    }
+
+    private void createDirectorySuppressException(final Path path) {
+        try {
+            Files.createDirectories(path);
+        } catch (Exception ex) {
+            throw new FileStorageException(format("Could not create the directory with path %s", path), ex);
+        }
+    }
+
+    @SneakyThrows
+    private Resource loadFileByPath(final Path path) {
+        Resource resource = new UrlResource(path.toUri());
+        if (resource.exists()) {
+            return resource;
+        } else {
+            return null;
+        }
     }
 }

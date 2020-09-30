@@ -2,11 +2,9 @@ package com.educationapp.server.endpoints;
 
 import static org.springframework.http.HttpStatus.OK;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,8 +15,8 @@ import com.educationapp.server.models.api.SaveFileApi;
 import com.educationapp.server.models.api.UploadFileResponseApi;
 import com.educationapp.server.models.persistence.FileDB;
 import com.educationapp.server.repositories.FileRepository;
+import com.educationapp.server.security.UserContextHolder;
 import com.educationapp.server.services.FileService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,23 +28,23 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequestMapping("/api")
 public class FileEndpoint {
 
-    @Autowired
-    private FileService fileService;
+    private final FileService fileService;
 
-    @Autowired
-    private FileRepository fileRepository;
+    private final FileRepository fileRepository;
 
-    private Path fileStorageLocation = Paths.get("D:\\Programming\\Projects\\EducationAppServer")
-                                            .toAbsolutePath()
-                                            .normalize();
+    public FileEndpoint(final FileService fileService,
+                        final FileRepository fileRepository) {
+        this.fileService = fileService;
+        this.fileRepository = fileRepository;
+    }
 
     @PostMapping("/uploadFile")
     public UploadFileResponseApi uploadFile(@RequestBody SaveFileApi saveFileApi) {
-        String fileName = fileService.saveFile(saveFileApi);
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                                                            .path("/downloadFile/")
-                                                            .path(fileName)
-                                                            .toUriString();
+        final String fileName = fileService.saveFile(saveFileApi);
+        final String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                                                                  .path("/downloadFile/")
+                                                                  .path(fileName)
+                                                                  .toUriString();
 
         return new UploadFileResponseApi(fileName,
                                          fileDownloadUri,
@@ -70,17 +68,11 @@ public class FileEndpoint {
     @GetMapping("/downloadFile/{fileId:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) {
         final FileDB fileDB = fileRepository.findById(fileId).orElse(new FileDB());
-        Resource resource = null;
-        try {
-            resource = fileService.loadFileAsResource(fileDB);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        final Resource resource = fileService.loadFile(fileDB);
 
         String contentType;
         try {
-            contentType = Files.probeContentType(
-                    fileStorageLocation.resolve(fileDB.getPath() + fileDB.getName()).normalize());
+            contentType = Files.probeContentType(Path.of(fileDB.getName()));
         } catch (IOException ex) {
             //TODO add log
             contentType = "application/octet-stream";
@@ -88,8 +80,6 @@ public class FileEndpoint {
 
         return ResponseEntity.ok()
                              .contentType(MediaType.parseMediaType(contentType))
-//                             .header(HttpHeaders.CONTENT_DISPOSITION,
-//                                     "attachment; filename=\"" + fileDB.getName() + "\"")
                              .body(resource);
     }
 
@@ -126,5 +116,38 @@ public class FileEndpoint {
     public ResponseEntity addAccessToFiles(@RequestBody final AccessToFileApi accessToFileApi) {
         fileService.saveAccessToFile(accessToFileApi);
         return new ResponseEntity<>(OK);
+    }
+
+    @PostMapping("/updateAvatar/{userId:.+}")
+    public ResponseEntity uploadAvatar(@PathVariable Long userId, @RequestParam("file") MultipartFile avatar) {
+        fileService.updateAvatar(userId, avatar);
+        return new ResponseEntity<>(OK);
+    }
+
+    @GetMapping("/avatar/{userId:.+}")
+    public ResponseEntity<Resource> getAvatar(@PathVariable("userId") final Long userId) {
+        final Resource resource = fileService.loadAvatar(userId);
+
+        if (resource == null) {
+            //TODO change to not found or something else
+            return new ResponseEntity<>(OK);
+        } else {
+            String contentType;
+            try {
+                contentType = Files.probeContentType(Path.of(resource.getFilename()));
+            } catch (IOException ex) {
+                //TODO add log
+                contentType = "application/octet-stream";
+            }
+
+            return ResponseEntity.ok()
+                                 .contentType(MediaType.parseMediaType(contentType))
+                                 .body(resource);
+        }
+    }
+
+    @GetMapping("/avatar")
+    public ResponseEntity<Resource> getAvatar() {
+        return getAvatar(UserContextHolder.getUser().getId());
     }
 }

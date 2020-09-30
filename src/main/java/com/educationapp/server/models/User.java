@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.FetchType;
-import javax.validation.constraints.NotEmpty;
 
 import com.educationapp.server.enums.Role;
 import lombok.AllArgsConstructor;
@@ -27,11 +26,9 @@ public class User {
     protected String surname;
 
     @NonNull
-    @NotEmpty
     protected String username;
 
     @NonNull
-    @NotEmpty
     protected String password;
 
     protected String phone;

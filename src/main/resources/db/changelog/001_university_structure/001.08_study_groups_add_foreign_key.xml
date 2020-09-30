@@ -7,6 +7,7 @@
         <preConditions onFail="MARK_RAN">
             <not>
                 <foreignKeyConstraintExists foreignKeyName="fk_study_group_department"/>
+                <foreignKeyConstraintExists foreignKeyName="fk_study_group_institute"/>
             </not>
         </preConditions>
 

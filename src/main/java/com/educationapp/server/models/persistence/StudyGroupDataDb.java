@@ -13,12 +13,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Table(name = "study_groups")
-@SecondaryTables({
-        @SecondaryTable(name="departments",
-                pkJoinColumns=@PrimaryKeyJoinColumn(name="id")),
-        @SecondaryTable(name="institutes",
-                pkJoinColumns=@PrimaryKeyJoinColumn(name="id"))
-})
 public class StudyGroupDataDb {
 
     @Id
@@ -29,9 +23,6 @@ public class StudyGroupDataDb {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "department_id")
-    private Long departmentId;
-
     @Column(name = "course")
     private Integer course;
 
@@ -41,15 +32,7 @@ public class StudyGroupDataDb {
     @Column(name = "is_showing_in_registration")
     private Boolean isShowingInRegistration;
 
-    @Column(table = "departments", name = "institute_id")
-    private Long instituteId;
-
-    @Column(table = "departments", name = "name")
-    private String departmentName;
-
-    @Column(table = "institutes", name = "name")
-    private String instituteName;
-
-    @Column(table = "institutes", name = "university_id")
-    private Long universityId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "department_id", referencedColumnName = "id")
+    private DepartmentDb department;
 }

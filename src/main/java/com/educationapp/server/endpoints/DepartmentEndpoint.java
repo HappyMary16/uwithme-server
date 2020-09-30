@@ -5,7 +5,6 @@ import com.educationapp.server.models.persistence.DepartmentDb;
 import com.educationapp.server.models.persistence.InstituteDb;
 import com.educationapp.server.repositories.DepartmentRepository;
 import com.educationapp.server.repositories.InstituteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,11 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/department")
 public class DepartmentEndpoint {
 
-    @Autowired
-    private InstituteRepository instituteRepository;
+    private final InstituteRepository instituteRepository;
 
-    @Autowired
-    private DepartmentRepository departmentRepository;
+    private final DepartmentRepository departmentRepository;
+
+    public DepartmentEndpoint(
+            final InstituteRepository instituteRepository, final DepartmentRepository departmentRepository) {
+        this.instituteRepository = instituteRepository;
+        this.departmentRepository = departmentRepository;
+    }
 
     @PostMapping("/add")
     public DepartmentDb addDepartment(@RequestBody AddDepartmentApi addDepartmentApi) {
@@ -27,14 +30,13 @@ public class DepartmentEndpoint {
         final String instituteName = addDepartmentApi.getInstituteName();
 
         final InstituteDb institute = instituteRepository.findByUniversityIdAndName(universityId, instituteName)
-                                                         .orElseGet(() -> instituteRepository
-                                                                 .save(InstituteDb.builder()
-                                                                                  .universityId(universityId)
-                                                                                  .name(instituteName)
-                                                                                  .build()));
+                                                         .orElseGet(() -> InstituteDb.builder()
+                                                                                     .universityId(universityId)
+                                                                                     .name(instituteName)
+                                                                                     .build());
         final DepartmentDb department = DepartmentDb.builder()
                                                     .name(addDepartmentApi.getDepartmentName())
-                                                    .instituteId(institute.getId())
+                                                    .institute(institute)
                                                     .build();
 
         return departmentRepository.save(department);

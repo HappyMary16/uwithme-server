@@ -33,5 +33,5 @@ public class StudyGroupDb {
     private Long teacherId;
 
     @Column(name = "is_showing_in_registration")
-    private Boolean isShowingInRegistration;
+    private boolean isShowingInRegistration;
 }
