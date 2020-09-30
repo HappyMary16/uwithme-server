@@ -5,7 +5,6 @@ import static org.springframework.http.HttpStatus.OK;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,10 +31,6 @@ public class FileEndpoint {
     private final FileService fileService;
 
     private final FileRepository fileRepository;
-
-    private Path fileStorageLocation = Paths.get("D:\\Programming\\Projects\\EducationAppServer")
-                                            .toAbsolutePath()
-                                            .normalize();
 
     public FileEndpoint(final FileService fileService,
                         final FileRepository fileRepository) {
@@ -85,8 +80,6 @@ public class FileEndpoint {
 
         return ResponseEntity.ok()
                              .contentType(MediaType.parseMediaType(contentType))
-//                             .header(HttpHeaders.CONTENT_DISPOSITION,
-//                                     "attachment; filename=\"" + fileDB.getName() + "\"")
                              .body(resource);
     }
 
@@ -149,8 +142,6 @@ public class FileEndpoint {
 
             return ResponseEntity.ok()
                                  .contentType(MediaType.parseMediaType(contentType))
-//                             .header(HttpHeaders.CONTENT_DISPOSITION,
-//                                     "attachment; filename=\"" + fileDB.getName() + "\"")
                                  .body(resource);
         }
     }
