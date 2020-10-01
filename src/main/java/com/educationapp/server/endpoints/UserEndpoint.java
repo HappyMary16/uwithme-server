@@ -32,8 +32,9 @@ public class UserEndpoint {
     private final StudentDataRepository studentDataRepository;
     private final StudentRepository studentRepository;
 
-    @GetMapping(value = "/teachers/{universityId}")
-    public ResponseEntity<?> getTeachersByUniversityId(@PathVariable(value = "universityId") final Long universityId) {
+    @GetMapping(value = "/teachers")
+    public ResponseEntity<?> getTeachersByUniversityId() {
+        final Long universityId = UserContextHolder.getUser().getUniversityId();
         final List<UserApi> users = teacherDataRepository.findAllByUniversityId(universityId)
                                                          .stream()
                                                          .map(userService::mapTeacherDataDbToUserApi)
@@ -84,8 +85,9 @@ public class UserEndpoint {
         return new ResponseEntity<>(studentRepository.save(student), OK);
     }
 
-    @GetMapping(value = "/students/without/group/{universityId}")
-    public ResponseEntity<?> getStudentsWithoutGroup(@PathVariable(value = "universityId") final Long universityId) {
+    @GetMapping(value = "/students/without/group")
+    public ResponseEntity<?> getStudentsWithoutGroup() {
+        final Long universityId = UserContextHolder.getUser().getUniversityId();
         final List<UserApi> users = studentDataRepository.findAllByStudyGroupIdAndUniversityId(null, universityId)
                                                          .stream()
                                                          .map(userService::mapStudentDataDbToUserApi)

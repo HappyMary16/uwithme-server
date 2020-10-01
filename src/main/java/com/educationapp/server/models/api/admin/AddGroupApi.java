@@ -10,9 +10,6 @@ import lombok.Getter;
 public class AddGroupApi {
 
     @NotNull
-    private final Long universityId;
-
-    @NotNull
     private final String instituteName;
 
     @NotNull

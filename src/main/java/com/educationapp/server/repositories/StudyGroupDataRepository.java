@@ -20,5 +20,5 @@ public interface StudyGroupDataRepository extends CrudRepository<StudyGroupDataD
             nativeQuery = true)
     List<StudyGroupDataDb> findAllByUniversityId(Long universityId);
 
-    List<StudyGroupDataDb> findAllByTeacherId(Long teacherId);
+    List<StudyGroupDataDb> findAllByIsShowingInRegistration(Boolean isShowingInRegistration);
 }

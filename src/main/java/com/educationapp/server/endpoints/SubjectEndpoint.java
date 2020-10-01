@@ -1,11 +1,14 @@
 package com.educationapp.server.endpoints;
 
+import static com.educationapp.server.enums.Role.ADMIN;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
 
+import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.models.persistence.SubjectDB;
 import com.educationapp.server.repositories.SubjectRepository;
+import com.educationapp.server.security.UserContextHolder;
 import com.educationapp.server.services.SubjectService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +24,12 @@ public class SubjectEndpoint {
 
     @GetMapping
     public ResponseEntity<List<SubjectDB>> getSubjects() {
-        return new ResponseEntity<>(subjectService.findSubjectsByTeacherUsername(), OK);
-    }
-
-    @GetMapping("/{universityId:.+}")
-    public ResponseEntity<List<SubjectDB>> getSubjectsByUniversityId(
-            @PathVariable("universityId") final Long universityId) {
-        return new ResponseEntity<>(subjectRepository.findAllByUniversityId(universityId), OK);
+        final UserApi user = UserContextHolder.getUser();
+        if (user.getRole().equals(ADMIN.getId())) {
+            return new ResponseEntity<>(subjectRepository.findAllByUniversityId(user.getUniversityId()), OK);
+        } else {
+            return new ResponseEntity<>(subjectService.findSubjectsByTeacherUsername(), OK);
+        }
     }
 
     @PostMapping("/{username:.+}/{subjectName:.+}")

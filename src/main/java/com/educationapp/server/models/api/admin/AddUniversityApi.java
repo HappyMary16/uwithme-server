@@ -20,8 +20,4 @@ public class AddUniversityApi {
     @NotNull
     @Size(min = 6, max = 50)
     private final String password;
-
-    @NotNull
-    @Size(min = 6, max = 50)
-    private final String confirmPassword;
 }

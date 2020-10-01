@@ -7,6 +7,7 @@ import com.educationapp.server.models.persistence.BuildingDb;
 import com.educationapp.server.models.persistence.LectureHallDb;
 import com.educationapp.server.repositories.BuildingsRepository;
 import com.educationapp.server.repositories.LectureHallRepository;
+import com.educationapp.server.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,14 +21,15 @@ public class LectureHallEndpoint {
 
     private final LectureHallRepository lectureHallRepository;
 
-    @GetMapping("/{universityId}")
-    public ResponseEntity<?> getLectureHalls(@PathVariable("universityId") final Long universityId) {
+    @GetMapping
+    public ResponseEntity<?> getLectureHalls() {
+        final Long universityId = UserContextHolder.getUser().getUniversityId();
         return new ResponseEntity<>(lectureHallRepository.findAllByUniversityId(universityId), OK);
     }
 
     @PostMapping
     public ResponseEntity<?> addLectureHall(@RequestBody final AddLectureHallApi addLectureHallApi) {
-        final Long universityId = addLectureHallApi.getUniversityId();
+        final Long universityId = UserContextHolder.getUser().getUniversityId();
         final String buildingName = addLectureHallApi.getBuildingName();
 
         final BuildingDb buildingDb = buildingsRepository.findByUniversityIdAndName(universityId, buildingName)

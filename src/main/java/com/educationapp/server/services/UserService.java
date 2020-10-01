@@ -75,13 +75,13 @@ public class UserService implements UserDetailsService {
     }
 
     public UserApi save(final AddUniversityApi addUniversityApi, final UniversityDb university) {
-        UserDB toCreate = UserDB.builder()
-                                .username(addUniversityApi.getUsername())
-                                .password(addUniversityApi.getPassword())
-                                .isAdmin(true)
-                                .role(ADMIN.getId())
-                                .universityId(university.getId())
-                                .build();
+        final UserDB toCreate = UserDB.builder()
+                                      .username(addUniversityApi.getUsername())
+                                      .password(addUniversityApi.getPassword())
+                                      .isAdmin(true)
+                                      .role(ADMIN.getId())
+                                      .universityId(university.getId())
+                                      .build();
 
         userRepository.save(toCreate);
 

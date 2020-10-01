@@ -10,6 +10,7 @@ import com.educationapp.server.models.persistence.StudyGroupDataDb;
 import com.educationapp.server.repositories.DepartmentRepository;
 import com.educationapp.server.repositories.InstituteRepository;
 import com.educationapp.server.repositories.StudyGroupDataRepository;
+import com.educationapp.server.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class GroupEndpoint {
 
     @PostMapping
     public ResponseEntity<?> addGroup(@RequestBody final AddGroupApi addGroupApi) {
-        final Long universityId = addGroupApi.getUniversityId();
+        final Long universityId = UserContextHolder.getUser().getUniversityId();
         final String instituteName = addGroupApi.getInstituteName();
         final String departmentName = addGroupApi.getDepartmentName();
 

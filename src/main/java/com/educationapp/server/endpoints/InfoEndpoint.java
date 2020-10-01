@@ -9,7 +9,6 @@ import com.educationapp.server.repositories.UniversityRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,16 +42,6 @@ public class InfoEndpoint {
 
     @GetMapping(value = "/groups")
     public ResponseEntity<?> getStudyGroups() {
-        return new ResponseEntity<>(studyGroupRepository.findAll(), OK);
-    }
-
-    @GetMapping(value = "/institutes/{universityId}")
-    public ResponseEntity<?> getInstitutesByUniversityId(@PathVariable("universityId") final Long universityId) {
-        return new ResponseEntity<>(instituteRepository.findAllByUniversityId(universityId), OK);
-    }
-
-    @GetMapping(value = "/departments/{universityId}")
-    public ResponseEntity<?> getDepartmentsByUniversityId(@PathVariable("universityId") final Long universityId) {
-        return new ResponseEntity<>(departmentRepository.findAllByUniversityId(universityId), OK);
+        return new ResponseEntity<>(studyGroupRepository.findAllByIsShowingInRegistration(true), OK);
     }
 }

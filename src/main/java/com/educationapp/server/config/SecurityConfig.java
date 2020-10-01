@@ -3,6 +3,7 @@ package com.educationapp.server.config;
 import com.educationapp.server.security.JwtTokenFilter;
 import com.educationapp.server.security.JwtTokenProvider;
 import com.educationapp.server.security.UserInitialisationFilter;
+import com.educationapp.server.security.UserLogoutFilter;
 import com.educationapp.server.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -70,8 +71,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new UserInitialisationFilter(jwtTokenProvider, userService), JwtTokenFilter.class);
-
-        //TODO add filter for deletion user from UserContextHolder
+                .addFilterAfter(new UserInitialisationFilter(jwtTokenProvider, userService),
+                                UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new UserLogoutFilter(), JwtTokenFilter.class);
     }
 }
