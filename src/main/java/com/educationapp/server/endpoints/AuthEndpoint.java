@@ -1,5 +1,8 @@
 package com.educationapp.server.endpoints;
 
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+
 import javax.validation.Valid;
 
 import com.educationapp.server.models.api.LoginApi;
@@ -9,7 +12,6 @@ import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.security.JwtTokenProvider;
 import com.educationapp.server.services.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,11 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthEndpoint {
 
     private final JwtTokenProvider tokenProvider;
+
     private final UserService userService;
 
     @PostMapping("/signIn")
-    public ResponseEntity<?> authenticateUser(@RequestBody @Valid LoginApi loginApi) {
-        UserApi user = userService.findByUserName(loginApi.getUsername());
+    public ResponseEntity<?> authenticateUser(@RequestBody @Valid final LoginApi loginApi) {
+        final UserApi user = userService.findByUserName(loginApi.getUsername());
 
         if (user.getPassword().equals(loginApi.getPassword())) {
             user.setAuthToken(tokenProvider.createAuthToken(loginApi.getUsername()));
@@ -35,29 +38,29 @@ public class AuthEndpoint {
 
             return ResponseEntity.ok(user);
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("");
+        return new ResponseEntity<>(UNAUTHORIZED);
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<UserApi> register(@RequestBody RegisterApi registerApi) {
-        String username;
+    public ResponseEntity<?> register(@RequestBody final RegisterApi registerApi) {
         if (StringUtils.isEmpty(registerApi.getUsername())) {
-            username = registerApi.getEmail();
-        } else {
-            username = registerApi.getUsername();
+            registerApi.setUsername(registerApi.getEmail());
         }
-        registerApi.setUsername(username);
+
         userService.save(registerApi);
 
-        UserApi user = userService.findByUserName(username);
-        user.setAuthToken(tokenProvider.createAuthToken(username));
-        user.setRefreshToken(tokenProvider.createRefreshToken(username));
+        final String username = registerApi.getUsername();
+        final UserApi user = userService.findByUserName(username)
+                                        .toBuilder()
+                                        .authToken(tokenProvider.createAuthToken(username))
+                                        .refreshToken(tokenProvider.createRefreshToken(username))
+                                        .build();
 
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return new ResponseEntity<>(user, OK);
     }
 
     @PostMapping("/refreshToken")
-    public ResponseEntity<?> refreshToken(@RequestBody TokenApi refreshTokenApi) {
+    public ResponseEntity<?> refreshToken(@RequestBody final TokenApi refreshTokenApi) {
         final String token = refreshTokenApi.getRefreshToken();
 
         if (tokenProvider.validateRefreshToken(token)) {
@@ -67,6 +70,6 @@ public class AuthEndpoint {
             return ResponseEntity.ok(tokenApi);
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("");
+        return new ResponseEntity<>(UNAUTHORIZED);
     }
 }

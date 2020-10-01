@@ -28,10 +28,6 @@ public class RegisterApi {
     @Size(min = 6, max = 50)
     private String password;
 
-    @NotNull
-    @Size(min = 6, max = 50)
-    private String confirmPassword;
-
     private String phone;
 
     private String email;

@@ -1,32 +1,32 @@
 package com.educationapp.server.endpoints;
 
-import java.util.List;
+import static org.springframework.http.HttpStatus.OK;
 
 import com.educationapp.server.models.api.admin.AddLectureHallApi;
 import com.educationapp.server.models.persistence.BuildingDb;
 import com.educationapp.server.models.persistence.LectureHallDb;
 import com.educationapp.server.repositories.BuildingsRepository;
 import com.educationapp.server.repositories.LectureHallRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/lectureHalls")
 public class LectureHallEndpoint {
 
-    @Autowired
-    private BuildingsRepository buildingsRepository;
+    private final BuildingsRepository buildingsRepository;
 
-    @Autowired
-    private LectureHallRepository lectureHallRepository;
+    private final LectureHallRepository lectureHallRepository;
 
     @GetMapping("/{universityId}")
-    public List<LectureHallDb> getLectureHalls(@PathVariable("universityId") final Long universityId) {
-        return lectureHallRepository.findAllByUniversityId(universityId);
+    public ResponseEntity<?> getLectureHalls(@PathVariable("universityId") final Long universityId) {
+        return new ResponseEntity<>(lectureHallRepository.findAllByUniversityId(universityId), OK);
     }
 
     @PostMapping
-    public LectureHallDb addLectureHall(@RequestBody AddLectureHallApi addLectureHallApi) {
+    public ResponseEntity<?> addLectureHall(@RequestBody final AddLectureHallApi addLectureHallApi) {
         final Long universityId = addLectureHallApi.getUniversityId();
         final String buildingName = addLectureHallApi.getBuildingName();
 
@@ -42,6 +42,6 @@ public class LectureHallEndpoint {
                                                          .placeNumber(addLectureHallApi.getPlaceNumber())
                                                          .build();
 
-        return lectureHallRepository.save(lectureHallDb);
+        return new ResponseEntity<>(lectureHallRepository.save(lectureHallDb), OK);
     }
 }

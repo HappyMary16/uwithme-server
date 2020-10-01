@@ -1,19 +1,16 @@
 package com.educationapp.server.endpoints;
 
-import java.util.List;
+import static org.springframework.http.HttpStatus.OK;
 
-import com.educationapp.server.models.persistence.DepartmentDb;
-import com.educationapp.server.models.persistence.InstituteDb;
-import com.educationapp.server.models.persistence.StudyGroupDataDb;
-import com.educationapp.server.models.persistence.UniversityDb;
 import com.educationapp.server.repositories.DepartmentRepository;
 import com.educationapp.server.repositories.InstituteRepository;
 import com.educationapp.server.repositories.StudyGroupDataRepository;
 import com.educationapp.server.repositories.UniversityRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
@@ -22,37 +19,40 @@ import org.springframework.web.bind.annotation.RestController;
 public class InfoEndpoint {
 
     private final InstituteRepository instituteRepository;
+
     private final DepartmentRepository departmentRepository;
+
     private final StudyGroupDataRepository studyGroupRepository;
+
     private final UniversityRepository universityRepository;
 
-    @RequestMapping(value = "/universities", method = RequestMethod.GET)
-    public List<UniversityDb> getUniversities() {
-        return (List<UniversityDb>) universityRepository.findAll();
+    @GetMapping(value = "/universities")
+    public ResponseEntity<?> getUniversities() {
+        return new ResponseEntity<>(universityRepository.findAll(), OK);
     }
 
-    @RequestMapping(value = "/institutes", method = RequestMethod.GET)
-    public List<InstituteDb> getInstitutes() {
-        return (List<InstituteDb>) instituteRepository.findAll();
+    @GetMapping(value = "/institutes")
+    public ResponseEntity<?> getInstitutes() {
+        return new ResponseEntity<>(instituteRepository.findAll(), OK);
     }
 
-    @RequestMapping(value = "/departments", method = RequestMethod.GET)
-    public List<DepartmentDb> getDepartments() {
-        return (List<DepartmentDb>) departmentRepository.findAll();
+    @GetMapping(value = "/departments")
+    public ResponseEntity<?> getDepartments() {
+        return new ResponseEntity<>(departmentRepository.findAll(), OK);
     }
 
-    @RequestMapping(value = "/studyGroups", method = RequestMethod.GET)
-    public List<StudyGroupDataDb> getStudyGroups() {
-        return (List<StudyGroupDataDb>) studyGroupRepository.findAll();
+    @GetMapping(value = "/groups")
+    public ResponseEntity<?> getStudyGroups() {
+        return new ResponseEntity<>(studyGroupRepository.findAll(), OK);
     }
 
-    @RequestMapping(value = "/institutes/{universityId}", method = RequestMethod.GET)
-    public List<InstituteDb> getInstitutesByUniversityId(@PathVariable("universityId") final Long universityId) {
-        return instituteRepository.findAllByUniversityId(universityId);
+    @GetMapping(value = "/institutes/{universityId}")
+    public ResponseEntity<?> getInstitutesByUniversityId(@PathVariable("universityId") final Long universityId) {
+        return new ResponseEntity<>(instituteRepository.findAllByUniversityId(universityId), OK);
     }
 
-    @RequestMapping(value = "/departments/{universityId}", method = RequestMethod.GET)
-    public List<DepartmentDb> getDepartmentsByUniversityId(@PathVariable("universityId") final Long universityId) {
-        return departmentRepository.findAllByUniversityId(universityId);
+    @GetMapping(value = "/departments/{universityId}")
+    public ResponseEntity<?> getDepartmentsByUniversityId(@PathVariable("universityId") final Long universityId) {
+        return new ResponseEntity<>(departmentRepository.findAllByUniversityId(universityId), OK);
     }
 }

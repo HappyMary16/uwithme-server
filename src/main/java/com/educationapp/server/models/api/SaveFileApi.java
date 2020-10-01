@@ -11,9 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class SaveFileApi {
 
     @NotNull
-    private String username;
-
-    @NotNull
     private String subjectName;
 
     @NotNull
