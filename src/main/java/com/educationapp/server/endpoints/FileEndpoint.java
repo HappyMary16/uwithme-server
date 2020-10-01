@@ -1,6 +1,6 @@
 package com.educationapp.server.endpoints;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.io.IOException;
@@ -97,7 +97,7 @@ public class FileEndpoint {
         final Resource resource = fileService.loadAvatar(userId);
 
         if (resource == null) {
-            return new ResponseEntity<>(NOT_FOUND);
+            return new ResponseEntity<>(NO_CONTENT);
         } else {
             String contentType;
             try {
