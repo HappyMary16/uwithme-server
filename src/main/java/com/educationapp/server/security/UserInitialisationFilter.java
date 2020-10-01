@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.educationapp.server.services.UserService;
-import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.JwtException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -29,7 +29,7 @@ public class UserInitialisationFilter extends OncePerRequestFilter {
             final String username = jwtTokenProvider.getUsername(token);
 
             UserContextHolder.setUser(userService.findByUserName(username));
-        } catch (final MalformedJwtException e) {
+        } catch (final JwtException | IllegalArgumentException e) {
             log.info("Someone try to refresh token with wrong auth token");
         } finally {
             filterChain.doFilter(request, response);
