@@ -10,9 +10,6 @@ import lombok.Getter;
 public class AddLectureHallApi {
 
     @NotNull
-    private final Long universityId;
-
-    @NotNull
     private final String buildingName;
 
     @NotNull

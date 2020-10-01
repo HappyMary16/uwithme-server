@@ -10,8 +10,5 @@ import lombok.Getter;
 public class AddInstituteApi {
 
     @NotNull
-    private final Long universityId;
-
-    @NotNull
     private final String instituteName;
 }

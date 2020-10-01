@@ -3,10 +3,10 @@ package com.educationapp.server.endpoints;
 import static org.springframework.http.HttpStatus.OK;
 
 import com.educationapp.server.repositories.BuildingsRepository;
+import com.educationapp.server.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,8 +17,9 @@ public class BuildingsEndpoint {
 
     private final BuildingsRepository buildingsRepository;
 
-    @GetMapping("/{universityId}")
-    public ResponseEntity<?> getBuildings(@PathVariable("universityId") final Long universityId) {
+    @GetMapping
+    public ResponseEntity<?> getBuildings() {
+        final Long universityId = UserContextHolder.getUser().getUniversityId();
         return new ResponseEntity<>(buildingsRepository.findAllByUniversityId(universityId), OK);
     }
 }

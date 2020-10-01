@@ -1,24 +1,21 @@
 package com.educationapp.server.services;
 
-import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.models.api.admin.AddUniversityApi;
 import com.educationapp.server.models.persistence.UniversityDb;
 import com.educationapp.server.repositories.UniversityRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+@AllArgsConstructor
 @Service
 public class UniversityService {
 
-    @Autowired
-    private UniversityRepository universityRepository;
+    private final UniversityRepository universityRepository;
+    private final UserService userService;
 
-    @Autowired
-    private UserService userService;
-
-    public UserApi addUniversity(final AddUniversityApi addUniversityApi) {
-        final UniversityDb
-                university = universityRepository.save(new UniversityDb(addUniversityApi.getUniversityName()));
-        return userService.save(addUniversityApi, university);
+    public void addUniversity(final AddUniversityApi addUniversityApi) {
+        final UniversityDb toCreate = new UniversityDb(addUniversityApi.getUniversityName());
+        final UniversityDb university = universityRepository.save(toCreate);
+        userService.save(addUniversityApi, university);
     }
 }

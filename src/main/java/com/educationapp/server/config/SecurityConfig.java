@@ -70,7 +70,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new UserInitialisationFilter(jwtTokenProvider, userService), JwtTokenFilter.class);
+                .addFilter(new UserInitialisationFilter(jwtTokenProvider, userService));
 
         //TODO add filter for deletion user from UserContextHolder
     }
