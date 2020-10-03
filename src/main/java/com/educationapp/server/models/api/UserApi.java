@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.core.io.Resource;
 
 @Data
 @AllArgsConstructor
@@ -47,8 +46,6 @@ public class UserApi {
     private String refreshToken;
 
     private Long universityId;
-
-    private Resource avatar;
 
     @Builder.Default
     private Boolean isAdmin = false;

@@ -27,6 +27,8 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;
+    private final StudentDataRepository studentDataRepository;
+    private final TeacherDataRepository teacherDataRepository;
     private final StudyGroupRepository studyGroupRepository;
     private final DepartmentRepository departmentRepository;
     private final InstituteRepository instituteRepository;
@@ -41,35 +43,39 @@ public class UserService implements UserDetailsService {
     }
 
     public Long save(final RegisterApi user) {
-        UserDB toCreate = UserDB.builder()
-                                .firstName(user.getFirstName())
-                                .lastName(user.getLastName())
-                                .surname(user.getSurname())
-                                .username(user.getUsername())
-                                .password(user.getPassword())
-                                .phone(user.getPhone())
-                                .email(user.getEmail())
-                                .role(user.getRole())
-                                .isAdmin(false)
-                                .universityId(user.getUniversityId())
-                                .build();
-        UserDB created = userRepository.save(toCreate);
-
         if (user.getRole() == STUDENT.getId()) {
-            StudentDB studentToCreate = StudentDB.builder()
-                                                 .id(created.getId())
-                                                 .studentId(user.getStudentId())
-                                                 .studyGroupId(user.getStudyGroupId())
-                                                 .build();
-            return studentRepository.save(studentToCreate).getId();
+            StudentDataDb studentToCreate = StudentDataDb.builder()
+                                                         .firstName(user.getFirstName())
+                                                         .lastName(user.getLastName())
+                                                         .surname(user.getSurname())
+                                                         .username(user.getUsername())
+                                                         .password(user.getPassword())
+                                                         .phone(user.getPhone())
+                                                         .email(user.getEmail())
+                                                         .role(user.getRole())
+                                                         .isAdmin(false)
+                                                         .universityId(user.getUniversityId())
+                                                         .studentId(user.getStudentId())
+                                                         .studyGroupId(user.getStudyGroupId())
+                                                         .build();
+            return studentDataRepository.save(studentToCreate).getId();
 
         } else if (user.getRole() == TEACHER.getId()) {
-            TeacherDB teacherToCreate = TeacherDB.builder()
-                                                 .id(created.getId())
-                                                 .departmentId(user.getDepartmentId())
-                                                 .scienceDegreeId(user.getScienceDegreeId())
-                                                 .build();
-            return teacherRepository.save(teacherToCreate).getId();
+            TeacherDataDb teacherToCreate = TeacherDataDb.builder()
+                                                         .firstName(user.getFirstName())
+                                                         .lastName(user.getLastName())
+                                                         .surname(user.getSurname())
+                                                         .username(user.getUsername())
+                                                         .password(user.getPassword())
+                                                         .phone(user.getPhone())
+                                                         .email(user.getEmail())
+                                                         .role(user.getRole())
+                                                         .isAdmin(false)
+                                                         .universityId(user.getUniversityId())
+                                                         .departmentId(user.getDepartmentId())
+                                                         .scienceDegreeId(user.getScienceDegreeId())
+                                                         .build();
+            return teacherDataRepository.save(teacherToCreate).getId();
         }
         return null;
     }
@@ -113,8 +119,7 @@ public class UserService implements UserDetailsService {
                                                 .email(userDb.getEmail())
                                                 .role(userDb.getRole())
                                                 .universityId(userDb.getUniversityId())
-                                                .isAdmin(userDb.getIsAdmin())
-                                                .avatar(fileService.loadAvatar(userDb.getId()));
+                                                .isAdmin(userDb.getIsAdmin());
         Long departmentId = null;
 
         if (Role.STUDENT.getId() == userDb.getRole()) {

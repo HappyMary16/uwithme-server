@@ -16,9 +16,6 @@ public interface StudyGroupRepository extends CrudRepository<StudyGroupDb, Long>
             nativeQuery = true)
     List<StudyGroupDb> findAllByUniversityId(@Param("universityId") Long universityId);
 
-    @Query(value = "SELECT DISTINCT sg.id, sg.name, department_id, course FROM study_groups sg " +
-            "LEFT JOIN schedule s ON  sg.id = s.study_group_id " +
-            "LEFT JOIN subjects su ON s.study_group_id = su.id WHERE su.teacher_id = :teacherId",
-            nativeQuery = true)
-    List<StudyGroupDb> findAllByTeacherId(@Param("teacherId") Long universityId);
+    @Query(value = "SELECT * FROM study_groups sg WHERE sg.id IN :ids", nativeQuery = true)
+    List<StudyGroupDb> findAllByIds(List<Long> ids);
 }

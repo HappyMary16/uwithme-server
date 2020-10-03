@@ -1,5 +1,7 @@
 package com.educationapp.server.models.api;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +17,7 @@ public class LessonApi {
 
     private final String lectureHall;
 
-    private final String groupName;
+    private final List<String> groups;
 
     private final Long weekDay;
 
