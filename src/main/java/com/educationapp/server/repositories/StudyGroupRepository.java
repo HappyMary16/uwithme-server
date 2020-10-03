@@ -18,4 +18,7 @@ public interface StudyGroupRepository extends CrudRepository<StudyGroupDb, Long>
 
     @Query(value = "SELECT * FROM study_groups sg WHERE sg.id IN :ids", nativeQuery = true)
     List<StudyGroupDb> findAllByIds(List<Long> ids);
+
+    @Query(value = "SELECT * FROM study_groups sg WHERE sg.name IN :names", nativeQuery = true)
+    List<StudyGroupDb> findAllByNames(List<String> names);
 }

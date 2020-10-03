@@ -11,6 +11,8 @@ import lombok.Getter;
 @Builder(toBuilder = true)
 public class LessonApi {
 
+    private final Long id;
+
     private final String subjectName;
 
     private final String teacherName;

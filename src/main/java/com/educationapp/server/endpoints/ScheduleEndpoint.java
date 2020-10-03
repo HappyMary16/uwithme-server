@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 import com.educationapp.server.models.api.CreateLessonApi;
+import com.educationapp.server.models.api.admin.DeleteLessonApi;
 import com.educationapp.server.security.UserContextHolder;
 import com.educationapp.server.services.ScheduleService;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,12 @@ public class ScheduleEndpoint {
     @PostMapping
     public ResponseEntity<?> addLesson(@RequestBody CreateLessonApi createLessonApi) {
         scheduleService.createLesson(createLessonApi);
+        return new ResponseEntity<>(CREATED);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteLesson(@RequestBody DeleteLessonApi deleteLessonApi) {
+        scheduleService.deleteLesson(deleteLessonApi);
         return new ResponseEntity<>(CREATED);
     }
 

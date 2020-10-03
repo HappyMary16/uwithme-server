@@ -9,8 +9,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.NotFoundException;
+
 import com.educationapp.server.models.api.CreateLessonApi;
 import com.educationapp.server.models.api.LessonApi;
+import com.educationapp.server.models.api.admin.DeleteLessonApi;
 import com.educationapp.server.models.persistence.ScheduleDb;
 import com.educationapp.server.models.persistence.StudyGroupDb;
 import com.educationapp.server.models.persistence.SubjectDB;
@@ -27,7 +30,6 @@ public class ScheduleService {
     private final SubjectRepository subjectRepository;
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
-    private final StudyGroupDataRepository studyGroupDataRepository;
     private final StudyGroupRepository studyGroupRepository;
 
     public void createLesson(final CreateLessonApi createLessonApi) {
@@ -62,8 +64,25 @@ public class ScheduleService {
         return lessons;
     }
 
+    public void deleteLesson(final DeleteLessonApi deleteLessonApi) {
+        final List<String> groupNames = deleteLessonApi.getGroups();
+        final Long lessonId = deleteLessonApi.getLessonId();
+        final ScheduleDb schedule = scheduleRepository.findById(lessonId)
+                                                      .orElseThrow(() -> new NotFoundException("Lesson is not found"));
+
+        if (groupNames == null || groupNames.isEmpty()) {
+            schedule.setGroups(null);
+            scheduleRepository.save(schedule);
+            scheduleRepository.deleteById(lessonId);
+        } else {
+            schedule.setGroups(studyGroupRepository.findAllByNames(groupNames));
+            scheduleRepository.save(schedule);
+        }
+    }
+
     private LessonApi mapScheduleDbToLesson(final ScheduleDb scheduleDb) {
         final LessonApi.LessonApiBuilder lesson = LessonApi.builder()
+                                                           .id(scheduleDb.getId())
                                                            .lessonTime(scheduleDb.getLessonNumber())
                                                            .lectureHall(scheduleDb.getAuditory())
                                                            .weekDay(scheduleDb.getDayOfWeek())
