@@ -14,10 +14,7 @@ import javax.ws.rs.NotFoundException;
 import com.educationapp.server.models.api.CreateLessonApi;
 import com.educationapp.server.models.api.LessonApi;
 import com.educationapp.server.models.api.admin.DeleteLessonApi;
-import com.educationapp.server.models.persistence.ScheduleDb;
-import com.educationapp.server.models.persistence.StudyGroupDb;
-import com.educationapp.server.models.persistence.SubjectDB;
-import com.educationapp.server.models.persistence.UserDB;
+import com.educationapp.server.models.persistence.*;
 import com.educationapp.server.repositories.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,6 +28,7 @@ public class ScheduleService {
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final StudyGroupRepository studyGroupRepository;
+    private final LectureHallRepository lectureHallRepository;
 
     public void createLesson(final CreateLessonApi createLessonApi) {
         final List<ScheduleDb> lessonsToCreate = buildLessons(createLessonApi);
@@ -84,7 +82,7 @@ public class ScheduleService {
         final LessonApi.LessonApiBuilder lesson = LessonApi.builder()
                                                            .id(scheduleDb.getId())
                                                            .lessonTime(scheduleDb.getLessonNumber())
-                                                           .lectureHall(scheduleDb.getAuditory())
+                                                           .lectureHall(scheduleDb.getAuditory().getName())
                                                            .weekDay(scheduleDb.getDayOfWeek())
                                                            .weekNumber(scheduleDb.getWeekNumber());
 
@@ -110,8 +108,10 @@ public class ScheduleService {
     }
 
     private List<ScheduleDb> buildLessons(final CreateLessonApi createLessonApi) {
+        //TODO fix get
+        final LectureHallDb lectureHallDb = lectureHallRepository.findByName(createLessonApi.getLectureHall()).get();
         final ScheduleDb.ScheduleDbBuilder scheduleDb = ScheduleDb.builder()
-                                                                  .auditory(createLessonApi.getLectureHall());
+                                                                  .auditory(lectureHallDb);
 
         if (createLessonApi.getTeacherId() == null && createLessonApi.getSubjectId() == null) {
             scheduleDb.subjectName(createLessonApi.getSubjectName());

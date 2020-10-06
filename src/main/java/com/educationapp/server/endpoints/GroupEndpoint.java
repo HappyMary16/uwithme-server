@@ -67,4 +67,17 @@ public class GroupEndpoint {
             return new ResponseEntity<>(NOT_FOUND);
         }
     }
+
+    /**
+     * Only for teachers
+     *
+     * @return
+     */
+    @GetMapping
+    public ResponseEntity<?> getGroups() {
+        final Long userId = UserContextHolder.getUser().getId();
+
+        //add groups by curator
+        return new ResponseEntity<>(studyGroupDataRepository.findAllByTeacher(userId), OK);
+    }
 }
