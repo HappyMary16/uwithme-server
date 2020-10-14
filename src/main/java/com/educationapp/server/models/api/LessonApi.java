@@ -19,6 +19,8 @@ public class LessonApi {
 
     private final String lectureHall;
 
+    private final String building;
+
     private final List<String> groups;
 
     private final Long weekDay;

@@ -17,10 +17,12 @@ import com.educationapp.server.models.api.admin.DeleteLessonApi;
 import com.educationapp.server.models.persistence.*;
 import com.educationapp.server.repositories.*;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
@@ -62,7 +64,7 @@ public class ScheduleService {
         return lessons;
     }
 
-    public void deleteLesson(final DeleteLessonApi deleteLessonApi) {
+    public LessonApi deleteLesson(final DeleteLessonApi deleteLessonApi) {
         final List<String> groupNames = deleteLessonApi.getGroups();
         final Long lessonId = deleteLessonApi.getLessonId();
         final ScheduleDb schedule = scheduleRepository.findById(lessonId)
@@ -72,9 +74,10 @@ public class ScheduleService {
             schedule.setGroups(null);
             scheduleRepository.save(schedule);
             scheduleRepository.deleteById(lessonId);
+            return null;
         } else {
             schedule.setGroups(studyGroupRepository.findAllByNames(groupNames));
-            scheduleRepository.save(schedule);
+            return mapScheduleDbToLesson(scheduleRepository.save(schedule));
         }
     }
 
@@ -82,6 +85,7 @@ public class ScheduleService {
         final LessonApi.LessonApiBuilder lesson = LessonApi.builder()
                                                            .id(scheduleDb.getId())
                                                            .lessonTime(scheduleDb.getLessonNumber())
+                                                           .building(scheduleDb.getAuditory().getBuilding().getName())
                                                            .lectureHall(scheduleDb.getAuditory().getName())
                                                            .weekDay(scheduleDb.getDayOfWeek())
                                                            .weekNumber(scheduleDb.getWeekNumber());
@@ -92,7 +96,7 @@ public class ScheduleService {
                     .ifPresent(subject -> {
                         lesson.subjectName(subject.getName());
                         userRepository.findById(subject.getTeacherId())
-                                      .ifPresent(teacher -> lesson.teacherName(getTeacherName(teacher)));
+                                      .ifPresent(teacher -> lesson.teacherName(teacher.getSurname()));
                     });
         } else {
             lesson.subjectName(scheduleDb.getSubjectName())
@@ -108,8 +112,9 @@ public class ScheduleService {
     }
 
     private List<ScheduleDb> buildLessons(final CreateLessonApi createLessonApi) {
+        log.info("Create lesson by api: {}", createLessonApi.toString());
         //TODO fix get
-        final LectureHallDb lectureHallDb = lectureHallRepository.findByName(createLessonApi.getLectureHall()).get();
+        final LectureHallDb lectureHallDb = lectureHallRepository.findById(createLessonApi.getLectureHall()).get();
         final ScheduleDb.ScheduleDbBuilder scheduleDb = ScheduleDb.builder()
                                                                   .auditory(lectureHallDb);
 
@@ -171,12 +176,5 @@ public class ScheduleService {
         return scheduleDb1.getDayOfWeek().equals(scheduleDb2.getDayOfWeek())
                 && scheduleDb1.getLessonNumber().equals(scheduleDb2.getLessonNumber())
                 && scheduleDb1.getWeekNumber().equals(scheduleDb2.getWeekNumber());
-    }
-
-    private String getTeacherName(final UserDB teacher) {
-        final String lastName = teacher.getLastName().length() > 1
-                ? teacher.getLastName().charAt(0) + "."
-                : "";
-        return teacher.getSurname() + " " + teacher.getFirstName().charAt(0) + ". " + lastName;
     }
 }

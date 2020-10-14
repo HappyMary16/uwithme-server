@@ -12,6 +12,7 @@ import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.security.JwtTokenProvider;
 import com.educationapp.server.services.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
+@Slf4j
 public class AuthEndpoint {
 
     private final JwtTokenProvider tokenProvider;
@@ -30,6 +32,7 @@ public class AuthEndpoint {
 
     @PostMapping("/signIn")
     public ResponseEntity<?> authenticateUser(@RequestBody @Valid final LoginApi loginApi) {
+        log.info("Someone try to login with: {}", loginApi);
         final UserApi user = userService.findByUserName(loginApi.getUsername());
 
         if (user.getPassword().equals(loginApi.getPassword())) {
@@ -43,6 +46,8 @@ public class AuthEndpoint {
 
     @PostMapping("/signUp")
     public ResponseEntity<?> register(@RequestBody final RegisterApi registerApi) {
+        log.info("Someone try to register with: {}", registerApi);
+
         if (StringUtils.isEmpty(registerApi.getUsername())) {
             registerApi.setUsername(registerApi.getEmail());
         }
@@ -61,6 +66,8 @@ public class AuthEndpoint {
 
     @PostMapping("/refreshToken")
     public ResponseEntity<?> refreshToken(@RequestBody final TokenApi refreshTokenApi) {
+        log.info("Someone try to refresh token with: {}", refreshTokenApi);
+
         final String token = refreshTokenApi.getRefreshToken();
 
         if (tokenProvider.validateRefreshToken(token)) {

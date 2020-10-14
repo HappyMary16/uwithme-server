@@ -26,8 +26,7 @@ public class ScheduleEndpoint {
 
     @DeleteMapping
     public ResponseEntity<?> deleteLesson(@RequestBody DeleteLessonApi deleteLessonApi) {
-        scheduleService.deleteLesson(deleteLessonApi);
-        return new ResponseEntity<>(CREATED);
+        return new ResponseEntity<>(scheduleService.deleteLesson(deleteLessonApi), OK);
     }
 
     @GetMapping

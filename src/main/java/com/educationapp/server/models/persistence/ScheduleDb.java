@@ -34,7 +34,7 @@ public class ScheduleDb {
     @Column(name = "week_number")
     private Long weekNumber;
 
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne(cascade = {CascadeType.PERSIST})
     @JoinColumn(name = "auditory", referencedColumnName = "id")
     private LectureHallDb auditory;
 

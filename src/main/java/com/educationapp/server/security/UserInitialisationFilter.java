@@ -26,11 +26,13 @@ public class UserInitialisationFilter extends OncePerRequestFilter {
                                     final FilterChain filterChain) throws IOException, ServletException {
         try {
             final String token = jwtTokenProvider.resolveToken(request);
+
             final String username = jwtTokenProvider.getUsername(token);
 
             UserContextHolder.setUser(userService.findByUserName(username));
         } catch (final JwtException | IllegalArgumentException e) {
-            log.info("Someone try to refresh token with wrong auth token");
+            log.info("Exception during user initialization: ");
+            e.printStackTrace();
         } finally {
             filterChain.doFilter(request, response);
         }
