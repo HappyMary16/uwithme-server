@@ -81,8 +81,9 @@ public class UserEndpoint {
                                                    .toBuilder()
                                                    .studyGroupId(null)
                                                    .build();
-
-        return new ResponseEntity<>(studentRepository.save(student), OK);
+        studentRepository.save(student);
+        return new ResponseEntity<>(userService.mapStudentDataDbToUserApi(studentDataRepository.findById(studentId)
+                                                                                               .get()), OK);
     }
 
     @GetMapping(value = "/students/without/group")
