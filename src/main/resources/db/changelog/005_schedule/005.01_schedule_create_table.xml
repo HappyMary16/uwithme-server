@@ -16,9 +16,6 @@
             <column name="subject_id" type="INTEGER">
                 <constraints nullable="true"/>
             </column>
-            <column name="study_group_id" type="INTEGER">
-                <constraints nullable="false"/>
-            </column>
             <column name="lesson_number" type="INTEGER">
                 <constraints nullable="false"/>
             </column>

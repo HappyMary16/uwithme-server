@@ -33,14 +33,13 @@ public class LectureHallEndpoint {
         final String buildingName = addLectureHallApi.getBuildingName();
 
         final BuildingDb buildingDb = buildingsRepository.findByUniversityIdAndName(universityId, buildingName)
-                                                         .orElseGet(() -> buildingsRepository
-                                                                 .save(BuildingDb.builder()
-                                                                                 .universityId(universityId)
-                                                                                 .name(buildingName)
-                                                                                 .build()));
+                                                         .orElseGet(() -> BuildingDb.builder()
+                                                                                    .universityId(universityId)
+                                                                                    .name(buildingName)
+                                                                                    .build());
         final LectureHallDb lectureHallDb = LectureHallDb.builder()
                                                          .name(addLectureHallApi.getLectureHallName())
-                                                         .buildingId(buildingDb.getId())
+                                                         .building(buildingDb)
                                                          .placeNumber(addLectureHallApi.getPlaceNumber())
                                                          .build();
 

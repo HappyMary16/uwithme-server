@@ -6,6 +6,7 @@
     <include file="005.01_schedule_create_table.xml" relativeToChangelogFile="true"/>
     <include file="005.02_schedule_add_primary_key.xml" relativeToChangelogFile="true"/>
     <include file="005.03_file_subject_add_foreign_key.xml" relativeToChangelogFile="true"/>
-    <include file="005.04_file_type_add_foreign_key.xml" relativeToChangelogFile="true"/>
-    <include file="005.05_schedule_add_unique_constraint.xml" relativeToChangelogFile="true"/>
+    <include file="005.04_schedule_add_unique_constraint.xml" relativeToChangelogFile="true"/>
+    <include file="005.05_schedule_group.xml" relativeToChangelogFile="true"/>
+    <include file="005.06_schedule_group_foreign_key.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

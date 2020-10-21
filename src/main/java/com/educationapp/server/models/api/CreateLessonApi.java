@@ -3,10 +3,10 @@ package com.educationapp.server.models.api;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 
 @AllArgsConstructor
-@Getter
+@Data
 public class CreateLessonApi {
 
     private final Long subjectId;
@@ -17,7 +17,7 @@ public class CreateLessonApi {
 
     private final String teacherName;
 
-    private final String lectureHall;
+    private final Long lectureHall;
 
     private final List<Long> groups;
 

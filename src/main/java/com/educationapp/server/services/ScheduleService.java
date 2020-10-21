@@ -9,34 +9,28 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.NotFoundException;
+
 import com.educationapp.server.models.api.CreateLessonApi;
 import com.educationapp.server.models.api.LessonApi;
-import com.educationapp.server.models.persistence.ScheduleDb;
-import com.educationapp.server.models.persistence.SubjectDB;
-import com.educationapp.server.models.persistence.UserDB;
+import com.educationapp.server.models.api.admin.DeleteLessonApi;
+import com.educationapp.server.models.persistence.*;
 import com.educationapp.server.repositories.*;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
+@Slf4j
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final SubjectRepository subjectRepository;
     private final UserRepository userRepository;
-    private final StudyGroupRepository studyGroupRepository;
     private final StudentRepository studentRepository;
-
-    public ScheduleService(final ScheduleRepository scheduleRepository,
-                           final SubjectRepository subjectRepository,
-                           final UserRepository userRepository,
-                           final StudyGroupRepository studyGroupRepository,
-                           final StudentRepository studentRepository) {
-        this.scheduleRepository = scheduleRepository;
-        this.subjectRepository = subjectRepository;
-        this.userRepository = userRepository;
-        this.studyGroupRepository = studyGroupRepository;
-        this.studentRepository = studentRepository;
-    }
+    private final StudyGroupRepository studyGroupRepository;
+    private final LectureHallRepository lectureHallRepository;
 
     public void createLesson(final CreateLessonApi createLessonApi) {
         final List<ScheduleDb> lessonsToCreate = buildLessons(createLessonApi);
@@ -70,10 +64,29 @@ public class ScheduleService {
         return lessons;
     }
 
+    public LessonApi deleteLesson(final DeleteLessonApi deleteLessonApi) {
+        final List<String> groupNames = deleteLessonApi.getGroups();
+        final Long lessonId = deleteLessonApi.getLessonId();
+        final ScheduleDb schedule = scheduleRepository.findById(lessonId)
+                                                      .orElseThrow(() -> new NotFoundException("Lesson is not found"));
+
+        if (groupNames == null || groupNames.isEmpty()) {
+            schedule.setGroups(null);
+            scheduleRepository.save(schedule);
+            scheduleRepository.deleteById(lessonId);
+            return null;
+        } else {
+            schedule.setGroups(studyGroupRepository.findAllByNames(groupNames));
+            return mapScheduleDbToLesson(scheduleRepository.save(schedule));
+        }
+    }
+
     private LessonApi mapScheduleDbToLesson(final ScheduleDb scheduleDb) {
         final LessonApi.LessonApiBuilder lesson = LessonApi.builder()
+                                                           .id(scheduleDb.getId())
                                                            .lessonTime(scheduleDb.getLessonNumber())
-                                                           .lectureHall(scheduleDb.getAuditory())
+                                                           .building(scheduleDb.getAuditory().getBuilding().getName())
+                                                           .lectureHall(scheduleDb.getAuditory().getName())
                                                            .weekDay(scheduleDb.getDayOfWeek())
                                                            .weekNumber(scheduleDb.getWeekNumber());
 
@@ -83,24 +96,27 @@ public class ScheduleService {
                     .ifPresent(subject -> {
                         lesson.subjectName(subject.getName());
                         userRepository.findById(subject.getTeacherId())
-                                      .ifPresent(teacher -> lesson
-                                              .teacherName(teacher.getSurname() + " " + teacher.getFirstName() +
-                                                                   " " + teacher.getLastName()));
+                                      .ifPresent(teacher -> lesson.teacherName(teacher.getSurname()));
                     });
         } else {
             lesson.subjectName(scheduleDb.getSubjectName())
                   .teacherName(scheduleDb.getTeacherName());
         }
 
-        studyGroupRepository.findById(scheduleDb.getStudyGroupId())
-                            .ifPresent(group -> lesson.groupName(group.getName()));
+        final List<String> groups = scheduleDb.getGroups()
+                                              .stream()
+                                              .map(StudyGroupDb::getName)
+                                              .collect(Collectors.toList());
 
-        return lesson.build();
+        return lesson.groups(groups).build();
     }
 
     private List<ScheduleDb> buildLessons(final CreateLessonApi createLessonApi) {
+        log.info("Create lesson by api: {}", createLessonApi.toString());
+        //TODO fix get
+        final LectureHallDb lectureHallDb = lectureHallRepository.findById(createLessonApi.getLectureHall()).get();
         final ScheduleDb.ScheduleDbBuilder scheduleDb = ScheduleDb.builder()
-                                                                  .auditory(createLessonApi.getLectureHall());
+                                                                  .auditory(lectureHallDb);
 
         if (createLessonApi.getTeacherId() == null && createLessonApi.getSubjectId() == null) {
             scheduleDb.subjectName(createLessonApi.getSubjectName());
@@ -131,11 +147,9 @@ public class ScheduleService {
         }
 
         final List<ScheduleDb.ScheduleDbBuilder> lessons = List.of(scheduleDb);
+        final List<StudyGroupDb> groups = studyGroupRepository.findAllByIds(createLessonApi.getGroups());
 
         return lessons.stream()
-                      .flatMap(lesson -> createLessonApi.getGroups()
-                                                        .stream()
-                                                        .map(lesson::studyGroupId))
                       .flatMap(lesson -> createLessonApi.getWeekDays()
                                                         .stream()
                                                         .map(lesson::dayOfWeek))
@@ -145,7 +159,7 @@ public class ScheduleService {
                       .flatMap(lesson -> createLessonApi.getLessonTimes()
                                                         .stream()
                                                         .map(lesson::lessonNumber))
-                      .map(ScheduleDb.ScheduleDbBuilder::build)
+                      .map(lesson -> lesson.groups(groups).build())
                       .collect(Collectors.toList());
     }
 
@@ -161,7 +175,6 @@ public class ScheduleService {
     private boolean compareLessonTime(final ScheduleDb scheduleDb1, final ScheduleDb scheduleDb2) {
         return scheduleDb1.getDayOfWeek().equals(scheduleDb2.getDayOfWeek())
                 && scheduleDb1.getLessonNumber().equals(scheduleDb2.getLessonNumber())
-                && scheduleDb1.getWeekNumber().equals(scheduleDb2.getWeekNumber())
-                && scheduleDb1.getStudyGroupId().equals(scheduleDb2.getStudyGroupId());
+                && scheduleDb1.getWeekNumber().equals(scheduleDb2.getWeekNumber());
     }
 }

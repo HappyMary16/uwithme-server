@@ -1,5 +1,7 @@
 package com.educationapp.server.models.persistence;
 
+import java.util.List;
+
 import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
@@ -23,9 +25,6 @@ public class ScheduleDb {
     @Column(name = "subject_id")
     private Long subjectId;
 
-    @Column(name = "study_group_id")
-    private Long studyGroupId;
-
     @Column(name = "lesson_number")
     private Long lessonNumber;
 
@@ -35,12 +34,21 @@ public class ScheduleDb {
     @Column(name = "week_number")
     private Long weekNumber;
 
-    @Column(name = "auditory")
-    private String auditory;
+    @OneToOne(cascade = {CascadeType.PERSIST})
+    @JoinColumn(name = "auditory", referencedColumnName = "id")
+    private LectureHallDb auditory;
 
     @Column(name = "subject_name")
     private String subjectName;
 
     @Column(name = "teacher_name")
     private String teacherName;
+
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(
+            name = "schedule_group",
+            joinColumns = {@JoinColumn(name = "schedule_id")},
+            inverseJoinColumns = {@JoinColumn(name = "group_id")}
+    )
+    private List<StudyGroupDb> groups;
 }

@@ -82,7 +82,8 @@ public class FileService {
                                                   .stream()
                                                   .filter(subject -> subject.getName().equals(file.getSubjectName()))
                                                   .findFirst()
-                                                  .orElse(subjectService.save(username, file.getSubjectName()));
+                                                  .orElseGet(
+                                                          () -> subjectService.save(username, file.getSubjectName()));
 
         final String fileLocation = subjectDb.getId() + "\\" + file.getFileTypeId() + "\\";
 

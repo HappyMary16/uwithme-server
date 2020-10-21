@@ -3,9 +3,9 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet id="005.05" author="mborodin">
+    <changeSet id="005.04" author="mborodin">
         <addUniqueConstraint tableName="schedule"
-                             columnNames="lesson_number, study_group_id, day_of_week, week_number"
+                             columnNames="lesson_number, day_of_week, week_number, subject_name, teacher_name"
                              constraintName="unique_lesson_time"/>
     </changeSet>
 </databaseChangeLog>
