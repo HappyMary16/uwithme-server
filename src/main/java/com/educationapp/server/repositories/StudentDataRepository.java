@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
-public interface StudentDataRepository extends CrudRepository<StudentDataDb, Long> {
+public interface StudentDataRepository extends CrudRepository<StudentDataDb, String> {
 
     @Query(value = "SELECT DISTINCT s.id, s.study_group_id, student_id, " +
             "u.first_name, last_name, surname, username, password, phone, email, role, is_admin, university_id " +
@@ -17,7 +17,7 @@ public interface StudentDataRepository extends CrudRepository<StudentDataDb, Lon
             "LEFT JOIN subjects s3 ON s2.subject_id = s3.id " +
             "WHERE s3.teacher_id = :teacherId",
             nativeQuery = true)
-    List<StudentDataDb> findAllByTeacherId(@Param("teacherId") Long teacherId);
+    List<StudentDataDb> findAllByTeacherId(@Param("teacherId") String teacherId);
 
     List<StudentDataDb> findAllByUniversityId(Long groupId);
 

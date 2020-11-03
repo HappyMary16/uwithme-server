@@ -26,7 +26,7 @@ public class StudentDB implements Serializable {
     @Id
     @Column(name = "id")
     @NotNull
-    private Long id;
+    private String id;
 
     @Column(name = "study_group_id")
     private Long studyGroupId;

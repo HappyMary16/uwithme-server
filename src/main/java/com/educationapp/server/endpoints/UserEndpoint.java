@@ -75,7 +75,7 @@ public class UserEndpoint {
     }
 
     @DeleteMapping(value = "/group/studentId/{studentId}")
-    public ResponseEntity<?> removeStudentFromGroup(@PathVariable(value = "studentId") final Long studentId) {
+    public ResponseEntity<?> removeStudentFromGroup(@PathVariable(value = "studentId") final String studentId) {
         final StudentDB student = studentRepository.findById(studentId)
                                                    .orElseThrow(NotFoundException::new)
                                                    .toBuilder()

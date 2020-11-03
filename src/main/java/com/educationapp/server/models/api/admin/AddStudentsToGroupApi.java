@@ -12,7 +12,7 @@ import lombok.Getter;
 public class AddStudentsToGroupApi {
 
     @NotNull
-    private List<Long> studentsIds;
+    private List<String> studentsIds;
 
     @NotNull
     private Long groupId;

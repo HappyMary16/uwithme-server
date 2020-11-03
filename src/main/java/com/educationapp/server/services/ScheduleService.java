@@ -46,7 +46,7 @@ public class ScheduleService {
     }
 
     public List<LessonApi> findLessonsByUsername(final String username) {
-        final Optional<UserDB> user = userRepository.findByUsername(username);
+        final Optional<UserDB> user = userRepository.findById(username);
         final List<LessonApi> lessons = new ArrayList<>();
 
         if (user.isPresent() && user.get().getRole().equals(STUDENT.getId())) {
@@ -91,13 +91,13 @@ public class ScheduleService {
                                                            .weekNumber(scheduleDb.getWeekNumber());
 
         if (Objects.nonNull(scheduleDb.getSubjectId())) {
-            subjectRepository
-                    .findById(scheduleDb.getSubjectId())
-                    .ifPresent(subject -> {
-                        lesson.subjectName(subject.getName());
-                        userRepository.findById(subject.getTeacherId())
-                                      .ifPresent(teacher -> lesson.teacherName(teacher.getSurname()));
-                    });
+//            subjectRepository
+//                    .findById(scheduleDb.getSubjectId())
+//                    .ifPresent(subject -> {
+//                        lesson.subjectName(subject.getName());
+//                        userRepository.findById(subject.getTeacherId())
+//                                      .ifPresent(teacher -> lesson.teacherName(teacher.getSurname()));
+//                    });
         } else {
             lesson.subjectName(scheduleDb.getSubjectName())
                   .teacherName(scheduleDb.getTeacherName());

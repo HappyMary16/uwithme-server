@@ -75,7 +75,7 @@ public class FileService {
     }
 
     public String saveFile(final SaveFileApi file) {
-        final String username = UserContextHolder.getUser().getUsername();
+        final String username = UserContextHolder.getUser().getId();
         final String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()));
 
         final SubjectDB subjectDb = subjectService.findSubjectsByTeacherUsername()
@@ -111,7 +111,7 @@ public class FileService {
     }
 
     public void updateAvatar(final MultipartFile avatar) {
-        final Long userId = UserContextHolder.getUser().getId();
+        final String userId = UserContextHolder.getUser().getId();
         final Path targetLocation = userAvatarStorageLocation.resolve(userId + ".jpg");
 
         try {
@@ -121,7 +121,7 @@ public class FileService {
         }
     }
 
-    public Resource loadAvatar(final Long userId) {
+    public Resource loadAvatar(final String userId) {
         final Path filePath = userAvatarStorageLocation.resolve(userId + ".jpg");
         return loadFileByPath(filePath);
     }

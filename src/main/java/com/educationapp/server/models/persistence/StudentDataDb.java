@@ -22,7 +22,7 @@ public class StudentDataDb implements Serializable {
 
     @Id
     @Column(name = "id")
-    private Long id;
+    private String id;
 
     @Column(name = "study_group_id")
     private Long studyGroupId;

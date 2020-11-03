@@ -93,7 +93,7 @@ public class FileEndpoint {
     }
 
     @GetMapping("/avatar/{userId:.+}")
-    public ResponseEntity<?> getAvatar(@PathVariable("userId") final Long userId) {
+    public ResponseEntity<?> getAvatar(@PathVariable("userId") final String userId) {
         final Resource resource = fileService.loadAvatar(userId);
 
         if (resource == null) {

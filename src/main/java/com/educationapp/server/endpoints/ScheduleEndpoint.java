@@ -31,7 +31,7 @@ public class ScheduleEndpoint {
 
     @GetMapping
     public ResponseEntity<?> getLessons() {
-        final String username = UserContextHolder.getUser().getUsername();
+        final String username = UserContextHolder.getUser().getId();
         return new ResponseEntity<>(scheduleService.findLessonsByUsername(username), OK);
     }
 

@@ -12,9 +12,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SubjectRepository extends CrudRepository<SubjectDB, Long> {
 
-    List<SubjectDB> findAllByTeacherId(final Long teacherId);
+    List<SubjectDB> findAllByTeacherId(final String teacherId);
 
-    Optional<SubjectDB> findByNameAndTeacherId(final String name, final Long teacherId);
+    Optional<SubjectDB> findByNameAndTeacherId(final String name, final String teacherId);
 
     @Query(value = "SELECT * FROM subjects JOIN users ON subjects.teacher_id = users.id WHERE users.university_id = " +
             ":universityId",

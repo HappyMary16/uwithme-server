@@ -10,7 +10,7 @@
             </not>
         </preConditions>
         <createTable tableName="students">
-            <column name="id" type="INTEGER">
+            <column name="id" type="VARCHAR(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="study_group_id" type="INTEGER">

@@ -28,5 +28,5 @@ public interface StudyGroupDataRepository extends CrudRepository<StudyGroupDataD
             "JOIN subjects s3 on s2.subject_id = s3.id " +
             "WHERE s3.teacher_id = :teacherId",
             nativeQuery = true)
-    List<StudyGroupDataDb> findAllByTeacher(Long teacherId);
+    List<StudyGroupDataDb> findAllByTeacher(String teacherId);
 }

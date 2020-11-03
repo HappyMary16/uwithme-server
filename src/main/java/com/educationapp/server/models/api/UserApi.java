@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 public class UserApi {
 
-    private Long id;
+    private String id;
 
     private String firstName;
 
@@ -40,10 +40,6 @@ public class UserApi {
     private String departmentName;
 
     private String scienceDegreeName;
-
-    private String authToken;
-
-    private String refreshToken;
 
     private Long universityId;
 

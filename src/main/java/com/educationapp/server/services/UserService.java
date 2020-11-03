@@ -7,50 +7,31 @@ import static com.educationapp.server.enums.Role.TEACHER;
 import java.util.Objects;
 
 import com.educationapp.server.enums.Role;
-import com.educationapp.server.exception.ResourceNotFoundException;
 import com.educationapp.server.models.api.RegisterApi;
 import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.models.api.admin.AddUniversityApi;
 import com.educationapp.server.models.persistence.*;
 import com.educationapp.server.repositories.*;
-import com.educationapp.server.security.UserDetailsImpl;
+import com.educationapp.server.security.UserContextHolder;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;
-    private final StudentDataRepository studentDataRepository;
-    private final TeacherDataRepository teacherDataRepository;
     private final StudyGroupRepository studyGroupRepository;
     private final DepartmentRepository departmentRepository;
     private final InstituteRepository instituteRepository;
     private final ScienceDegreeRepository scienceDegreeRepository;
-    private final FileService fileService;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        final UserDB user = userRepository.findByUsername(username)
-                                          .orElseThrow(() -> new UsernameNotFoundException(username));
-        return new UserDetailsImpl(user);
-    }
-
-    public Long save(final RegisterApi user) {
+    public String save(final RegisterApi user) {
+        final String userId = UserContextHolder.getUser().getId();
         final UserDB toCreate = UserDB.builder()
-                                      .firstName(user.getFirstName())
-                                      .lastName(user.getLastName())
-                                      .surname(user.getSurname())
-                                      .username(user.getUsername())
-                                      .password(user.getPassword())
-                                      .phone(user.getPhone())
-                                      .email(user.getEmail())
+                                      .id(userId)
                                       .role(user.getRole())
                                       .isAdmin(false)
                                       .universityId(user.getUniversityId())
@@ -78,8 +59,6 @@ public class UserService implements UserDetailsService {
 
     public UserApi save(final AddUniversityApi addUniversityApi, final UniversityDb university) {
         final UserDB toCreate = UserDB.builder()
-                                      .username(addUniversityApi.getUsername())
-                                      .password(addUniversityApi.getPassword())
                                       .isAdmin(true)
                                       .role(ADMIN.getId())
                                       .universityId(university.getId())
@@ -88,7 +67,7 @@ public class UserService implements UserDetailsService {
         userRepository.save(toCreate);
 
         return UserApi.builder()
-                      .id(toCreate.getId())
+//                      .id(toCreate.getId())
                       .username(addUniversityApi.getUsername())
                       .password(addUniversityApi.getPassword())
                       .isAdmin(true)
@@ -97,22 +76,15 @@ public class UserService implements UserDetailsService {
                       .build();
     }
 
-    public UserApi findByUserName(final String username) {
-        UserDB userDb = userRepository.findByUsername(username).orElse(null);
+    public UserApi findById(final String username) {
+        UserDB userDb = userRepository.findById(username).orElse(null);
 
         if (Objects.isNull(userDb)) {
-            throw new ResourceNotFoundException("User", "user name", username);
+            return null;
         }
 
         UserApi.UserApiBuilder userApi = UserApi.builder()
-                                                .id(userDb.getId())
-                                                .firstName(userDb.getFirstName())
-                                                .lastName(userDb.getLastName())
-                                                .surname(userDb.getSurname())
-                                                .username(userDb.getUsername())
-                                                .password(userDb.getPassword())
-                                                .phone(userDb.getPhone())
-                                                .email(userDb.getEmail())
+//                                                .id(userDb.getId())
                                                 .role(userDb.getRole())
                                                 .universityId(userDb.getUniversityId())
                                                 .isAdmin(userDb.getIsAdmin());
@@ -156,7 +128,7 @@ public class UserService implements UserDetailsService {
                                                             .orElse(new DepartmentDb());
 
         return UserApi.builder()
-                      .id(teacher.getId())
+//                      .id(teacher.getId())
                       .firstName(teacher.getFirstName())
                       .lastName(teacher.getLastName())
                       .surname(teacher.getSurname())
@@ -196,7 +168,7 @@ public class UserService implements UserDetailsService {
         }
 
         return UserApi.builder()
-                      .id(student.getId())
+//                      .id(student.getId())
                       .firstName(student.getFirstName())
                       .lastName(student.getLastName())
                       .surname(student.getSurname())

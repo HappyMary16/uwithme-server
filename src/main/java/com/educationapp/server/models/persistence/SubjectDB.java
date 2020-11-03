@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "subjects")
 public class SubjectDB {
 
-    public SubjectDB(final String name, final Long teacherId) {
+    public SubjectDB(final String name, final String teacherId) {
         this.name = name;
         this.teacherId = teacherId;
     }
@@ -27,5 +27,5 @@ public class SubjectDB {
     private String name;
 
     @Column(name = "teacher_id")
-    private Long teacherId;
+    private String teacherId;
 }

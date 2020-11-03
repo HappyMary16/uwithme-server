@@ -12,8 +12,5 @@
         <addPrimaryKey tableName="users"
                        columnNames="id"
                        constraintName="user_pk"/>
-        <addAutoIncrement tableName="users"
-                          columnName="id"
-                          columnDataType="INTEGER"/>
     </changeSet>
 </databaseChangeLog>

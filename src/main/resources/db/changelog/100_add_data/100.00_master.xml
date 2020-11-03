@@ -9,13 +9,4 @@
     <include file="100.03_departments.xml" relativeToChangelogFile="true"/>
     <include file="100.04_study_groups.xml" relativeToChangelogFile="true"/>
 
-    <include file="100.10_users.xml" relativeToChangelogFile="true"/>
-    <include file="100.11_teachers.xml" relativeToChangelogFile="true"/>
-    <include file="100.12_students.xml" relativeToChangelogFile="true"/>
-
-    <include file="" relativeToChangelogFile="true"/>
-    <include file="" relativeToChangelogFile="true"/>
-    <include file="" relativeToChangelogFile="true"/>
-    <include file="" relativeToChangelogFile="true"/>
-    <include file="" relativeToChangelogFile="true"/>
 </databaseChangeLog>

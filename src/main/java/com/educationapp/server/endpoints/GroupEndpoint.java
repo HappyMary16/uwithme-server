@@ -75,7 +75,7 @@ public class GroupEndpoint {
      */
     @GetMapping
     public ResponseEntity<?> getGroups() {
-        final Long userId = UserContextHolder.getUser().getId();
+        final String userId = UserContextHolder.getUser().getId();
 
         //add groups by curator
         return new ResponseEntity<>(studyGroupDataRepository.findAllByTeacher(userId), OK);

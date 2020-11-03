@@ -20,5 +20,5 @@ public interface ScheduleRepository extends CrudRepository<ScheduleDb, Long> {
     @Query(value = "SELECT * FROM schedule JOIN subjects ON schedule.subject_id = subjects.id WHERE subjects" +
             ".teacher_id = :teacherId",
             nativeQuery = true)
-    List<ScheduleDb> findAllByTeacherId(@Param("teacherId") final Long teacherId);
+    List<ScheduleDb> findAllByTeacherId(@Param("teacherId") final String teacherId);
 }

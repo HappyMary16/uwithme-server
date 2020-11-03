@@ -22,7 +22,7 @@ public class TeacherDataDb implements Serializable {
 
     @Id
     @Column(name = "id")
-    private Long id;
+    private String id;
 
     @Column(name = "department_id")
     private Long departmentId;

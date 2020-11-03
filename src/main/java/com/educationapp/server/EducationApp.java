@@ -9,10 +9,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 
 
 @Slf4j
-@EnableGlobalMethodSecurity(
-        prePostEnabled = true,
-        securedEnabled = true,
-        jsr250Enabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @SpringBootApplication
 public class EducationApp extends SpringBootServletInitializer {
 
