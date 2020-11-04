@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +34,7 @@ public class FileEndpoint {
 
     private final FileRepository fileRepository;
 
+    @PreAuthorize("hasAuthority('TEACHER')")
     @PostMapping("/{subjectName}/{fileType:[1-2]}")
     public ResponseEntity<?> uploadMultipleFiles(@RequestParam("files") final MultipartFile[] files,
                                                  @PathVariable("subjectName") final String subjectName,
@@ -75,12 +77,14 @@ public class FileEndpoint {
         return new ResponseEntity<>(fileService.findAllFiles(), OK);
     }
 
+    @PreAuthorize("hasAuthority('TEACHER')")
     @PostMapping("/access")
     public ResponseEntity<?> addAccessToFiles(@RequestBody final AccessToFileApi accessToFileApi) {
         fileService.addAccessToFile(accessToFileApi);
         return new ResponseEntity<>(OK);
     }
 
+    @PreAuthorize("hasAnyAuthority('TEACHER', 'STUDENT')")
     @PostMapping("/avatar")
     public ResponseEntity<?> uploadAvatar(@RequestParam("file") final MultipartFile avatar) {
         fileService.updateAvatar(avatar);

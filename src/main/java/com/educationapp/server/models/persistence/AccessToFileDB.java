@@ -26,7 +26,7 @@ public class AccessToFileDB {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "study_group_id")
+    @Column(name = "group_id")
     private Long studyGroupId;
 
     @Column(name = "file_id")

@@ -1,15 +1,12 @@
 package com.educationapp.server.services;
 
 import static com.educationapp.server.enums.Role.ADMIN;
-import static com.educationapp.server.enums.Role.STUDENT;
-import static com.educationapp.server.enums.Role.TEACHER;
 
 import java.util.Objects;
 
-import com.educationapp.server.enums.Role;
+import com.educationapp.server.exception.UserNotFound;
 import com.educationapp.server.models.api.RegisterApi;
 import com.educationapp.server.models.api.UserApi;
-import com.educationapp.server.models.api.admin.AddUniversityApi;
 import com.educationapp.server.models.persistence.*;
 import com.educationapp.server.repositories.*;
 import com.educationapp.server.security.UserContextHolder;
@@ -20,107 +17,56 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
+    private final SimpleUserRepository simpleUserRepository;
     private final UserRepository userRepository;
-    private final StudentRepository studentRepository;
-    private final TeacherRepository teacherRepository;
     private final StudyGroupRepository studyGroupRepository;
     private final DepartmentRepository departmentRepository;
     private final InstituteRepository instituteRepository;
-    private final ScienceDegreeRepository scienceDegreeRepository;
+    private final UniversityRepository universityRepository;
 
     public String save(final RegisterApi user) {
         final String userId = UserContextHolder.getUser().getId();
-        final UserDB toCreate = UserDB.builder()
-                                      .id(userId)
-                                      .role(user.getRole())
-                                      .isAdmin(false)
-                                      .universityId(user.getUniversityId())
-                                      .build();
-        final UserDB created = userRepository.save(toCreate);
 
-        if (user.getRole() == STUDENT.getId()) {
-            final StudentDB studentToCreate = StudentDB.builder()
-                                                       .id(created.getId())
-                                                       .studentId(user.getStudentId())
-                                                       .studyGroupId(user.getStudyGroupId())
-                                                       .build();
-            return studentRepository.save(studentToCreate).getId();
+        final SimpleUserDb toCreate = SimpleUserDb.builder()
+                                                  .id(userId)
+                                                  .role(user.getRole())
+                                                  .isAdmin(false)
+                                                  .universityId(user.getUniversityId())
+                                                  .departmentId(user.getDepartmentId())
+                                                  .groupId(user.getGroupId())
+                                                  .build();
 
-        } else if (user.getRole() == TEACHER.getId()) {
-            final TeacherDB teacherToCreate = TeacherDB.builder()
-                                                       .id(created.getId())
-                                                       .departmentId(user.getDepartmentId())
-                                                       .scienceDegreeId(user.getScienceDegreeId())
-                                                       .build();
-            return teacherRepository.save(teacherToCreate).getId();
+        if (user.getRole().equals(ADMIN.getId())) {
+            final UniversityDb universityToCreate = new UniversityDb(user.getUniversityName());
+            final Long universityId = universityRepository.save(universityToCreate).getId();
+
+            toCreate.setUniversityId(universityId);
         }
-        return null;
+
+        return simpleUserRepository.save(toCreate).getId();
     }
 
-    public UserApi save(final AddUniversityApi addUniversityApi, final UniversityDb university) {
-        final UserDB toCreate = UserDB.builder()
-                                      .isAdmin(true)
-                                      .role(ADMIN.getId())
-                                      .universityId(university.getId())
-                                      .build();
+    public UserApi getUserApi() {
+        final UserApi user = UserContextHolder.getUser();
+        final UserApi.UserApiBuilder userBuilder = user.toBuilder();
+        final UserDB userDb = userRepository.findById(user.getId())
+                                            .orElseThrow(() -> new UserNotFound(user.getEmail()));
 
-        userRepository.save(toCreate);
-
-        return UserApi.builder()
-//                      .id(toCreate.getId())
-                      .username(addUniversityApi.getUsername())
-                      .password(addUniversityApi.getPassword())
-                      .isAdmin(true)
-                      .role(ADMIN.getId())
-                      .universityId(university.getId())
-                      .build();
-    }
-
-    public UserApi findById(final String username) {
-        UserDB userDb = userRepository.findById(username).orElse(null);
-
-        if (Objects.isNull(userDb)) {
-            return null;
+        if (!userDb.getRole().equals(ADMIN.getId())) {
+            final DepartmentDb department = Objects.nonNull(userDb.getStudyGroup())
+                    ? userDb.getStudyGroup().getDepartment()
+                    : userDb.getDepartment();
+            userBuilder.departmentName(department.getName())
+                       .instituteName(department.getInstitute().getName());
         }
 
-        UserApi.UserApiBuilder userApi = UserApi.builder()
-//                                                .id(userDb.getId())
-                                                .role(userDb.getRole())
-                                                .universityId(userDb.getUniversityId())
-                                                .isAdmin(userDb.getIsAdmin());
-        Long departmentId = null;
-
-        if (Role.STUDENT.getId() == userDb.getRole()) {
-            StudentDB studentDb = studentRepository.findById(userDb.getId())
-                                                   .orElse(new StudentDB());
-            StudyGroupDb studyGroup = studyGroupRepository.findById(studentDb.getStudyGroupId())
-                                                          .orElse(new StudyGroupDb());
-            departmentId = studyGroup.getDepartmentId();
-
-            userApi = userApi.studentId(studentDb.getStudentId())
-                             .studyGroupName(studyGroup.getName())
-                             .studyGroupId(studyGroup.getId());
-        } else if (Role.TEACHER.getId() == userDb.getRole()) {
-            TeacherDB teacherDB = teacherRepository.findById(userDb.getId())
-                                                   .orElse(new TeacherDB());
-            ScienceDegreeDb scienceDegree = scienceDegreeRepository.findById(teacherDB.getScienceDegreeId())
-                                                                   .orElse(new ScienceDegreeDb());
-            departmentId = teacherDB.getDepartmentId();
-
-            userApi = userApi.scienceDegreeName(scienceDegree.getName());
+        if (Objects.nonNull(userDb.getStudyGroup())) {
+            final StudyGroupDataDb studyGroup = userDb.getStudyGroup();
+            userBuilder.studyGroupId(studyGroup.getId())
+                       .studyGroupName(studyGroup.getName());
         }
-        if (Role.STUDENT.getId() == userDb.getRole() || Role.TEACHER.getId() == userDb.getRole()) {
-            DepartmentDb department = departmentRepository.findById(Objects.requireNonNull(departmentId))
-                                                          .orElse(new DepartmentDb());
-            InstituteDb institute = instituteRepository.findById(department.getInstitute().getId())
-                                                       .orElse(new InstituteDb());
 
-            return userApi.departmentName(department.getName())
-                          .instituteName(institute.getName())
-                          .build();
-        } else {
-            return userApi.build();
-        }
+        return userBuilder.build();
     }
 
     public UserApi mapTeacherDataDbToUserApi(final TeacherDataDb teacher) {
@@ -128,19 +74,15 @@ public class UserService {
                                                             .orElse(new DepartmentDb());
 
         return UserApi.builder()
-//                      .id(teacher.getId())
+                      .id(teacher.getId())
                       .firstName(teacher.getFirstName())
                       .lastName(teacher.getLastName())
                       .surname(teacher.getSurname())
                       .username(teacher.getUsername())
-                      .password(teacher.getPassword())
                       .phone(teacher.getPhone())
                       .email(teacher.getEmail())
                       .role(teacher.getRole())
                       .universityId(teacher.getUniversityId())
-                      .scienceDegreeName(scienceDegreeRepository.findById(teacher.getScienceDegreeId())
-                                                                .map(ScienceDegreeDb::getName)
-                                                                .orElse(null))
                       .departmentName(department.getName())
                       .instituteName(instituteRepository.findById(department.getInstitute().getId())
                                                         .map(InstituteDb::getName)
@@ -168,17 +110,15 @@ public class UserService {
         }
 
         return UserApi.builder()
-//                      .id(student.getId())
+                      .id(student.getId())
                       .firstName(student.getFirstName())
                       .lastName(student.getLastName())
                       .surname(student.getSurname())
                       .username(student.getUsername())
-                      .password(student.getPassword())
                       .phone(student.getPhone())
                       .email(student.getEmail())
                       .role(student.getRole())
                       .universityId(student.getUniversityId())
-                      .studentId(student.getStudentId())
                       .studyGroupName(studyGroup.getName())
                       .studyGroupId(studyGroup.getId())
                       .departmentName(department.getName())

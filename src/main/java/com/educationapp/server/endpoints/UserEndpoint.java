@@ -20,6 +20,7 @@ import com.educationapp.server.security.UserContextHolder;
 import com.educationapp.server.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
@@ -74,6 +75,7 @@ public class UserEndpoint {
         return new ResponseEntity<>(users, OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/group/studentId/{studentId}")
     public ResponseEntity<?> removeStudentFromGroup(@PathVariable(value = "studentId") final String studentId) {
         final StudentDB student = studentRepository.findById(studentId)
@@ -86,6 +88,7 @@ public class UserEndpoint {
                                                                                                .get()), OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "/students/without/group")
     public ResponseEntity<?> getStudentsWithoutGroup() {
         final Long universityId = UserContextHolder.getUser().getUniversityId();
@@ -97,6 +100,7 @@ public class UserEndpoint {
         return new ResponseEntity<>(users, OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/group")
     public ResponseEntity<?> addStudentToGroup(@RequestBody final AddStudentsToGroupApi addStudentsToGroupApi) {
         final List<StudentDB> students = addStudentsToGroupApi

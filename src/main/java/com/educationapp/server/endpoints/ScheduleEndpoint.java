@@ -9,6 +9,7 @@ import com.educationapp.server.security.UserContextHolder;
 import com.educationapp.server.services.ScheduleService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
@@ -18,12 +19,14 @@ public class ScheduleEndpoint {
 
     private final ScheduleService scheduleService;
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<?> addLesson(@RequestBody CreateLessonApi createLessonApi) {
         scheduleService.createLesson(createLessonApi);
         return new ResponseEntity<>(CREATED);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping
     public ResponseEntity<?> deleteLesson(@RequestBody DeleteLessonApi deleteLessonApi) {
         return new ResponseEntity<>(scheduleService.deleteLesson(deleteLessonApi), OK);

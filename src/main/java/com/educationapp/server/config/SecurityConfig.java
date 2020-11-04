@@ -1,9 +1,11 @@
 package com.educationapp.server.config;
 
+import com.educationapp.server.repositories.SimpleUserRepository;
+import com.educationapp.server.security.CustomKeycloakAuthenticationProvider;
 import com.educationapp.server.security.UserInitialisationFilter;
 import com.educationapp.server.security.UserLogoutFilter;
-import com.educationapp.server.services.UserService;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
@@ -25,13 +27,19 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 @AllArgsConstructor
 class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
-    private final UserService userService;
+    private final SimpleUserRepository simpleUserRepository;
 
+    @SneakyThrows
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) {
         KeycloakAuthenticationProvider keycloakAuthenticationProvider = keycloakAuthenticationProvider();
         keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper());
         auth.authenticationProvider(keycloakAuthenticationProvider);
+    }
+
+    @Override
+    protected KeycloakAuthenticationProvider keycloakAuthenticationProvider() {
+        return new CustomKeycloakAuthenticationProvider(simpleUserRepository);
     }
 
     @Bean
@@ -57,9 +65,8 @@ class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
                 .antMatchers("/").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterAfter(new UserInitialisationFilter(userService),
+                .addFilterAfter(new UserInitialisationFilter(simpleUserRepository),
                                 UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new UserLogoutFilter(), UsernamePasswordAuthenticationFilter.class);
-        ;
     }
 }

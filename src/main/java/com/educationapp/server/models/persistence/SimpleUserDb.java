@@ -1,8 +1,9 @@
 package com.educationapp.server.models.persistence;
 
-import java.io.Serializable;
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,9 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
-public class UserDB implements Serializable {
-
-    private static final long serialVersionUID = 3366295050169335755L;
+public class SimpleUserDb {
 
     @Id
     @Column(name = "id")
@@ -32,11 +31,10 @@ public class UserDB implements Serializable {
     @Column(name = "university_id")
     private Long universityId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "department_id", referencedColumnName = "id")
-    private DepartmentDb department;
+    @Column(name = "department_id")
+    private Long departmentId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "group_id", referencedColumnName = "id")
-    private StudyGroupDataDb studyGroup;
+    @Column(name = "group_id")
+    private Long groupId;
+
 }

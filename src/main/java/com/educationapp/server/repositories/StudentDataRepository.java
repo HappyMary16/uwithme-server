@@ -9,10 +9,10 @@ import org.springframework.data.repository.query.Param;
 
 public interface StudentDataRepository extends CrudRepository<StudentDataDb, String> {
 
-    @Query(value = "SELECT DISTINCT s.id, s.study_group_id, student_id, " +
+    @Query(value = "SELECT DISTINCT s.id, s.group_id, student_id, " +
             "u.first_name, last_name, surname, username, password, phone, email, role, is_admin, university_id " +
             "FROM students s JOIN users u ON u.id = s.id " +
-            "JOIN schedule_group sg on s.study_group_id = sg.group_id " +
+            "JOIN schedule_group sg on s.group_id = sg.group_id " +
             "LEFT JOIN schedule s2 on sg.schedule_id = s2.id " +
             "LEFT JOIN subjects s3 ON s2.subject_id = s3.id " +
             "WHERE s3.teacher_id = :teacherId",

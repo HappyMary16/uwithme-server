@@ -16,6 +16,12 @@
             <column name="role" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
+            <column name="department_id" type="INTEGER">
+                <constraints nullable="true"/>
+            </column>
+            <column name="group_id" type="INTEGER">
+                <constraints nullable="true"/>
+            </column>
             <column name="is_admin" type="BOOLEAN" defaultValue="false">
                 <constraints nullable="false"/>
             </column>

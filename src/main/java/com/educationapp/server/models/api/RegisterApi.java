@@ -15,16 +15,14 @@ public class RegisterApi {
     @Size(max = 3)
     private Integer role;
 
-    private String studentId;
-
-    private Long studyGroupId;
+    private Long groupId;
 
     private Long departmentId;
-
-    private Long scienceDegreeId;
 
     @NotNull
     private Long universityId;
 
     private Long instituteId;
+
+    private String universityName;
 }

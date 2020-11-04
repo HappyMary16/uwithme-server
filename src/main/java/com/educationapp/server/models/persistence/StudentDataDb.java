@@ -24,7 +24,7 @@ public class StudentDataDb implements Serializable {
     @Column(name = "id")
     private String id;
 
-    @Column(name = "study_group_id")
+    @Column(name = "group_id")
     private Long studyGroupId;
 
     @Column(name = "student_id")

@@ -5,12 +5,6 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <include file="003.01_user_create_table.xml" relativeToChangelogFile="true"/>
     <include file="003.02_user_add_primary_key.xml" relativeToChangelogFile="true"/>
-    <include file="003.03_teachers_create_table.xml" relativeToChangelogFile="true"/>
-    <include file="003.04_teacher_user_add_foreign_key.xml" relativeToChangelogFile="true"/>
-    <include file="003.05_teacher_department_add_foreign_key.xml" relativeToChangelogFile="true"/>
-    <include file="003.06_users_add_foreign_key.xml" relativeToChangelogFile="true"/>
-    <include file="003.07_students_create_table.xml" relativeToChangelogFile="true"/>
-    <include file="003.08_student_user_add_foreign_key.xml" relativeToChangelogFile="true"/>
-    <include file="003.09_student_study_group_add_foreign_key.xml" relativeToChangelogFile="true"/>
-    <include file="003.10_teacher_degree_add_foreign_key.xml" relativeToChangelogFile="true"/>
+    <include file="003.03_user_department_add_foreign_key.xml" relativeToChangelogFile="true"/>
+    <include file="003.04_users_study_group_add_foreign_key.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

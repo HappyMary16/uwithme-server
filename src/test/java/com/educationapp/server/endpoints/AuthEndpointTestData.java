@@ -18,20 +18,17 @@ public class AuthEndpointTestData {
                                                                .build();
     public static final RegisterApi STUDENT_REQUIRED_FIELDS = USER_REQUIRED_FIELDS.toBuilder()
                                                                                   .role(Role.STUDENT.getId())
-                                                                                  .studyGroupId(1L)
+                                                                                  .groupId(1L)
                                                                                   .build();
     public static final RegisterApi STUDENT = USER.toBuilder()
-                                                  .studentId("AA00000")
                                                   .role(Role.STUDENT.getId())
-                                                  .studyGroupId(1L)
+                                                  .groupId(1L)
                                                   .build();
     public static final RegisterApi TEACHER_REQUIRED_FIELDS = USER_REQUIRED_FIELDS.toBuilder()
                                                                                   .role(Role.TEACHER.getId())
-                                                                                  .scienceDegreeId(1L)
                                                                                   .build();
     public static final RegisterApi TEACHER = USER.toBuilder()
                                                   .role(Role.TEACHER.getId())
-                                                  .scienceDegreeId(1L)
                                                   .build();
 
     public static final UserApi CREATED_USER_REQUIRED_FIELDS = UserApi.builder()
@@ -46,23 +43,20 @@ public class AuthEndpointTestData {
             CREATED_USER_REQUIRED_FIELDS.toBuilder()
                                         .role(STUDENT.getRole())
                                         .studyGroupName("studyGroupName")
-                                        .studyGroupId(STUDENT.getStudyGroupId())
+                                        .studyGroupId(STUDENT.getGroupId())
                                         .build();
     public static final UserApi CREATED_STUDENT = CREATED_USER.toBuilder()
-                                                              .studentId(STUDENT.getStudentId())
                                                               .role(STUDENT.getRole())
                                                               .studyGroupName("studyGroupName")
-                                                              .studyGroupId(STUDENT.getStudyGroupId())
+                                                              .studyGroupId(STUDENT.getGroupId())
                                                               .build();
 
     public static final UserApi CREATED_TEACHER_REQUIRED_FIELDS =
             CREATED_USER_REQUIRED_FIELDS.toBuilder()
                                         .role(TEACHER.getRole())
-                                        .scienceDegreeName("scienceDegreeName")
                                         .build();
     public static final UserApi CREATED_TEACHER = CREATED_USER.toBuilder()
                                                               .role(TEACHER.getRole())
-                                                              .scienceDegreeName("scienceDegreeName")
                                                               .build();
 
     public static final UserApi EXPECTED_STUDENT_REQUIRED_FIELDS =

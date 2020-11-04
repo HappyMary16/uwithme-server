@@ -1,7 +1,6 @@
 package com.educationapp.server.security;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -9,7 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.educationapp.server.models.api.UserApi;
-import com.educationapp.server.services.UserService;
+import com.educationapp.server.models.persistence.SimpleUserDb;
+import com.educationapp.server.repositories.SimpleUserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.KeycloakSecurityContext;
@@ -20,7 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @AllArgsConstructor
 public class UserInitialisationFilter extends OncePerRequestFilter {
 
-    private final UserService userService;
+    private final SimpleUserRepository simpleUserRepository;
 
     @Override
     protected void doFilterInternal(final HttpServletRequest request,
@@ -31,17 +31,18 @@ public class UserInitialisationFilter extends OncePerRequestFilter {
                 (KeycloakSecurityContext) request.getAttribute(KeycloakSecurityContext.class.getName());
         final AccessToken token = session.getToken();
 
-        final String userId = token.getSubject();
-        final UserApi user = Optional.ofNullable(userService.findById(userId))
-                                     .orElseGet(UserApi::new);
+        final SimpleUserDb user = simpleUserRepository.findById(token.getSubject()).orElseGet(SimpleUserDb::new);
 
-        UserContextHolder.setUser(user.toBuilder()
-                                      .id(userId)
-                                      .firstName(token.getGivenName())
-                                      .lastName(token.getMiddleName())
-                                      .surname(token.getFamilyName())
-                                      .email(token.getEmail())
-                                      .build());
+        UserContextHolder.setUser(UserApi.builder()
+                                         .id(token.getSubject())
+                                         .firstName(token.getGivenName())
+                                         .lastName(token.getMiddleName())
+                                         .surname(token.getFamilyName())
+                                         .email(token.getEmail())
+                                         .role(user.getRole())
+                                         .universityId(user.getUniversityId())
+                                         .isAdmin(user.getIsAdmin())
+                                         .build());
 
         filterChain.doFilter(request, response);
     }
