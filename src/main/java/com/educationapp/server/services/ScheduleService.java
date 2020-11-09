@@ -11,11 +11,16 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.NotFoundException;
 
+import com.educationapp.server.clients.KeycloakServiceClient;
+import com.educationapp.server.exception.UserNotFoundException;
+import com.educationapp.server.models.KeycloakUser;
 import com.educationapp.server.models.api.CreateLessonApi;
 import com.educationapp.server.models.api.LessonApi;
+import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.models.api.admin.DeleteLessonApi;
 import com.educationapp.server.models.persistence.*;
 import com.educationapp.server.repositories.*;
+import com.educationapp.server.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,9 +33,9 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final SubjectRepository subjectRepository;
     private final UserRepository userRepository;
-    private final StudentRepository studentRepository;
     private final StudyGroupRepository studyGroupRepository;
     private final LectureHallRepository lectureHallRepository;
+    private final KeycloakServiceClient keycloakServiceClient;
 
     public void createLesson(final CreateLessonApi createLessonApi) {
         final List<ScheduleDb> lessonsToCreate = buildLessons(createLessonApi);
@@ -45,38 +50,50 @@ public class ScheduleService {
                                  .collect(Collectors.toList());
     }
 
-    public List<LessonApi> findLessonsByUsername(final String username) {
-        final Optional<UserDB> user = userRepository.findByUsername(username);
-        final List<LessonApi> lessons = new ArrayList<>();
+    public List<LessonApi> findUsersLessons() {
+        final UserApi user = UserContextHolder.getUser();
 
-        if (user.isPresent() && user.get().getRole().equals(STUDENT.getId())) {
-            studentRepository.findById(user.get().getId())
-                             .ifPresent(student -> lessons.addAll(findLessonsByGroupId(student.getStudyGroupId())));
-        } else if (user.isPresent() && user.get().getRole().equals(TEACHER.getId())) {
-            return scheduleRepository.findAllByTeacherId(user.get().getId())
-                                     .stream()
-                                     .map(this::mapScheduleDbToLesson)
-                                     .collect(Collectors.toList());
+        if (user.getRole().equals(STUDENT.getId())) {
+            return new ArrayList<>(findLessonsByGroupId(user.getStudyGroupId()));
+        } else if (user.getRole().equals(TEACHER.getId())) {
+            return findLessonsByTeacherId(user.getId());
         } else {
             throw new RuntimeException("Schedule exist only for students and teacher");
         }
+    }
 
-        return lessons;
+    public List<LessonApi> findLessonsById(final String username) {
+        final UserDb user = userRepository.findById(username).orElseThrow(UserNotFoundException::new);
+
+        if (user.getRole().equals(STUDENT.getId())) {
+            return new ArrayList<>(findLessonsByGroupId(user.getStudyGroup().getId()));
+        } else if (user.getRole().equals(TEACHER.getId())) {
+            return findLessonsByTeacherId(user.getId());
+        } else {
+            throw new RuntimeException("Schedule exist only for students and teacher");
+        }
     }
 
     public LessonApi deleteLesson(final DeleteLessonApi deleteLessonApi) {
-        final List<String> groupNames = deleteLessonApi.getGroups();
+        final List<String> groupNames = deleteLessonApi.getGroups() != null
+                ? deleteLessonApi.getGroups()
+                : List.of();
+
         final Long lessonId = deleteLessonApi.getLessonId();
         final ScheduleDb schedule = scheduleRepository.findById(lessonId)
                                                       .orElseThrow(() -> new NotFoundException("Lesson is not found"));
 
-        if (groupNames == null || groupNames.isEmpty()) {
+        if (groupNames.isEmpty()) {
             schedule.setGroups(null);
             scheduleRepository.save(schedule);
             scheduleRepository.deleteById(lessonId);
             return null;
         } else {
-            schedule.setGroups(studyGroupRepository.findAllByNames(groupNames));
+            final List<StudyGroupDb> groups = schedule.getGroups()
+                                                      .stream()
+                                                      .filter(group -> !groupNames.contains(group.getName()))
+                                                      .collect(Collectors.toList());
+            schedule.setGroups(groups);
             return mapScheduleDbToLesson(scheduleRepository.save(schedule));
         }
     }
@@ -90,14 +107,11 @@ public class ScheduleService {
                                                            .weekDay(scheduleDb.getDayOfWeek())
                                                            .weekNumber(scheduleDb.getWeekNumber());
 
-        if (Objects.nonNull(scheduleDb.getSubjectId())) {
-            subjectRepository
-                    .findById(scheduleDb.getSubjectId())
-                    .ifPresent(subject -> {
-                        lesson.subjectName(subject.getName());
-                        userRepository.findById(subject.getTeacherId())
-                                      .ifPresent(teacher -> lesson.teacherName(teacher.getSurname()));
-                    });
+        final SubjectDB subject = scheduleDb.getSubject();
+        if (Objects.nonNull(subject)) {
+            final KeycloakUser teacher = keycloakServiceClient.getUserById(subject.getTeacher().getId());
+            lesson.subjectName(subject.getName())
+                  .teacherName(teacher.getFamilyName());
         } else {
             lesson.subjectName(scheduleDb.getSubjectName())
                   .teacherName(scheduleDb.getTeacherName());
@@ -129,20 +143,21 @@ public class ScheduleService {
 
         } else if (createLessonApi.getSubjectId() == null) {
             final SubjectDB newSubject = new SubjectDB(createLessonApi.getSubjectName(),
-                                                       createLessonApi.getTeacherId());
-            final Long subjectId = subjectRepository.save(newSubject).getId();
-            scheduleDb.subjectId(subjectId);
+                                                       userRepository
+                                                               .getProxyByIdIfExist(createLessonApi.getTeacherId()));
+            scheduleDb.subject(newSubject);
 
         } else {
             final Optional<SubjectDB> subjectDb =
                     subjectRepository.findByNameAndTeacherId(createLessonApi.getSubjectName(),
                                                              createLessonApi.getTeacherId());
-            subjectDb.ifPresentOrElse(subject -> scheduleDb.subjectId(subject.getId()),
+            subjectDb.ifPresentOrElse(scheduleDb::subject,
                                       () -> {
-                                          final SubjectDB newSubject = new SubjectDB(createLessonApi.getSubjectName(),
-                                                                                     createLessonApi.getTeacherId());
-                                          subjectRepository.save(newSubject);
-                                          scheduleDb.subjectId(newSubject.getId());
+                                          final SubjectDB newSubject =
+                                                  new SubjectDB(createLessonApi.getSubjectName(),
+                                                                userRepository.getProxyByIdIfExist(
+                                                                        createLessonApi.getTeacherId()));
+                                          scheduleDb.subject(newSubject);
                                       });
         }
 
@@ -176,5 +191,12 @@ public class ScheduleService {
         return scheduleDb1.getDayOfWeek().equals(scheduleDb2.getDayOfWeek())
                 && scheduleDb1.getLessonNumber().equals(scheduleDb2.getLessonNumber())
                 && scheduleDb1.getWeekNumber().equals(scheduleDb2.getWeekNumber());
+    }
+
+    private List<LessonApi> findLessonsByTeacherId(final String teacherId) {
+        return scheduleRepository.findAllByTeacherId(teacherId)
+                                 .stream()
+                                 .map(this::mapScheduleDbToLesson)
+                                 .collect(Collectors.toList());
     }
 }

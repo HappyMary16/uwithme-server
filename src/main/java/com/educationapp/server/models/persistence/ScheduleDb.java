@@ -22,8 +22,9 @@ public class ScheduleDb {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "subject_id")
-    private Long subjectId;
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_id", referencedColumnName = "id")
+    private SubjectDB subject;
 
     @Column(name = "lesson_number")
     private Long lessonNumber;

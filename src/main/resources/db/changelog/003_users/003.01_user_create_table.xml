@@ -10,22 +10,17 @@
             </not>
         </preConditions>
         <createTable tableName="users">
-            <column name="id" type="INTEGER">
+            <column name="id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="first_name" type="VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"/>
-            <column name="last_name" type="VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"/>
-            <column name="surname" type="VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"/>
-            <column name="username" type="VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci">
-                <constraints nullable="false"/>
-            </column>
-            <column name="password" type="VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci">
-            <constraints nullable="false"/>
-            </column>
-            <column name="phone" type="VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"/>
-            <column name="email" type="VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"/>
             <column name="role" type="INTEGER">
                 <constraints nullable="false"/>
+            </column>
+            <column name="department_id" type="INTEGER">
+                <constraints nullable="true"/>
+            </column>
+            <column name="group_id" type="INTEGER">
+                <constraints nullable="true"/>
             </column>
             <column name="is_admin" type="BOOLEAN" defaultValue="false">
                 <constraints nullable="false"/>

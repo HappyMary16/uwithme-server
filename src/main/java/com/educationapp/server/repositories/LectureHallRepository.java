@@ -1,7 +1,6 @@
 package com.educationapp.server.repositories;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.educationapp.server.models.persistence.LectureHallDb;
 import org.springframework.data.jpa.repository.Query;
@@ -14,6 +13,4 @@ public interface LectureHallRepository extends CrudRepository<LectureHallDb, Lon
             ":universityId",
             nativeQuery = true)
     List<LectureHallDb> findAllByUniversityId(@Param("universityId") Long universityId);
-
-    Optional<LectureHallDb> findByName(String name);
 }

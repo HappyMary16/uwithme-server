@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 import com.educationapp.server.models.persistence.StudyGroupDataDb;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface StudyGroupDataRepository extends CrudRepository<StudyGroupDataDb, Long> {
+public interface StudyGroupDataRepository extends JpaRepository<StudyGroupDataDb, Long> {
 
     Optional<StudyGroupDataDb> findById(Long id);
 
@@ -28,5 +28,11 @@ public interface StudyGroupDataRepository extends CrudRepository<StudyGroupDataD
             "JOIN subjects s3 on s2.subject_id = s3.id " +
             "WHERE s3.teacher_id = :teacherId",
             nativeQuery = true)
-    List<StudyGroupDataDb> findAllByTeacher(Long teacherId);
+    List<StudyGroupDataDb> findAllByTeacher(String teacherId);
+
+    default StudyGroupDataDb getProxyByIdIfExist(final Long id) {
+        return id != null
+                ? getOne(id)
+                : null;
+    }
 }

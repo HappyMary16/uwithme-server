@@ -10,6 +10,7 @@ import com.educationapp.server.repositories.InstituteRepository;
 import com.educationapp.server.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
@@ -21,6 +22,7 @@ public class DepartmentEndpoint {
 
     private final DepartmentRepository departmentRepository;
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<?> addDepartment(@RequestBody final AddDepartmentApi addDepartmentApi) {
         final Long universityId = UserContextHolder.getUser().getUniversityId();

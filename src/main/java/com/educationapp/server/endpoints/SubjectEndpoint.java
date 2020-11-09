@@ -12,6 +12,7 @@ import com.educationapp.server.security.UserContextHolder;
 import com.educationapp.server.services.SubjectService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
@@ -28,10 +29,11 @@ public class SubjectEndpoint {
         if (user.getRole().equals(ADMIN.getId())) {
             return new ResponseEntity<>(subjectRepository.findAllByUniversityId(user.getUniversityId()), OK);
         } else {
-            return new ResponseEntity<>(subjectService.findSubjectsByTeacherUsername(), OK);
+            return new ResponseEntity<>(subjectService.findUsersSubjects(), OK);
         }
     }
 
+    @PreAuthorize("hasAuthority('TEACHER')")
     @PostMapping("/{username:.+}/{subjectName:.+}")
     public ResponseEntity<?> saveSubject(@PathVariable("subjectName") final String subjectName,
                                          @PathVariable("username") final String username) {

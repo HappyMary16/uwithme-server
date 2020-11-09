@@ -6,19 +6,14 @@
     <changeSet author="mborodin" id="003.03">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="teachers"/>
+                <foreignKeyConstraintExists foreignKeyName="fk_user_department"/>
             </not>
         </preConditions>
-        <createTable tableName="teachers">
-            <column name="id" type="INTEGER">
-                <constraints nullable="false"/>
-            </column>
-            <column name="science_degree_id" type="INTEGER">
-                <constraints nullable="false"/>
-            </column>
-            <column name="department_id" type="INTEGER">
-                <constraints nullable="true"/>
-            </column>
-        </createTable>
+
+        <addForeignKeyConstraint baseTableName="users"
+                                 baseColumnNames="department_id"
+                                 constraintName="fk_teacher_department"
+                                 referencedTableName="departments"
+                                 referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>

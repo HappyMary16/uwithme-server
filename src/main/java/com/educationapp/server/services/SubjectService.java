@@ -9,30 +9,25 @@ import java.util.stream.Collectors;
 import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.models.persistence.AccessToFileDB;
 import com.educationapp.server.models.persistence.SubjectDB;
-import com.educationapp.server.repositories.*;
+import com.educationapp.server.models.persistence.UserDb;
+import com.educationapp.server.repositories.AccessToFileRepository;
+import com.educationapp.server.repositories.FileRepository;
+import com.educationapp.server.repositories.SubjectRepository;
+import com.educationapp.server.repositories.UserRepository;
 import com.educationapp.server.security.UserContextHolder;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+@AllArgsConstructor
 @Service
 public class SubjectService {
 
-    @Autowired
-    private SubjectRepository subjectRepository;
+    private final SubjectRepository subjectRepository;
+    private final UserRepository userRepository;
+    private final AccessToFileRepository accessToFileRepository;
+    private final FileRepository fileRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private AccessToFileRepository accessToFileRepository;
-
-    @Autowired
-    private StudentRepository studentRepository;
-
-    @Autowired
-    private FileRepository fileRepository;
-
-    public List<SubjectDB> findSubjectsByTeacherUsername() {
+    public List<SubjectDB> findUsersSubjects() {
         final UserApi user = UserContextHolder.getUser();
         if (user.getRole().equals(STUDENT.getId())) {
             final List<AccessToFileDB> accessToFileDBS =
@@ -53,9 +48,8 @@ public class SubjectService {
         throw new UnsupportedOperationException("Operation 'Get files' supported only for teachers and students");
     }
 
-    public SubjectDB save(final String username, final String subject) {
-        final Long teacherId = userRepository.findByUsername(username).get().getId();
-
-        return subjectRepository.save(new SubjectDB(subject, teacherId));
+    public SubjectDB save(final String userId, final String subject) {
+        final UserDb teacher = userRepository.getProxyByIdIfExist(userId);
+        return subjectRepository.save(new SubjectDB(subject, teacher));
     }
 }

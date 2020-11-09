@@ -27,6 +27,8 @@
         <lombok.version>1.18.6</lombok.version>
         <mysql.version>8.0.15</mysql.version>
         <javax.version>7.0</javax.version>
+        <spring-security-oauth2-autoconfigure.version>2.0.0.RELEASE</spring-security-oauth2-autoconfigure.version>
+        <keycloak.version>9.0.2</keycloak.version>
     </properties>
 
     <dependencies>
@@ -105,6 +107,18 @@
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <version>${javax.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-spring-boot-starter</artifactId>
+            <version>${keycloak.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security.oauth.boot</groupId>
+            <artifactId>spring-security-oauth2-autoconfigure</artifactId>
+            <version>${spring-security-oauth2-autoconfigure.version}</version>
         </dependency>
     </dependencies>
 

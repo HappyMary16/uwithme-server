@@ -13,7 +13,7 @@ public class CreateLessonApi {
 
     private final String subjectName;
 
-    private final Long teacherId;
+    private final String teacherId;
 
     private final String teacherName;
 

@@ -6,14 +6,16 @@ import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Value;
 
 @AllArgsConstructor
 @Getter
+@Value
 public class AddStudentsToGroupApi {
 
     @NotNull
-    private List<Long> studentsIds;
+    List<String> studentsIds;
 
     @NotNull
-    private Long groupId;
+    Long groupId;
 }

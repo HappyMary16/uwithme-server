@@ -14,7 +14,7 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="study_group_id" type="INTEGER">
+            <column name="group_id" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
             <column name="file_id" type="INTEGER">

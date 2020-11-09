@@ -23,7 +23,7 @@ public class DepartmentDb {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "institute_id", referencedColumnName = "id")
     private InstituteDb institute;
 }

@@ -1,222 +1,202 @@
 package com.educationapp.server.services;
 
 import static com.educationapp.server.enums.Role.ADMIN;
-import static com.educationapp.server.enums.Role.STUDENT;
-import static com.educationapp.server.enums.Role.TEACHER;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-import com.educationapp.server.enums.Role;
-import com.educationapp.server.exception.ResourceNotFoundException;
+import javax.transaction.Transactional;
+
+import com.educationapp.server.clients.KeycloakServiceClient;
+import com.educationapp.server.exception.UserNotFoundException;
+import com.educationapp.server.models.KeycloakUser;
 import com.educationapp.server.models.api.RegisterApi;
 import com.educationapp.server.models.api.UserApi;
-import com.educationapp.server.models.api.admin.AddUniversityApi;
 import com.educationapp.server.models.persistence.*;
-import com.educationapp.server.repositories.*;
-import com.educationapp.server.security.UserDetailsImpl;
+import com.educationapp.server.repositories.DepartmentRepository;
+import com.educationapp.server.repositories.StudyGroupDataRepository;
+import com.educationapp.server.repositories.UniversityRepository;
+import com.educationapp.server.repositories.UserRepository;
+import com.educationapp.server.security.UserContextHolder;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
+@Slf4j
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final UserRepository userRepository;
-    private final StudentRepository studentRepository;
-    private final TeacherRepository teacherRepository;
-    private final StudentDataRepository studentDataRepository;
-    private final TeacherDataRepository teacherDataRepository;
-    private final StudyGroupRepository studyGroupRepository;
+    private final StudyGroupDataRepository studyGroupRepository;
     private final DepartmentRepository departmentRepository;
-    private final InstituteRepository instituteRepository;
-    private final ScienceDegreeRepository scienceDegreeRepository;
-    private final FileService fileService;
+    private final UniversityRepository universityRepository;
+    private final KeycloakServiceClient keycloakServiceClient;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        final UserDB user = userRepository.findByUsername(username)
-                                          .orElseThrow(() -> new UsernameNotFoundException(username));
-        return new UserDetailsImpl(user);
-    }
+    @Transactional
+    public String save(final RegisterApi user) {
+        final String userId = UserContextHolder.getUser().getId();
 
-    public Long save(final RegisterApi user) {
-        final UserDB toCreate = UserDB.builder()
-                                      .firstName(user.getFirstName())
-                                      .lastName(user.getLastName())
-                                      .surname(user.getSurname())
-                                      .username(user.getUsername())
-                                      .password(user.getPassword())
-                                      .phone(user.getPhone())
-                                      .email(user.getEmail())
+        final DepartmentDb departmentProxy = departmentRepository.getProxyByIdIfExist(user.getDepartmentId());
+        final StudyGroupDataDb groupProxy = studyGroupRepository.getProxyByIdIfExist(user.getGroupId());
+
+        final UserDb toCreate = UserDb.builder().id(userId)
                                       .role(user.getRole())
                                       .isAdmin(false)
                                       .universityId(user.getUniversityId())
-                                      .build();
-        final UserDB created = userRepository.save(toCreate);
-
-        if (user.getRole() == STUDENT.getId()) {
-            final StudentDB studentToCreate = StudentDB.builder()
-                                                       .id(created.getId())
-                                                       .studentId(user.getStudentId())
-                                                       .studyGroupId(user.getStudyGroupId())
-                                                       .build();
-            return studentRepository.save(studentToCreate).getId();
-
-        } else if (user.getRole() == TEACHER.getId()) {
-            final TeacherDB teacherToCreate = TeacherDB.builder()
-                                                       .id(created.getId())
-                                                       .departmentId(user.getDepartmentId())
-                                                       .scienceDegreeId(user.getScienceDegreeId())
-                                                       .build();
-            return teacherRepository.save(teacherToCreate).getId();
-        }
-        return null;
-    }
-
-    public UserApi save(final AddUniversityApi addUniversityApi, final UniversityDb university) {
-        final UserDB toCreate = UserDB.builder()
-                                      .username(addUniversityApi.getUsername())
-                                      .password(addUniversityApi.getPassword())
-                                      .isAdmin(true)
-                                      .role(ADMIN.getId())
-                                      .universityId(university.getId())
+                                      .department(departmentProxy)
+                                      .studyGroup(groupProxy)
                                       .build();
 
-        userRepository.save(toCreate);
+        if (user.getRole().equals(ADMIN.getId())) {
+            final UniversityDb universityToCreate = new UniversityDb(user.getUniversityName());
+            final Long universityId = universityRepository.save(universityToCreate).getId();
 
-        return UserApi.builder()
-                      .id(toCreate.getId())
-                      .username(addUniversityApi.getUsername())
-                      .password(addUniversityApi.getPassword())
-                      .isAdmin(true)
-                      .role(ADMIN.getId())
-                      .universityId(university.getId())
-                      .build();
+            toCreate.setUniversityId(universityId);
+        }
+
+        return userRepository.save(toCreate).getId();
     }
 
-    public UserApi findByUserName(final String username) {
-        UserDB userDb = userRepository.findByUsername(username).orElse(null);
+    @Transactional
+    public UserApi getUserApi() {
+        final UserApi user = UserContextHolder.getUser();
+        final UserApi.UserApiBuilder userBuilder = user.toBuilder();
+        final UserDb userDb = userRepository.findById(user.getId())
+                                            .orElseThrow(() -> new UserNotFoundException(user.getEmail()));
 
-        if (Objects.isNull(userDb)) {
-            throw new ResourceNotFoundException("User", "user name", username);
+        if (!userDb.getRole().equals(ADMIN.getId())) {
+            final DepartmentDb department = Objects.nonNull(userDb.getStudyGroup())
+                    ? userDb.getStudyGroup().getDepartment()
+                    : userDb.getDepartment();
+            userBuilder.departmentName(department.getName())
+                       .instituteName(department.getInstitute().getName());
         }
 
-        UserApi.UserApiBuilder userApi = UserApi.builder()
-                                                .id(userDb.getId())
-                                                .firstName(userDb.getFirstName())
-                                                .lastName(userDb.getLastName())
-                                                .surname(userDb.getSurname())
-                                                .username(userDb.getUsername())
-                                                .password(userDb.getPassword())
-                                                .phone(userDb.getPhone())
-                                                .email(userDb.getEmail())
-                                                .role(userDb.getRole())
-                                                .universityId(userDb.getUniversityId())
-                                                .isAdmin(userDb.getIsAdmin());
-        Long departmentId = null;
-
-        if (Role.STUDENT.getId() == userDb.getRole()) {
-            StudentDB studentDb = studentRepository.findById(userDb.getId())
-                                                   .orElse(new StudentDB());
-            StudyGroupDb studyGroup = studyGroupRepository.findById(studentDb.getStudyGroupId())
-                                                          .orElse(new StudyGroupDb());
-            departmentId = studyGroup.getDepartmentId();
-
-            userApi = userApi.studentId(studentDb.getStudentId())
-                             .studyGroupName(studyGroup.getName())
-                             .studyGroupId(studyGroup.getId());
-        } else if (Role.TEACHER.getId() == userDb.getRole()) {
-            TeacherDB teacherDB = teacherRepository.findById(userDb.getId())
-                                                   .orElse(new TeacherDB());
-            ScienceDegreeDb scienceDegree = scienceDegreeRepository.findById(teacherDB.getScienceDegreeId())
-                                                                   .orElse(new ScienceDegreeDb());
-            departmentId = teacherDB.getDepartmentId();
-
-            userApi = userApi.scienceDegreeName(scienceDegree.getName());
+        if (Objects.nonNull(userDb.getStudyGroup())) {
+            final StudyGroupDataDb studyGroup = userDb.getStudyGroup();
+            userBuilder.studyGroupId(studyGroup.getId())
+                       .studyGroupName(studyGroup.getName());
         }
-        if (Role.STUDENT.getId() == userDb.getRole() || Role.TEACHER.getId() == userDb.getRole()) {
-            DepartmentDb department = departmentRepository.findById(Objects.requireNonNull(departmentId))
-                                                          .orElse(new DepartmentDb());
-            InstituteDb institute = instituteRepository.findById(department.getInstitute().getId())
-                                                       .orElse(new InstituteDb());
 
-            return userApi.departmentName(department.getName())
-                          .instituteName(institute.getName())
-                          .build();
-        } else {
-            return userApi.build();
-        }
+        return userBuilder.build();
     }
 
-    public UserApi mapTeacherDataDbToUserApi(final TeacherDataDb teacher) {
-        final DepartmentDb department = departmentRepository.findById(teacher.getDepartmentId())
-                                                            .orElse(new DepartmentDb());
+    @Transactional
+    public List<UserApi> findTeachersByUniversityId() {
+        final Long universityId = UserContextHolder.getUser().getUniversityId();
+        final List<UserApi> teachers = userRepository.findAllByRoleAndUniversityId(2, universityId)
+                                                     .stream()
+                                                     .map(this::mapToUserApi)
+                                                     .collect(Collectors.toList());
 
-        return UserApi.builder()
-                      .id(teacher.getId())
-                      .firstName(teacher.getFirstName())
-                      .lastName(teacher.getLastName())
-                      .surname(teacher.getSurname())
-                      .username(teacher.getUsername())
-                      .password(teacher.getPassword())
-                      .phone(teacher.getPhone())
-                      .email(teacher.getEmail())
-                      .role(teacher.getRole())
-                      .universityId(teacher.getUniversityId())
-                      .scienceDegreeName(scienceDegreeRepository.findById(teacher.getScienceDegreeId())
-                                                                .map(ScienceDegreeDb::getName)
-                                                                .orElse(null))
-                      .departmentName(department.getName())
-                      .instituteName(instituteRepository.findById(department.getInstitute().getId())
-                                                        .map(InstituteDb::getName)
-                                                        .orElse(null))
-                      //TODO
-//                      .isAdmin(teacher.getIsAdmin())
-                      .build();
+        log.debug("Teachers by university id: {}. Result: {}", universityId, teachers);
+
+        return teachers;
     }
 
-    public UserApi mapStudentDataDbToUserApi(final StudentDataDb student) {
-        StudyGroupDb studyGroup;
-        if (student.getStudyGroupId() != null) {
-            studyGroup = studyGroupRepository.findById(student.getStudyGroupId())
-                                             .orElse(new StudyGroupDb());
-        } else {
-            studyGroup = new StudyGroupDb();
+    @Transactional
+    public List<UserApi> findStudentsByGroupId(final Long groupId) {
+        return userRepository.findAllByStudyGroupId(groupId)
+                             .stream()
+                             .map(this::mapToUserApi)
+                             .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public UserApi removeStudentFromGroup(final String studentId) {
+        final UserDb student = userRepository.findById(studentId)
+                                             .orElseThrow(UserNotFoundException::new)
+                                             .toBuilder()
+                                             .studyGroup(null)
+                                             .build();
+        final UserDb updatedUser = userRepository.save(student);
+        return mapToUserApi(updatedUser);
+    }
+
+    public void addStudentToGroup(final List<String> studentIds, final Long groupId) {
+        final List<UserDb> students = studentIds
+                .stream()
+                .map(id -> userRepository.findById(id).orElse(null))
+                .filter(Objects::nonNull)
+                .peek(s -> {
+                    final StudyGroupDataDb groupProxy = studyGroupRepository.getProxyByIdIfExist(groupId);
+                    s.setStudyGroup(groupProxy);
+                })
+                .collect(Collectors.toList());
+
+        userRepository.saveAll(students);
+    }
+
+    @Transactional
+    public List<UserApi> findUsersWithoutGroup() {
+        final Long universityId = UserContextHolder.getUser().getUniversityId();
+        return userRepository.findAllByStudyGroupIsNullAndRoleAndUniversityId(1, universityId)
+                             .stream()
+                             .map(this::mapToUserApi)
+                             .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<UserApi> findStudentByTeacherId(final String teacherId) {
+        return userRepository.findStudentsByTeacherId(teacherId)
+                             .stream()
+                             .map(this::mapToUserApi)
+                             .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<UserApi> findTeachersByGroupId(final Long groupId) {
+        return userRepository.findTeachersByGroupId(groupId)
+                             .stream()
+                             .map(this::mapToUserApi)
+                             .collect(Collectors.toList());
+    }
+
+    private UserApi mapToUserApi(final UserDb userDb) {
+        final KeycloakUser user = keycloakServiceClient.getUserById(userDb.getId());
+
+        return mapUserDbToUserApi(userDb).toBuilder()
+                                         .firstName(user.getGivenName())
+                                         .lastName(user.getMiddleName())
+                                         .surname(user.getFamilyName())
+                                         .email(user.getEmail())
+                                         .build();
+    }
+
+    public static UserApi mapUserDbToUserApi(final UserDb userDb) {
+        StudyGroupDataDb studyGroup = userDb.getStudyGroup();
+        DepartmentDb department = userDb.getDepartment();
+
+        if (department == null) {
+            if (studyGroup == null) {
+                studyGroup = new StudyGroupDataDb();
+                department = new DepartmentDb();
+            } else {
+                department = studyGroup.getDepartment();
+            }
         }
 
-        DepartmentDb department;
-        if (studyGroup.getDepartmentId() != null) {
-            department = departmentRepository.findById(studyGroup.getDepartmentId())
-                                             .orElse(new DepartmentDb());
-        } else {
-            department = new DepartmentDb();
+        if (studyGroup == null) {
+            studyGroup = new StudyGroupDataDb();
+        }
+
+        final InstituteDb institute = department.getInstitute();
+        String instituteName = "";
+        if (institute != null) {
+            instituteName = institute.getName();
         }
 
         return UserApi.builder()
-                      .id(student.getId())
-                      .firstName(student.getFirstName())
-                      .lastName(student.getLastName())
-                      .surname(student.getSurname())
-                      .username(student.getUsername())
-                      .password(student.getPassword())
-                      .phone(student.getPhone())
-                      .email(student.getEmail())
-                      .role(student.getRole())
-                      .universityId(student.getUniversityId())
-                      .studentId(student.getStudentId())
+                      .id(userDb.getId())
+                      .role(userDb.getRole())
+                      .universityId(userDb.getUniversityId())
                       .studyGroupName(studyGroup.getName())
                       .studyGroupId(studyGroup.getId())
                       .departmentName(department.getName())
-                      .instituteName(department.getInstitute() != null
-                                             ? instituteRepository.findById(department.getId())
-                                                                  .map(InstituteDb::getName)
-                                                                  .orElse(null)
-                                             : null)
-                      //TODO
-//                      .isAdmin(student.getIsAdmin())
+                      .instituteName(instituteName)
+                      .isAdmin(userDb.getIsAdmin())
                       .build();
     }
 }

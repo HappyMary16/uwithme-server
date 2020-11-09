@@ -24,8 +24,6 @@ import com.educationapp.server.models.persistence.FileDB;
 import com.educationapp.server.models.persistence.SubjectDB;
 import com.educationapp.server.repositories.AccessToFileRepository;
 import com.educationapp.server.repositories.FileRepository;
-import com.educationapp.server.repositories.StudentRepository;
-import com.educationapp.server.repositories.UserRepository;
 import com.educationapp.server.security.UserContextHolder;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,15 +41,11 @@ public class FileService {
     private final Path userAvatarStorageLocation;
     private final FileRepository fileRepository;
     private final AccessToFileRepository accessToFileRepository;
-    private final UserRepository userRepository;
-    private final StudentRepository studentRepository;
     private final SubjectService subjectService;
 
     @Autowired
     public FileService(final FileRepository fileRepository,
                        final AccessToFileRepository accessToFileRepository,
-                       final UserRepository userRepository,
-                       final StudentRepository studentRepository,
                        final SubjectService subjectService,
                        @Value("${file.upload.directory}") final String fileUploadDirectory,
                        @Value("${user.avatar.upload.directory}") final String userAvatarUploadDirectory) {
@@ -69,16 +63,14 @@ public class FileService {
 
         this.fileRepository = fileRepository;
         this.accessToFileRepository = accessToFileRepository;
-        this.userRepository = userRepository;
-        this.studentRepository = studentRepository;
         this.subjectService = subjectService;
     }
 
     public String saveFile(final SaveFileApi file) {
-        final String username = UserContextHolder.getUser().getUsername();
+        final String username = UserContextHolder.getUser().getId();
         final String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()));
 
-        final SubjectDB subjectDb = subjectService.findSubjectsByTeacherUsername()
+        final SubjectDB subjectDb = subjectService.findUsersSubjects()
                                                   .stream()
                                                   .filter(subject -> subject.getName().equals(file.getSubjectName()))
                                                   .findFirst()
@@ -111,7 +103,7 @@ public class FileService {
     }
 
     public void updateAvatar(final MultipartFile avatar) {
-        final Long userId = UserContextHolder.getUser().getId();
+        final String userId = UserContextHolder.getUser().getId();
         final Path targetLocation = userAvatarStorageLocation.resolve(userId + ".jpg");
 
         try {
@@ -121,7 +113,7 @@ public class FileService {
         }
     }
 
-    public Resource loadAvatar(final Long userId) {
+    public Resource loadAvatar(final String userId) {
         final Path filePath = userAvatarStorageLocation.resolve(userId + ".jpg");
         return loadFileByPath(filePath);
     }
@@ -144,7 +136,7 @@ public class FileService {
     public List<FileApi> findAllFiles() {
         final UserApi user = UserContextHolder.getUser();
         if (user.getRole().equals(STUDENT.getId())) {
-            final Long studyGroupId = studentRepository.findById(user.getId()).get().getStudyGroupId();
+            final Long studyGroupId = user.getStudyGroupId();
             return accessToFileRepository.findAllByStudyGroupId(studyGroupId)
                                          .stream()
                                          .map(accessToFileDB -> {
@@ -158,7 +150,7 @@ public class FileService {
                                          })
                                          .collect(Collectors.toList());
         } else if (user.getRole().equals(TEACHER.getId())) {
-            return subjectService.findSubjectsByTeacherUsername()
+            return subjectService.findUsersSubjects()
                                  .stream()
                                  .map(SubjectDB::getId)
                                  .map(fileRepository::findAllBySubjectId)

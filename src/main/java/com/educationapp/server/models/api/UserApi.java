@@ -1,5 +1,6 @@
 package com.educationapp.server.models.api;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,10 +9,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder(toBuilder = true)
 public class UserApi {
 
-    private Long id;
+    private String id;
 
     private String firstName;
 
@@ -21,15 +23,11 @@ public class UserApi {
 
     private String username;
 
-    private String password;
-
     private String phone;
 
     private String email;
 
     private Integer role;
-
-    private String studentId;
 
     private String studyGroupName;
 
@@ -38,12 +36,6 @@ public class UserApi {
     private String instituteName;
 
     private String departmentName;
-
-    private String scienceDegreeName;
-
-    private String authToken;
-
-    private String refreshToken;
 
     private Long universityId;
 

@@ -15,35 +15,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
-public class UserDB implements Serializable {
+public class UserDb implements Serializable {
 
     private static final long serialVersionUID = 3366295050169335755L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
-
-    @Column(name = "first_name")
-    private String firstName;
-
-    @Column(name = "last_name")
-    private String lastName;
-
-    @Column(name = "surname")
-    private String surname;
-
-    @Column(name = "username")
-    private String username;
-
-    @Column(name = "password")
-    private String password;
-
-    @Column(name = "phone")
-    private String phone;
-
-    @Column(name = "email")
-    private String email;
+    private String id;
 
     @Column(name = "role")
     private Integer role;
@@ -53,4 +31,12 @@ public class UserDB implements Serializable {
 
     @Column(name = "university_id")
     private Long universityId;
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "department_id", referencedColumnName = "id")
+    private DepartmentDb department;
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "group_id", referencedColumnName = "id")
+    private StudyGroupDataDb studyGroup;
 }

@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "subjects")
 public class SubjectDB {
 
-    public SubjectDB(final String name, final Long teacherId) {
+    public SubjectDB(final String name, final UserDb teacher) {
         this.name = name;
-        this.teacherId = teacherId;
+        this.teacher = teacher;
     }
 
     @Id
@@ -26,6 +26,7 @@ public class SubjectDB {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "teacher_id")
-    private Long teacherId;
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinColumn(name = "teacher_id", referencedColumnName = "id")
+    private UserDb teacher;
 }

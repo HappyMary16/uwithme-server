@@ -16,7 +16,7 @@
             <column name="name" type="VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci">
                 <constraints nullable="false"/>
             </column>
-            <column name="teacher_id" type="INTEGER">
+            <column name="teacher_id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
         </createTable>

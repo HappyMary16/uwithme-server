@@ -6,20 +6,14 @@ import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.ws.rs.NotFoundException;
 
 import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.models.api.admin.AddStudentsToGroupApi;
-import com.educationapp.server.models.persistence.StudentDB;
-import com.educationapp.server.repositories.StudentDataRepository;
-import com.educationapp.server.repositories.StudentRepository;
-import com.educationapp.server.repositories.TeacherDataRepository;
 import com.educationapp.server.security.UserContextHolder;
 import com.educationapp.server.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
@@ -28,17 +22,10 @@ import org.springframework.web.bind.annotation.*;
 public class UserEndpoint {
 
     private final UserService userService;
-    private final TeacherDataRepository teacherDataRepository;
-    private final StudentDataRepository studentDataRepository;
-    private final StudentRepository studentRepository;
 
     @GetMapping(value = "/teachers")
     public ResponseEntity<?> getTeachersByUniversityId() {
-        final Long universityId = UserContextHolder.getUser().getUniversityId();
-        final List<UserApi> users = teacherDataRepository.findAllByUniversityId(universityId)
-                                                         .stream()
-                                                         .map(userService::mapTeacherDataDbToUserApi)
-                                                         .collect(Collectors.toList());
+        final List<UserApi> users = userService.findTeachersByUniversityId();
 
         return new ResponseEntity<>(users, OK);
     }
@@ -49,15 +36,9 @@ public class UserEndpoint {
         List<UserApi> users;
 
         if (user.getRole().equals(STUDENT.getId())) {
-            users = teacherDataRepository.findAllByGroupId(user.getStudyGroupId())
-                                         .stream()
-                                         .map(userService::mapTeacherDataDbToUserApi)
-                                         .collect(Collectors.toList());
+            users = userService.findTeachersByGroupId(user.getStudyGroupId());
         } else if (user.getRole().equals(TEACHER.getId())) {
-            users = studentDataRepository.findAllByTeacherId(user.getId())
-                                         .stream()
-                                         .map(userService::mapStudentDataDbToUserApi)
-                                         .collect(Collectors.toList());
+            users = userService.findStudentByTeacherId(user.getId());
         } else {
             return new ResponseEntity<>(METHOD_NOT_ALLOWED);
         }
@@ -67,47 +48,27 @@ public class UserEndpoint {
 
     @GetMapping(value = "/students/groupId/{groupId}")
     public ResponseEntity<?> getStudentsByGroupId(@PathVariable(value = "groupId") final Long groupId) {
-        final List<UserApi> users = studentDataRepository.findAllByStudyGroupId(groupId)
-                                                         .stream()
-                                                         .map(userService::mapStudentDataDbToUserApi)
-                                                         .collect(Collectors.toList());
+        final List<UserApi> users = userService.findStudentsByGroupId(groupId);
         return new ResponseEntity<>(users, OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/group/studentId/{studentId}")
-    public ResponseEntity<?> removeStudentFromGroup(@PathVariable(value = "studentId") final Long studentId) {
-        final StudentDB student = studentRepository.findById(studentId)
-                                                   .orElseThrow(NotFoundException::new)
-                                                   .toBuilder()
-                                                   .studyGroupId(null)
-                                                   .build();
-        studentRepository.save(student);
-        return new ResponseEntity<>(userService.mapStudentDataDbToUserApi(studentDataRepository.findById(studentId)
-                                                                                               .get()), OK);
+    public ResponseEntity<?> removeStudentFromGroup(@PathVariable(value = "studentId") final String studentId) {
+        return new ResponseEntity<>(userService.removeStudentFromGroup(studentId), OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "/students/without/group")
     public ResponseEntity<?> getStudentsWithoutGroup() {
-        final Long universityId = UserContextHolder.getUser().getUniversityId();
-        final List<UserApi> users = studentDataRepository.findAllByStudyGroupIdAndUniversityId(null, universityId)
-                                                         .stream()
-                                                         .map(userService::mapStudentDataDbToUserApi)
-                                                         .collect(Collectors.toList());
-
+        final List<UserApi> users = userService.findUsersWithoutGroup();
         return new ResponseEntity<>(users, OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/group")
     public ResponseEntity<?> addStudentToGroup(@RequestBody final AddStudentsToGroupApi addStudentsToGroupApi) {
-        final List<StudentDB> students = addStudentsToGroupApi
-                .getStudentsIds()
-                .stream()
-                .map(id -> studentRepository.findById(id).orElseThrow(NotFoundException::new))
-                .peek(s -> s.setStudyGroupId(addStudentsToGroupApi.getGroupId()))
-                .collect(Collectors.toList());
-
-        studentRepository.saveAll(students);
-
+        userService.addStudentToGroup(addStudentsToGroupApi.getStudentsIds(), addStudentsToGroupApi.getGroupId());
         return getStudentsByGroupId(addStudentsToGroupApi.getGroupId());
     }
 }

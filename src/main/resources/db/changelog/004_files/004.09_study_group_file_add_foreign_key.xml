@@ -11,7 +11,7 @@
         </preConditions>
 
         <addForeignKeyConstraint baseTableName="study_group_file"
-                                 baseColumnNames="study_group_id"
+                                 baseColumnNames="group_id"
                                  constraintName="fk_study_group_file"
                                  referencedTableName="study_groups"
                                  referencedColumnNames="id"/>

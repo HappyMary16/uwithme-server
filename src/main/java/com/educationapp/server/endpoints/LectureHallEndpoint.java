@@ -10,6 +10,7 @@ import com.educationapp.server.repositories.LectureHallRepository;
 import com.educationapp.server.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
@@ -21,12 +22,14 @@ public class LectureHallEndpoint {
 
     private final LectureHallRepository lectureHallRepository;
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     public ResponseEntity<?> getLectureHalls() {
         final Long universityId = UserContextHolder.getUser().getUniversityId();
         return new ResponseEntity<>(lectureHallRepository.findAllByUniversityId(universityId), OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<?> addLectureHall(@RequestBody final AddLectureHallApi addLectureHallApi) {
         final Long universityId = UserContextHolder.getUser().getUniversityId();
