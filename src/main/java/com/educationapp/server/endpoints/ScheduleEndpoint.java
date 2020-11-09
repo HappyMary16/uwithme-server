@@ -5,7 +5,6 @@ import static org.springframework.http.HttpStatus.OK;
 
 import com.educationapp.server.models.api.CreateLessonApi;
 import com.educationapp.server.models.api.admin.DeleteLessonApi;
-import com.educationapp.server.security.UserContextHolder;
 import com.educationapp.server.services.ScheduleService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +33,7 @@ public class ScheduleEndpoint {
 
     @GetMapping
     public ResponseEntity<?> getLessons() {
-        final String username = UserContextHolder.getUser().getId();
-        return new ResponseEntity<>(scheduleService.findLessonsByUsername(username), OK);
+        return new ResponseEntity<>(scheduleService.findUsersLessons(), OK);
     }
 
     @GetMapping("/group/{groupId}")
@@ -43,8 +41,8 @@ public class ScheduleEndpoint {
         return new ResponseEntity<>(scheduleService.findLessonsByGroupId(groupId), OK);
     }
 
-    @GetMapping("/username/{username}")
-    public ResponseEntity<?> getLessonsByUserId(@PathVariable("username") String username) {
-        return new ResponseEntity<>(scheduleService.findLessonsByUsername(username), OK);
+    @GetMapping("/username/{userId}")
+    public ResponseEntity<?> getLessonsByUserId(@PathVariable("userId") String userId) {
+        return new ResponseEntity<>(scheduleService.findLessonsById(userId), OK);
     }
 }

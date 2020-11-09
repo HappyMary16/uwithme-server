@@ -29,7 +29,7 @@ public class SubjectEndpoint {
         if (user.getRole().equals(ADMIN.getId())) {
             return new ResponseEntity<>(subjectRepository.findAllByUniversityId(user.getUniversityId()), OK);
         } else {
-            return new ResponseEntity<>(subjectService.findSubjectsByTeacherUsername(), OK);
+            return new ResponseEntity<>(subjectService.findUsersSubjects(), OK);
         }
     }
 

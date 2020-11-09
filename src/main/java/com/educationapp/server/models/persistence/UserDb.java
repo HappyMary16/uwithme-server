@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
-public class UserDB implements Serializable {
+public class UserDb implements Serializable {
 
     private static final long serialVersionUID = 3366295050169335755L;
 
@@ -32,11 +32,11 @@ public class UserDB implements Serializable {
     @Column(name = "university_id")
     private Long universityId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "department_id", referencedColumnName = "id")
     private DepartmentDb department;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "group_id", referencedColumnName = "id")
     private StudyGroupDataDb studyGroup;
 }

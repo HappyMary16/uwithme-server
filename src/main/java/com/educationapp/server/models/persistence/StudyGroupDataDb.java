@@ -32,7 +32,7 @@ public class StudyGroupDataDb {
     @Column(name = "is_showing_in_registration")
     private Boolean isShowingInRegistration;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id", referencedColumnName = "id")
     private DepartmentDb department;
 }
