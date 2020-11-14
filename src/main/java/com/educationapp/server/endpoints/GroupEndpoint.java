@@ -30,7 +30,7 @@ public class GroupEndpoint {
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<?> addGroup(@RequestBody final AddGroupApi addGroupApi) {
-        final Long universityId = UserContextHolder.getUser().getUniversityId();
+        final Long universityId = UserContextHolder.getUniversityId();
         final String instituteName = addGroupApi.getInstituteName();
         final String departmentName = addGroupApi.getDepartmentName();
 
@@ -48,7 +48,7 @@ public class GroupEndpoint {
                                                        .name(addGroupApi.getGroupName())
                                                        .course(addGroupApi.getCourse())
                                                        .department(department)
-                                                       .isShowingInRegistration(addGroupApi.isShowingInRegistration())
+                                                       .isVisible(addGroupApi.isShowingInRegistration())
                                                        .build();
 
         return new ResponseEntity<>(studyGroupDataRepository.save(group), OK);
@@ -77,7 +77,7 @@ public class GroupEndpoint {
      */
     @GetMapping
     public ResponseEntity<?> getGroups() {
-        final String userId = UserContextHolder.getUser().getId();
+        final String userId = UserContextHolder.getId();
 
         //add groups by curator
         return new ResponseEntity<>(studyGroupDataRepository.findAllByTeacher(userId), OK);

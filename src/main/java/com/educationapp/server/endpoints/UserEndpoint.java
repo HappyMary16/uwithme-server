@@ -7,6 +7,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
 
+import com.educationapp.server.enums.Role;
 import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.models.api.admin.AddStudentsToGroupApi;
 import com.educationapp.server.security.UserContextHolder;
@@ -32,13 +33,13 @@ public class UserEndpoint {
 
     @GetMapping
     public ResponseEntity<?> getUserFriends() {
-        final UserApi user = UserContextHolder.getUser();
+        final Role userRole = UserContextHolder.getRole();
         List<UserApi> users;
 
-        if (user.getRole().equals(STUDENT.getId())) {
-            users = userService.findTeachersByGroupId(user.getStudyGroupId());
-        } else if (user.getRole().equals(TEACHER.getId())) {
-            users = userService.findStudentByTeacherId(user.getId());
+        if (STUDENT.equals(userRole)) {
+            users = userService.findTeachers();
+        } else if (TEACHER.equals(userRole)) {
+            users = userService.findStudent(UserContextHolder.getId());
         } else {
             return new ResponseEntity<>(METHOD_NOT_ALLOWED);
         }

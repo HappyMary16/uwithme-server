@@ -25,7 +25,7 @@ public class DepartmentEndpoint {
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<?> addDepartment(@RequestBody final AddDepartmentApi addDepartmentApi) {
-        final Long universityId = UserContextHolder.getUser().getUniversityId();
+        final Long universityId = UserContextHolder.getUniversityId();
         final String instituteName = addDepartmentApi.getInstituteName();
 
         final InstituteDb institute = instituteRepository.findByUniversityIdAndName(universityId, instituteName)
@@ -43,7 +43,7 @@ public class DepartmentEndpoint {
 
     @GetMapping
     public ResponseEntity<?> getDepartmentsByUniversityId() {
-        final Long universityId = UserContextHolder.getUser().getUniversityId();
+        final Long universityId = UserContextHolder.getUniversityId();
         return new ResponseEntity<>(departmentRepository.findAllByUniversityId(universityId), OK);
     }
 }

@@ -6,7 +6,7 @@ import static com.educationapp.server.enums.Role.TEACHER;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.educationapp.server.models.api.UserApi;
+import com.educationapp.server.enums.Role;
 import com.educationapp.server.models.persistence.AccessToFileDB;
 import com.educationapp.server.models.persistence.SubjectDB;
 import com.educationapp.server.models.persistence.UserDb;
@@ -28,10 +28,10 @@ public class SubjectService {
     private final FileRepository fileRepository;
 
     public List<SubjectDB> findUsersSubjects() {
-        final UserApi user = UserContextHolder.getUser();
-        if (user.getRole().equals(STUDENT.getId())) {
+        final Role userRole = UserContextHolder.getRole();
+        if (STUDENT.equals(userRole)) {
             final List<AccessToFileDB> accessToFileDBS =
-                    accessToFileRepository.findAllByStudyGroupId(user.getStudyGroupId());
+                    accessToFileRepository.findAllByStudyGroupId(UserContextHolder.getGroupId());
 
             return accessToFileDBS.stream()
                                   .map(accessToFileDB -> fileRepository.findById(accessToFileDB.getFileId())
@@ -41,8 +41,8 @@ public class SubjectService {
                                   .map(subjectId -> subjectRepository.findById(subjectId).get())
                                   .collect(Collectors.toList());
 
-        } else if (user.getRole().equals(TEACHER.getId())) {
-            return subjectRepository.findAllByTeacherId(user.getId());
+        } else if (TEACHER.equals(userRole)) {
+            return subjectRepository.findAllByTeacherId(UserContextHolder.getId());
         }
 
         throw new UnsupportedOperationException("Operation 'Get files' supported only for teachers and students");
