@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.educationapp.server.enums.Role;
 import com.educationapp.server.exception.FileStorageException;
 import com.educationapp.server.models.api.AccessToFileApi;
 import com.educationapp.server.models.api.FileApi;
 import com.educationapp.server.models.api.SaveFileApi;
-import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.models.persistence.AccessToFileDB;
 import com.educationapp.server.models.persistence.FileDB;
 import com.educationapp.server.models.persistence.SubjectDB;
@@ -67,7 +67,7 @@ public class FileService {
     }
 
     public String saveFile(final SaveFileApi file) {
-        final String username = UserContextHolder.getUser().getId();
+        final String username = UserContextHolder.getId();
         final String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()));
 
         final SubjectDB subjectDb = subjectService.findUsersSubjects()
@@ -103,7 +103,7 @@ public class FileService {
     }
 
     public void updateAvatar(final MultipartFile avatar) {
-        final String userId = UserContextHolder.getUser().getId();
+        final String userId = UserContextHolder.getId();
         final Path targetLocation = userAvatarStorageLocation.resolve(userId + ".jpg");
 
         try {
@@ -134,9 +134,9 @@ public class FileService {
     }
 
     public List<FileApi> findAllFiles() {
-        final UserApi user = UserContextHolder.getUser();
-        if (user.getRole().equals(STUDENT.getId())) {
-            final Long studyGroupId = user.getStudyGroupId();
+        final Role userRole = UserContextHolder.getRole();
+        if (STUDENT.equals(userRole)) {
+            final Long studyGroupId = UserContextHolder.getGroupId();
             return accessToFileRepository.findAllByStudyGroupId(studyGroupId)
                                          .stream()
                                          .map(accessToFileDB -> {
@@ -149,7 +149,7 @@ public class FileService {
                                                                 accessToFileDB.getDateAddAccess());
                                          })
                                          .collect(Collectors.toList());
-        } else if (user.getRole().equals(TEACHER.getId())) {
+        } else if (TEACHER.equals(userRole)) {
             return subjectService.findUsersSubjects()
                                  .stream()
                                  .map(SubjectDB::getId)

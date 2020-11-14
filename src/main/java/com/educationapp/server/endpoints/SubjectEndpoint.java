@@ -5,7 +5,6 @@ import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
 
-import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.models.persistence.SubjectDB;
 import com.educationapp.server.repositories.SubjectRepository;
 import com.educationapp.server.security.UserContextHolder;
@@ -25,9 +24,9 @@ public class SubjectEndpoint {
 
     @GetMapping
     public ResponseEntity<List<SubjectDB>> getSubjects() {
-        final UserApi user = UserContextHolder.getUser();
-        if (user.getRole().equals(ADMIN.getId())) {
-            return new ResponseEntity<>(subjectRepository.findAllByUniversityId(user.getUniversityId()), OK);
+        if (ADMIN.equals(UserContextHolder.getRole())) {
+            final Long universityId = UserContextHolder.getUniversityId();
+            return new ResponseEntity<>(subjectRepository.findAllByUniversityId(universityId), OK);
         } else {
             return new ResponseEntity<>(subjectService.findUsersSubjects(), OK);
         }

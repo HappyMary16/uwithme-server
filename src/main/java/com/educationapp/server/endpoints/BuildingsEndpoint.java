@@ -21,7 +21,7 @@ public class BuildingsEndpoint {
 
     @GetMapping
     public ResponseEntity<?> getBuildings() {
-        final Long universityId = UserContextHolder.getUser().getUniversityId();
+        final Long universityId = UserContextHolder.getUniversityId();
         return new ResponseEntity<>(buildingsRepository.findAllByUniversityId(universityId), OK);
     }
 }

@@ -93,7 +93,7 @@ public class FileEndpoint {
 
     @GetMapping("/avatar")
     public ResponseEntity<?> getAvatar() {
-        return getAvatar(UserContextHolder.getUser().getId());
+        return getAvatar(UserContextHolder.getId());
     }
 
     @GetMapping("/avatar/{userId:.+}")

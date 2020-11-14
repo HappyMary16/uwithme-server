@@ -36,7 +36,7 @@ public class UserService {
 
     @Transactional
     public String save(final RegisterApi user) {
-        final String userId = UserContextHolder.getUser().getId();
+        final String userId = UserContextHolder.getId();
 
         final DepartmentDb departmentProxy = departmentRepository.getProxyByIdIfExist(user.getDepartmentId());
         final StudyGroupDataDb groupProxy = studyGroupRepository.getProxyByIdIfExist(user.getGroupId());
@@ -61,31 +61,16 @@ public class UserService {
 
     @Transactional
     public UserApi getUserApi() {
-        final UserApi user = UserContextHolder.getUser();
-        final UserApi.UserApiBuilder userBuilder = user.toBuilder();
-        final UserDb userDb = userRepository.findById(user.getId())
-                                            .orElseThrow(() -> new UserNotFoundException(user.getEmail()));
+        final KeycloakUser keycloakUser = UserContextHolder.getKeycloakUser();
+        final UserDb userDb = userRepository.findById(keycloakUser.getId())
+                                            .orElseThrow(() -> new UserNotFoundException(keycloakUser.getEmail()));
 
-        if (!userDb.getRole().equals(ADMIN.getId())) {
-            final DepartmentDb department = Objects.nonNull(userDb.getStudyGroup())
-                    ? userDb.getStudyGroup().getDepartment()
-                    : userDb.getDepartment();
-            userBuilder.departmentName(department.getName())
-                       .instituteName(department.getInstitute().getName());
-        }
-
-        if (Objects.nonNull(userDb.getStudyGroup())) {
-            final StudyGroupDataDb studyGroup = userDb.getStudyGroup();
-            userBuilder.studyGroupId(studyGroup.getId())
-                       .studyGroupName(studyGroup.getName());
-        }
-
-        return userBuilder.build();
+        return mapToUserApi(userDb, keycloakUser);
     }
 
     @Transactional
     public List<UserApi> findTeachersByUniversityId() {
-        final Long universityId = UserContextHolder.getUser().getUniversityId();
+        final Long universityId = UserContextHolder.getUniversityId();
         final List<UserApi> teachers = userRepository.findAllByRoleAndUniversityId(2, universityId)
                                                      .stream()
                                                      .map(this::mapToUserApi)
@@ -131,7 +116,7 @@ public class UserService {
 
     @Transactional
     public List<UserApi> findUsersWithoutGroup() {
-        final Long universityId = UserContextHolder.getUser().getUniversityId();
+        final Long universityId = UserContextHolder.getUniversityId();
         return userRepository.findAllByStudyGroupIsNullAndRoleAndUniversityId(1, universityId)
                              .stream()
                              .map(this::mapToUserApi)
@@ -139,7 +124,7 @@ public class UserService {
     }
 
     @Transactional
-    public List<UserApi> findStudentByTeacherId(final String teacherId) {
+    public List<UserApi> findStudent(final String teacherId) {
         return userRepository.findStudentsByTeacherId(teacherId)
                              .stream()
                              .map(this::mapToUserApi)
@@ -147,7 +132,8 @@ public class UserService {
     }
 
     @Transactional
-    public List<UserApi> findTeachersByGroupId(final Long groupId) {
+    public List<UserApi> findTeachers() {
+        final Long groupId = UserContextHolder.getGroupId();
         return userRepository.findTeachersByGroupId(groupId)
                              .stream()
                              .map(this::mapToUserApi)
@@ -155,17 +141,20 @@ public class UserService {
     }
 
     private UserApi mapToUserApi(final UserDb userDb) {
-        final KeycloakUser user = keycloakServiceClient.getUserById(userDb.getId());
+        final KeycloakUser keycloakUser = keycloakServiceClient.getUserById(userDb.getId());
+        return mapToUserApi(userDb, keycloakUser);
+    }
 
+    private UserApi mapToUserApi(final UserDb userDb, final KeycloakUser keycloakUser) {
         return mapUserDbToUserApi(userDb).toBuilder()
-                                         .firstName(user.getGivenName())
-                                         .lastName(user.getMiddleName())
-                                         .surname(user.getFamilyName())
-                                         .email(user.getEmail())
+                                         .firstName(keycloakUser.getGivenName())
+                                         .lastName(keycloakUser.getMiddleName())
+                                         .surname(keycloakUser.getFamilyName())
+                                         .email(keycloakUser.getEmail())
                                          .build();
     }
 
-    public static UserApi mapUserDbToUserApi(final UserDb userDb) {
+    private UserApi mapUserDbToUserApi(final UserDb userDb) {
         StudyGroupDataDb studyGroup = userDb.getStudyGroup();
         DepartmentDb department = userDb.getDepartment();
 

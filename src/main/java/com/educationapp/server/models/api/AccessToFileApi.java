@@ -6,14 +6,16 @@ import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Value;
 
+@Value
 @AllArgsConstructor
 @Getter
 public class AccessToFileApi {
 
     @NotNull
-    private List<Long> fileIds;
+    List<Long> fileIds;
 
     @NotNull
-    private List<Long> groupIds;
+    List<Long> groupIds;
 }

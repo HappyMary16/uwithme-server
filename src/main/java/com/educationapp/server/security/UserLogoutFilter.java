@@ -15,7 +15,7 @@ public class UserLogoutFilter extends OncePerRequestFilter {
     protected void doFilterInternal(final HttpServletRequest request,
                                     final HttpServletResponse response,
                                     final FilterChain filterChain) throws IOException, ServletException {
-        UserContextHolder.setUser(null);
+        UserContextHolder.setUserContext(null);
         filterChain.doFilter(request, response);
     }
 }

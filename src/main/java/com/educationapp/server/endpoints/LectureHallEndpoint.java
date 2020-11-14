@@ -25,14 +25,14 @@ public class LectureHallEndpoint {
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     public ResponseEntity<?> getLectureHalls() {
-        final Long universityId = UserContextHolder.getUser().getUniversityId();
+        final Long universityId = UserContextHolder.getUniversityId();
         return new ResponseEntity<>(lectureHallRepository.findAllByUniversityId(universityId), OK);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<?> addLectureHall(@RequestBody final AddLectureHallApi addLectureHallApi) {
-        final Long universityId = UserContextHolder.getUser().getUniversityId();
+        final Long universityId = UserContextHolder.getUniversityId();
         final String buildingName = addLectureHallApi.getBuildingName();
 
         final BuildingDb buildingDb = buildingsRepository.findByUniversityIdAndName(universityId, buildingName)

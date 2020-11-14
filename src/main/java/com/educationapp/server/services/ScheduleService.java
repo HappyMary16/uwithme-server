@@ -12,11 +12,11 @@ import java.util.stream.Collectors;
 import javax.ws.rs.NotFoundException;
 
 import com.educationapp.server.clients.KeycloakServiceClient;
+import com.educationapp.server.enums.Role;
 import com.educationapp.server.exception.UserNotFoundException;
 import com.educationapp.server.models.KeycloakUser;
 import com.educationapp.server.models.api.CreateLessonApi;
 import com.educationapp.server.models.api.LessonApi;
-import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.models.api.admin.DeleteLessonApi;
 import com.educationapp.server.models.persistence.*;
 import com.educationapp.server.repositories.*;
@@ -51,12 +51,13 @@ public class ScheduleService {
     }
 
     public List<LessonApi> findUsersLessons() {
-        final UserApi user = UserContextHolder.getUser();
+        final Role userRole = UserContextHolder.getRole();
 
-        if (user.getRole().equals(STUDENT.getId())) {
-            return new ArrayList<>(findLessonsByGroupId(user.getStudyGroupId()));
-        } else if (user.getRole().equals(TEACHER.getId())) {
-            return findLessonsByTeacherId(user.getId());
+        if (STUDENT.equals(userRole)) {
+            final Long groupId = UserContextHolder.getGroupId();
+            return new ArrayList<>(findLessonsByGroupId(groupId));
+        } else if (TEACHER.equals(userRole)) {
+            return findLessonsByTeacherId(UserContextHolder.getId());
         } else {
             throw new RuntimeException("Schedule exist only for students and teacher");
         }

@@ -1,6 +1,6 @@
 package com.educationapp.server.config;
 
-import com.educationapp.server.repositories.UserRepository;
+import com.educationapp.server.repositories.SimpleUserRepository;
 import com.educationapp.server.security.CustomKeycloakAuthenticationProvider;
 import com.educationapp.server.security.UserInitialisationFilter;
 import com.educationapp.server.security.UserLogoutFilter;
@@ -27,7 +27,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 @AllArgsConstructor
 class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
-    private final UserRepository userRepository;
+    private final SimpleUserRepository userRepository;
 
     @SneakyThrows
     @Autowired

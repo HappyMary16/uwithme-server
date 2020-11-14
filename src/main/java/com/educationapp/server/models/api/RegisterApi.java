@@ -11,6 +11,7 @@ import lombok.Data;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 public class RegisterApi {
+
     @NotNull
     @Size(max = 3)
     private Integer role;
@@ -19,7 +20,6 @@ public class RegisterApi {
 
     private Long departmentId;
 
-    @NotNull
     private Long universityId;
 
     private Long instituteId;

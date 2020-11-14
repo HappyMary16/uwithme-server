@@ -30,7 +30,7 @@ public class StudyGroupDataDb {
     private Long teacherId;
 
     @Column(name = "is_showing_in_registration")
-    private Boolean isShowingInRegistration;
+    private Boolean isVisible;
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id", referencedColumnName = "id")

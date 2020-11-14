@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.educationapp.server.models.persistence.DepartmentDb;
+import com.educationapp.server.models.persistence.InstituteDb;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +17,8 @@ public interface DepartmentRepository extends JpaRepository<DepartmentDb, Long> 
             "institutes.university_id = :universityId",
             nativeQuery = true)
     List<DepartmentDb> findAllByUniversityId(@Param("universityId") Long universityId);
+
+    List<DepartmentDb> findAllByInstitute(InstituteDb institute);
 
     Optional<DepartmentDb> findByInstituteIdAndName(Long instituteId, String name);
 
