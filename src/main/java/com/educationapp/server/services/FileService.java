@@ -47,14 +47,15 @@ public class FileService {
     public FileService(final FileRepository fileRepository,
                        final AccessToFileRepository accessToFileRepository,
                        final SubjectService subjectService,
-                       @Value("${file.upload.directory}") final String fileUploadDirectory,
-                       @Value("${user.avatar.upload.directory}") final String userAvatarUploadDirectory) {
-        fileStorageLocation = Paths.get("/")
-                                   .resolve(fileUploadDirectory)
+                       @Value("${main.upload.directory}") final String mainDirectory,
+                       @Value("${files.upload.directory}") final String filesUploadDirectory,
+                       @Value("${avatars.upload.directory}") final String avatarsUploadDirectory) {
+        fileStorageLocation = Paths.get(mainDirectory)
+                                   .resolve(filesUploadDirectory)
                                    .toAbsolutePath()
                                    .normalize();
-        userAvatarStorageLocation = Paths.get("/")
-                                         .resolve(userAvatarUploadDirectory)
+        userAvatarStorageLocation = Paths.get(mainDirectory)
+                                         .resolve(avatarsUploadDirectory)
                                          .toAbsolutePath()
                                          .normalize();
 
