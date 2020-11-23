@@ -49,11 +49,11 @@ public class FileService {
                        final SubjectService subjectService,
                        @Value("${file.upload.directory}") final String fileUploadDirectory,
                        @Value("${user.avatar.upload.directory}") final String userAvatarUploadDirectory) {
-        fileStorageLocation = Paths.get("D:\\Programming\\Projects\\EducationAppServer")
+        fileStorageLocation = Paths.get("/")
                                    .resolve(fileUploadDirectory)
                                    .toAbsolutePath()
                                    .normalize();
-        userAvatarStorageLocation = Paths.get("D:\\Programming\\Projects\\EducationAppServer")
+        userAvatarStorageLocation = Paths.get("/")
                                          .resolve(userAvatarUploadDirectory)
                                          .toAbsolutePath()
                                          .normalize();
@@ -77,28 +77,29 @@ public class FileService {
                                                   .orElseGet(
                                                           () -> subjectService.save(username, file.getSubjectName()));
 
-        final String fileLocation = subjectDb.getId() + "\\" + file.getFileTypeId() + "\\";
-
         try {
-            if (fileLocation.contains("..")) {
-                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileLocation);
+            final Path directory = fileStorageLocation.resolve(subjectDb.getId().toString())
+                                                      .resolve(file.getFileTypeId().toString());
+
+            if (directory.toString().contains("..")) {
+                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + directory);
             }
 
-            final Path directory = fileStorageLocation.resolve(fileLocation);
             if (Files.notExists(directory)) {
                 Files.createDirectories(directory);
             }
 
-            final Path targetLocation = fileStorageLocation.resolve(fileLocation.concat(fileName));
+            final Path targetLocation = directory.resolve(fileName);
             Files.copy(file.getFile().getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            fileRepository.save(new FileDB(fileLocation,
+            fileRepository.save(new FileDB(directory.toString(),
                                            fileName,
                                            subjectDb.getId(),
                                            file.getFileTypeId()));
-            return fileLocation;
+            return directory.toString();
         } catch (IOException e) {
-            throw new FileStorageException("Could not store file " + fileLocation + ". Please try again!", e);
+            throw new FileStorageException("Could not store file " + file.getFile().getName() + ". Please try again!",
+                                           e);
         }
     }
 
