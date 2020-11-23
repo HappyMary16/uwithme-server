@@ -51,10 +51,12 @@ public class FileService {
                        @Value("${files.upload.directory}") final String filesUploadDirectory,
                        @Value("${avatars.upload.directory}") final String avatarsUploadDirectory) {
         fileStorageLocation = Paths.get(mainDirectory)
+                                   .toAbsolutePath()
                                    .resolve(filesUploadDirectory)
                                    .toAbsolutePath()
                                    .normalize();
         userAvatarStorageLocation = Paths.get(mainDirectory)
+                                         .toAbsolutePath()
                                          .resolve(avatarsUploadDirectory)
                                          .toAbsolutePath()
                                          .normalize();
