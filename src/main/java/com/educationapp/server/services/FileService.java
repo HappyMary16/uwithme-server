@@ -26,7 +26,6 @@ import com.educationapp.server.models.persistence.SubjectDB;
 import com.educationapp.server.repositories.AccessToFileRepository;
 import com.educationapp.server.repositories.FileRepository;
 import com.educationapp.server.security.UserContextHolder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -43,7 +42,6 @@ public class FileService {
     private final AccessToFileRepository accessToFileRepository;
     private final SubjectService subjectService;
 
-    @Autowired
     public FileService(final FileRepository fileRepository,
                        final AccessToFileRepository accessToFileRepository,
                        final SubjectService subjectService,
@@ -77,24 +75,16 @@ public class FileService {
                                                           () -> subjectService.save(username, file.getSubjectName()));
 
         try {
-            final Path directory = fileStorageLocation.resolve(subjectDb.getId().toString() + file.getFileTypeId());
-
-            if (directory.toString().contains("..")) {
-                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + directory);
-            }
-
-            if (Files.notExists(directory)) {
-                Files.createDirectories(directory);
-            }
-
-            final Path targetLocation = directory.resolve(fileName);
+            final Path targetLocation = fileStorageLocation.resolve(subjectDb.getId().toString()
+                                                                            + file.getFileTypeId()
+                                                                            + fileName);
             Files.copy(file.getFile().getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            fileRepository.save(new FileDB(directory.toString(),
+            fileRepository.save(new FileDB(targetLocation.toString(),
                                            fileName,
                                            subjectDb.getId(),
                                            file.getFileTypeId()));
-            return directory.toString();
+            return fileName;
         } catch (IOException e) {
             throw new FileStorageException("Could not store file " + file.getFile().getName() + ". Please try again!",
                                            e);
@@ -118,7 +108,7 @@ public class FileService {
     }
 
     public Resource loadFile(final FileDB file) {
-        Path filePath = fileStorageLocation.resolve(file.getPath() + file.getName()).normalize();
+        Path filePath = fileStorageLocation.resolve(file.getPath()).normalize();
         return loadFileByPath(filePath);
     }
 
