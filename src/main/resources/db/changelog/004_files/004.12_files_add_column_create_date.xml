@@ -8,7 +8,6 @@
             <column name="create_date" type="TIMESTAMP(6)" defaultValueComputed="NOW(6)">
                 <constraints nullable="false"/>
             </column>
-
         </addColumn>
     </changeSet>
 </databaseChangeLog>

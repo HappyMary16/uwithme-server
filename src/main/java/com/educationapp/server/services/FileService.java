@@ -75,12 +75,21 @@ public class FileService {
                                                           () -> subjectService.save(username, file.getSubjectName()));
 
         try {
-            final Path targetLocation = fileStorageLocation.resolve(subjectDb.getId().toString()
-                                                                            + file.getFileTypeId()
-                                                                            + fileName);
+            final Path directory = fileStorageLocation.resolve(subjectDb.getId().toString())
+                                                      .resolve(file.getFileTypeId().toString());
+
+            if (directory.toString().contains("..")) {
+                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + directory);
+            }
+
+            if (Files.notExists(directory)) {
+                Files.createDirectories(directory);
+            }
+
+            final Path targetLocation = directory.resolve(fileName);
             Files.copy(file.getFile().getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            fileRepository.save(new FileDB(targetLocation.toString(),
+            fileRepository.save(new FileDB(directory.toString(),
                                            fileName,
                                            subjectDb.getId(),
                                            file.getFileTypeId()));
@@ -108,7 +117,7 @@ public class FileService {
     }
 
     public Resource loadFile(final FileDB file) {
-        Path filePath = fileStorageLocation.resolve(file.getPath()).normalize();
+        final Path filePath = fileStorageLocation.resolve(file.getPath()).resolve(file.getName()).normalize();
         return loadFileByPath(filePath);
     }
 
