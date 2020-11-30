@@ -9,7 +9,7 @@ public enum Role {
     TEACHER(2),
     ADMIN(3);
 
-    private int id;
+    private final int id;
 
     Role(final int id) {
         this.id = id;

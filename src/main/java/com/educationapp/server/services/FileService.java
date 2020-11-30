@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.educationapp.server.enums.FileType;
 import com.educationapp.server.enums.Role;
 import com.educationapp.server.exception.FileStorageException;
 import com.educationapp.server.models.api.AccessToFileApi;
@@ -82,8 +81,7 @@ public class FileService {
                                                           () -> subjectService.save(username, file.getSubjectName()));
 
         try {
-            final Path directory = fileStorageLocation.resolve(subjectDb.getName() + subjectDb.getId())
-                                                      .resolve(FileType.getById(file.getFileTypeId()).name());
+            final Path directory = fileStorageLocation.resolve(subjectDb.getId().toString() + file.getFileTypeId());
 
             if (directory.toString().contains("..")) {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + directory);
