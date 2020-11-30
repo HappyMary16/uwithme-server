@@ -38,7 +38,7 @@ public class FileEndpoint {
     @PostMapping("/{subjectName}/{fileType:[1-2]}")
     public ResponseEntity<?> uploadMultipleFiles(@RequestParam("files") final MultipartFile[] files,
                                                  @PathVariable("subjectName") final String subjectName,
-                                                 @PathVariable("fileType") final Long fileType) {
+                                                 @PathVariable("fileType") final Integer fileType) {
         final List<UploadFileResponseApi> uploadedFiles = Arrays
                 .stream(files)
                 .map(file -> {
