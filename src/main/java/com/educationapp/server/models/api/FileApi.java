@@ -18,7 +18,7 @@ public class FileApi {
     private String fileName;
 
     @NotNull
-    private Long type;
+    private Integer type;
 
     @NotNull
     private Long subjectId;

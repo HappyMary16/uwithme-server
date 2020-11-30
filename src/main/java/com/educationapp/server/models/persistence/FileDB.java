@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "files")
 public class FileDB {
 
-    public FileDB(final String path, final String name, final Long subjectId, final Long fileTypeId) {
+    public FileDB(final String path, final String name, final Long subjectId, final Integer fileTypeId) {
         this.path = path;
         this.name = name;
         this.subjectId = subjectId;
@@ -37,7 +37,7 @@ public class FileDB {
     private Long subjectId;
 
     @Column(name = "type_id")
-    private Long fileTypeId;
+    private Integer fileTypeId;
 
     @Column(name = "create_date")
     private Date createDate;

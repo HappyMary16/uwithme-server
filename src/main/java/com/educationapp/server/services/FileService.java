@@ -5,6 +5,7 @@ import static com.educationapp.server.enums.Role.TEACHER;
 import static java.lang.String.format;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.educationapp.server.enums.FileType;
 import com.educationapp.server.enums.Role;
 import com.educationapp.server.exception.FileStorageException;
 import com.educationapp.server.models.api.AccessToFileApi;
@@ -25,7 +27,6 @@ import com.educationapp.server.models.persistence.SubjectDB;
 import com.educationapp.server.repositories.AccessToFileRepository;
 import com.educationapp.server.repositories.FileRepository;
 import com.educationapp.server.security.UserContextHolder;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -81,8 +82,8 @@ public class FileService {
                                                           () -> subjectService.save(username, file.getSubjectName()));
 
         try {
-            final Path directory = fileStorageLocation.resolve(subjectDb.getId().toString())
-                                                      .resolve(file.getFileTypeId().toString());
+            final Path directory = fileStorageLocation.resolve(subjectDb.getName() + subjectDb.getId())
+                                                      .resolve(FileType.getById(file.getFileTypeId()).name());
 
             if (directory.toString().contains("..")) {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + directory);
@@ -178,9 +179,15 @@ public class FileService {
         }
     }
 
-    @SneakyThrows
     private Resource loadFileByPath(final Path path) {
-        Resource resource = new UrlResource(path.toUri());
+        Resource resource;
+        try {
+            resource = new UrlResource(path.toUri());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            throw new FileStorageException(format("Could not load file with path %s", path), e);
+        }
+
         if (resource.exists()) {
             return resource;
         } else {

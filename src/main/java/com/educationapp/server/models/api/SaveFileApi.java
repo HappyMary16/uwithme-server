@@ -14,7 +14,7 @@ public class SaveFileApi {
     private String subjectName;
 
     @NotNull
-    private Long fileTypeId;
+    private Integer fileTypeId;
 
     @NotNull
     private MultipartFile file;

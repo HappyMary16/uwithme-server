@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 
-
 @Slf4j
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @SpringBootApplication

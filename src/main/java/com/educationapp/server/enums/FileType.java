@@ -3,15 +3,14 @@ package com.educationapp.server.enums;
 import lombok.Getter;
 
 @Getter
-public enum Role {
+public enum FileType {
 
-    STUDENT(1),
-    TEACHER(2),
-    ADMIN(3);
+    LECTURE(1),
+    TASK(2);
 
     private int id;
 
-    Role(final int id) {
+    FileType(final int id) {
         this.id = id;
     }
 
@@ -21,4 +20,5 @@ public enum Role {
         }
         return Role.values()[id - 1];
     }
+
 }
