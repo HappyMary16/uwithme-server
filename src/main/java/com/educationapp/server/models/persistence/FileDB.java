@@ -7,6 +7,7 @@ import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Data
 @Entity
@@ -39,6 +40,7 @@ public class FileDB {
     @Column(name = "type_id")
     private Integer fileTypeId;
 
+    @CreationTimestamp
     @Column(name = "create_date")
     private Date createDate;
 }
