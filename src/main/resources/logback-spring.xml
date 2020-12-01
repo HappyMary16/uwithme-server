@@ -13,7 +13,7 @@
             <fileNamePattern>education-app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxFileSize>50MB</maxFileSize>
             <maxHistory>3</maxHistory>
-            <totalSizeCap>1GB</totalSizeCap>
+            <totalSizeCap>200MB</totalSizeCap>
         </rollingPolicy>
 
         <encoder>
