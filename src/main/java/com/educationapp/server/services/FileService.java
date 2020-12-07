@@ -135,18 +135,7 @@ public class FileService {
         final Role userRole = UserContextHolder.getRole();
         if (STUDENT.equals(userRole)) {
             final Long studyGroupId = UserContextHolder.getGroupId();
-            return accessToFileRepository.findAllByStudyGroupId(studyGroupId)
-                                         .stream()
-                                         .map(accessToFileDB -> {
-                                             final FileDB fileDB =
-                                                     fileRepository.findById(accessToFileDB.getFileId()).get();
-                                             return new FileApi(accessToFileDB.getFileId(),
-                                                                fileDB.getName(),
-                                                                fileDB.getFileTypeId(),
-                                                                fileDB.getSubjectId(),
-                                                                accessToFileDB.getDateAddAccess());
-                                         })
-                                         .collect(Collectors.toList());
+            return findFilesByGroupId(studyGroupId);
         } else if (TEACHER.equals(userRole)) {
             return subjectService.findUsersSubjects()
                                  .stream()
@@ -162,6 +151,21 @@ public class FileService {
         }
 
         throw new UnsupportedOperationException();
+    }
+
+    public List<FileApi> findFilesByGroupId(final Long groupId) {
+        return accessToFileRepository.findAllByStudyGroupId(groupId)
+                                     .stream()
+                                     .map(accessToFileDB -> fileRepository.findById(accessToFileDB.getFileId())
+                                                                          .map(fileDb -> new FileApi(
+                                                                                  accessToFileDB.getFileId(),
+                                                                                  fileDb.getName(),
+                                                                                  fileDb.getFileTypeId(),
+                                                                                  fileDb.getSubjectId(),
+                                                                                  accessToFileDB.getDateAddAccess()))
+                                                                          .orElse(null))
+                                     .filter(Objects::nonNull)
+                                     .collect(Collectors.toList());
     }
 
     private void createDirectorySuppressException(final Path path) {

@@ -3,6 +3,8 @@ package com.educationapp.server.endpoints;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
+import java.util.Optional;
+
 import com.educationapp.server.models.api.admin.AddGroupApi;
 import com.educationapp.server.models.persistence.DepartmentDb;
 import com.educationapp.server.models.persistence.InstituteDb;
@@ -59,12 +61,13 @@ public class GroupEndpoint {
         return new ResponseEntity<>(studyGroupDataRepository.findAllByUniversityId(universityId), OK);
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER', 'SERVICE')")
     @GetMapping(value = "/{groupId}")
     public ResponseEntity<?> getStudyGroupById(@PathVariable("groupId") final Long groupId) {
-        final StudyGroupDataDb group = studyGroupDataRepository.findById(groupId).orElse(null);
+        final Optional<StudyGroupDataDb> group = studyGroupDataRepository.findById(groupId);
 
-        if (group != null) {
-            return new ResponseEntity<>(studyGroupDataRepository.findById(groupId), OK);
+        if (group.isPresent()) {
+            return new ResponseEntity<>(group.get(), OK);
         } else {
             return new ResponseEntity<>(NOT_FOUND);
         }

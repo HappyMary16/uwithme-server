@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
 import com.educationapp.server.clients.KeycloakServiceClient;
 import com.educationapp.server.exception.UserNotFoundException;
 import com.educationapp.server.models.KeycloakUser;
@@ -34,7 +32,6 @@ public class UserService {
     private final UniversityRepository universityRepository;
     private final KeycloakServiceClient keycloakServiceClient;
 
-    @Transactional
     public String save(final RegisterApi user) {
         final String userId = UserContextHolder.getId();
 
@@ -59,7 +56,6 @@ public class UserService {
         return userRepository.save(toCreate).getId();
     }
 
-    @Transactional
     public UserApi getUserApi() {
         final KeycloakUser keycloakUser = UserContextHolder.getKeycloakUser();
         final UserDb userDb = userRepository.findById(keycloakUser.getId())
@@ -68,7 +64,6 @@ public class UserService {
         return mapToUserApi(userDb, keycloakUser);
     }
 
-    @Transactional
     public List<UserApi> findTeachersByUniversityId() {
         final Long universityId = UserContextHolder.getUniversityId();
         final List<UserApi> teachers = userRepository.findAllByRoleAndUniversityId(2, universityId)
@@ -81,7 +76,6 @@ public class UserService {
         return teachers;
     }
 
-    @Transactional
     public List<UserApi> findStudentsByGroupId(final Long groupId) {
         return userRepository.findAllByStudyGroupId(groupId)
                              .stream()
@@ -89,7 +83,6 @@ public class UserService {
                              .collect(Collectors.toList());
     }
 
-    @Transactional
     public UserApi removeStudentFromGroup(final String studentId) {
         final UserDb student = userRepository.findById(studentId)
                                              .orElseThrow(UserNotFoundException::new)
@@ -114,7 +107,6 @@ public class UserService {
         userRepository.saveAll(students);
     }
 
-    @Transactional
     public List<UserApi> findUsersWithoutGroup() {
         final Long universityId = UserContextHolder.getUniversityId();
         return userRepository.findAllByStudyGroupIsNullAndRoleAndUniversityId(1, universityId)
@@ -123,7 +115,6 @@ public class UserService {
                              .collect(Collectors.toList());
     }
 
-    @Transactional
     public List<UserApi> findStudent(final String teacherId) {
         return userRepository.findStudentsByTeacherId(teacherId)
                              .stream()
@@ -131,13 +122,22 @@ public class UserService {
                              .collect(Collectors.toList());
     }
 
-    @Transactional
     public List<UserApi> findTeachers() {
         final Long groupId = UserContextHolder.getGroupId();
+        return findTeachersByGroupId(groupId);
+    }
+
+    public List<UserApi> findTeachersByGroupId(final Long groupId) {
         return userRepository.findTeachersByGroupId(groupId)
                              .stream()
                              .map(this::mapToUserApi)
                              .collect(Collectors.toList());
+    }
+
+    public UserApi findUserById(final String userId) {
+        return userRepository.findById(userId)
+                             .map(this::mapToUserApi)
+                             .orElseThrow(UserNotFoundException::new);
     }
 
     private UserApi mapToUserApi(final UserDb userDb) {

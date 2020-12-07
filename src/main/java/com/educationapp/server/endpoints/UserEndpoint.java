@@ -1,8 +1,6 @@
 package com.educationapp.server.endpoints;
 
 import static com.educationapp.server.enums.Role.STUDENT;
-import static com.educationapp.server.enums.Role.TEACHER;
-import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
@@ -24,6 +22,13 @@ public class UserEndpoint {
 
     private final UserService userService;
 
+    @PreAuthorize("hasAnyAuthority('SERVICE')")
+    @GetMapping(value = "/{userId}")
+    public ResponseEntity<?> getUserById(@PathVariable(value = "userId") final String userId) {
+        return new ResponseEntity<>(userService.findUserById(userId), OK);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @GetMapping(value = "/teachers")
     public ResponseEntity<?> getTeachersByUniversityId() {
         final List<UserApi> users = userService.findTeachersByUniversityId();
@@ -31,6 +36,7 @@ public class UserEndpoint {
         return new ResponseEntity<>(users, OK);
     }
 
+    @PreAuthorize("hasAnyAuthority('TEACHER', 'STUDENT')")
     @GetMapping
     public ResponseEntity<?> getUserFriends() {
         final Role userRole = UserContextHolder.getRole();
@@ -38,18 +44,24 @@ public class UserEndpoint {
 
         if (STUDENT.equals(userRole)) {
             users = userService.findTeachers();
-        } else if (TEACHER.equals(userRole)) {
-            users = userService.findStudent(UserContextHolder.getId());
         } else {
-            return new ResponseEntity<>(METHOD_NOT_ALLOWED);
+            users = userService.findStudent(UserContextHolder.getId());
         }
 
         return new ResponseEntity<>(users, OK);
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER', 'SERVICE')")
     @GetMapping(value = "/students/groupId/{groupId}")
     public ResponseEntity<?> getStudentsByGroupId(@PathVariable(value = "groupId") final Long groupId) {
         final List<UserApi> users = userService.findStudentsByGroupId(groupId);
+        return new ResponseEntity<>(users, OK);
+    }
+
+    @PreAuthorize("hasAnyAuthority('SERVICE')")
+    @GetMapping(value = "/teachers/groupId/{groupId}")
+    public ResponseEntity<?> getTeachersByGroupId(@PathVariable(value = "groupId") final Long groupId) {
+        final List<UserApi> users = userService.findTeachersByGroupId(groupId);
         return new ResponseEntity<>(users, OK);
     }
 

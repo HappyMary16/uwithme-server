@@ -31,11 +31,13 @@ public class ScheduleEndpoint {
         return new ResponseEntity<>(scheduleService.deleteLesson(deleteLessonApi), OK);
     }
 
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'TEACHER')")
     @GetMapping
     public ResponseEntity<?> getLessons() {
         return new ResponseEntity<>(scheduleService.findUsersLessons(), OK);
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER', 'SERVICE')")
     @GetMapping("/group/{groupId}")
     public ResponseEntity<?> getLessonsByGroup(@PathVariable("groupId") Long groupId) {
         return new ResponseEntity<>(scheduleService.findLessonsByGroupId(groupId), OK);

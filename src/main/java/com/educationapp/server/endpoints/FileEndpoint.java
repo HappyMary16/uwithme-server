@@ -72,9 +72,16 @@ public class FileEndpoint {
                              .body(resource);
     }
 
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'TEACHER')")
     @GetMapping
     public ResponseEntity<?> getFiles() {
         return new ResponseEntity<>(fileService.findAllFiles(), OK);
+    }
+
+    @PreAuthorize("hasAnyAuthority('SERVICE')")
+    @GetMapping("/{groupId}")
+    public ResponseEntity<?> getFilesByGroupId(@PathVariable final Long groupId) {
+        return new ResponseEntity<>(fileService.findFilesByGroupId(groupId), OK);
     }
 
     @PreAuthorize("hasAuthority('TEACHER')")
@@ -91,11 +98,13 @@ public class FileEndpoint {
         return new ResponseEntity<>(OK);
     }
 
+    @PreAuthorize("hasAnyAuthority('TEACHER', 'STUDENT')")
     @GetMapping("/avatar")
     public ResponseEntity<?> getAvatar() {
         return getAvatar(UserContextHolder.getId());
     }
 
+    @PreAuthorize("hasAnyAuthority('TEACHER', 'STUDENT', 'ADMIN')")
     @GetMapping("/avatar/{userId:.+}")
     public ResponseEntity<?> getAvatar(@PathVariable("userId") final String userId) {
         final Resource resource = fileService.loadAvatar(userId);
