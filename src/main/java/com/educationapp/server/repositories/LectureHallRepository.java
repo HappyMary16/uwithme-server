@@ -9,8 +9,8 @@ import org.springframework.data.repository.query.Param;
 
 public interface LectureHallRepository extends CrudRepository<LectureHallDb, Long> {
 
-    @Query(value = "SELECT * FROM lecture_halls lh JOIN buildings b on lh.building_id = b.id WHERE b.university_id = " +
-            ":universityId",
-            nativeQuery = true)
+    @Query("SELECT lectureHall " +
+            "FROM LectureHallDb lectureHall " +
+            "WHERE lectureHall.building.universityId = :universityId")
     List<LectureHallDb> findAllByUniversityId(@Param("universityId") Long universityId);
 }

@@ -41,9 +41,9 @@ public class UserInitialisationFilter extends OncePerRequestFilter {
         final SimpleUserDb userDb = userRepository.findById(userId).orElse(null);
         final KeycloakUser keycloakUser = KeycloakUser.builder()
                                                       .id(userId)
-                                                      .givenName(token.getGivenName())
+                                                      .firstName(token.getGivenName())
                                                       .middleName(token.getMiddleName())
-                                                      .familyName(token.getFamilyName())
+                                                      .lastName(token.getFamilyName())
                                                       .email(token.getEmail())
                                                       .build();
 

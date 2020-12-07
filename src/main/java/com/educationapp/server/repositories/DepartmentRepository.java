@@ -13,9 +13,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DepartmentRepository extends JpaRepository<DepartmentDb, Long> {
 
-    @Query(value = "SELECT * FROM departments LEFT JOIN institutes ON departments.institute_id = institutes.id WHERE " +
-            "institutes.university_id = :universityId",
-            nativeQuery = true)
+    @Query("SELECT department " +
+            "FROM DepartmentDb department " +
+            "WHERE department.institute.universityId = :universityId")
     List<DepartmentDb> findAllByUniversityId(@Param("universityId") Long universityId);
 
     List<DepartmentDb> findAllByInstitute(InstituteDb institute);

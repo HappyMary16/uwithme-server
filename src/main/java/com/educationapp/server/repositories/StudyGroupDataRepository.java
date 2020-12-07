@@ -14,21 +14,21 @@ public interface StudyGroupDataRepository extends JpaRepository<StudyGroupDataDb
 
     Optional<StudyGroupDataDb> findById(Long id);
 
-    @Query(value = "SELECT * FROM study_groups sg " +
-            "JOIN departments d ON sg.department_id = d.id " +
-            "JOIN institutes i on d.institute_id = i.id " +
-            "WHERE i.university_id = :universityId",
-            nativeQuery = true)
+    @Query("SELECT studyGroup " +
+            "FROM StudyGroupDataDb studyGroup " +
+            "WHERE studyGroup.department.institute.universityId = :universityId")
     List<StudyGroupDataDb> findAllByUniversityId(Long universityId);
 
     List<StudyGroupDataDb> findAllByIsVisibleAndDepartment(Boolean isVisible, DepartmentDb department);
 
-    @Query(value = "SELECT * FROM study_groups sg " +
-            "JOIN schedule_group s on sg.id = s.group_id " +
-            "JOIN schedule s2 on s.schedule_id = s2.id " +
-            "JOIN subjects s3 on s2.subject_id = s3.id " +
-            "WHERE s3.teacher_id = :teacherId",
-            nativeQuery = true)
+    @Query("SELECT DISTINCT studyGroup " +
+            "FROM StudyGroupDataDb studyGroup " +
+            "JOIN ScheduleGroupDb scheduleGroup " +
+            "ON studyGroup.id = scheduleGroup.groupId " +
+            "JOIN ScheduleDb schedule " +
+            "ON scheduleGroup.scheduleId = schedule.id " +
+            "JOIN SubjectDB subject " +
+            "ON schedule.subject.teacher.id = :teacherId")
     List<StudyGroupDataDb> findAllByTeacher(String teacherId);
 
     default StudyGroupDataDb getProxyByIdIfExist(final Long id) {

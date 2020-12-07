@@ -18,20 +18,28 @@ public interface UserRepository extends JpaRepository<UserDb, String> {
 
     List<UserDb> findAllByStudyGroupId(Long groupId);
 
-    @Query(value = "SELECT DISTINCT * FROM users u " +
-            "JOIN schedule_group sg on u.group_id = sg.group_id " +
-            "LEFT JOIN schedule s2 on sg.schedule_id = s2.id " +
-            "LEFT JOIN subjects s3 ON s2.subject_id = s3.id " +
-            "WHERE u.role = 1 AND s3.teacher_id = :teacherId",
-            nativeQuery = true)
+    @Query("SELECT DISTINCT user " +
+            "FROM UserDb user " +
+            "LEFT JOIN ScheduleGroupDb scheduleGroup " +
+            "ON user.studyGroup.id = scheduleGroup.groupId " +
+            "LEFT JOIN ScheduleDb schedule " +
+            "ON scheduleGroup.scheduleId = schedule.id " +
+            "LEFT JOIN SubjectDB subject " +
+            "ON schedule.subject.id = subject.id " +
+            "WHERE user.role = 1 " +
+            "AND subject.teacher.id = :teacherId ")
     List<UserDb> findStudentsByTeacherId(@Param("teacherId") String teacherId);
 
-    @Query(value = "SELECT DISTINCT * FROM users u " +
-            "LEFT JOIN subjects s ON u.id = s.teacher_id " +
-            "LEFT JOIN schedule s2 on s.id = s2.subject_id " +
-            "JOIN schedule_group sg on s2.id = sg.schedule_id " +
-            "WHERE u.role = 2 AND sg.group_id = :groupId",
-            nativeQuery = true)
+    @Query("SELECT DISTINCT user " +
+            "FROM UserDb user " +
+            "LEFT JOIN SubjectDB subject " +
+            "ON user.id = subject.teacher.id " +
+            "LEFT JOIN ScheduleDb schedule " +
+            "ON subject.id = schedule.subject.id " +
+            "LEFT JOIN ScheduleGroupDb scheduleGroup " +
+            "ON schedule.id = scheduleGroup.scheduleId " +
+            "WHERE user.role = 2 " +
+            "AND scheduleGroup.groupId = :groupId ")
     List<UserDb> findTeachersByGroupId(@Param("groupId") Long groupId);
 
     List<UserDb> findAllByRoleAndUniversityId(Integer role, Long universityId);

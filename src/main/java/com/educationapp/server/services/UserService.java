@@ -147,9 +147,9 @@ public class UserService {
 
     private UserApi mapToUserApi(final UserDb userDb, final KeycloakUser keycloakUser) {
         return mapUserDbToUserApi(userDb).toBuilder()
-                                         .firstName(keycloakUser.getGivenName())
+                                         .firstName(keycloakUser.getFirstName())
                                          .lastName(keycloakUser.getMiddleName())
-                                         .surname(keycloakUser.getFamilyName())
+                                         .surname(keycloakUser.getLastName())
                                          .email(keycloakUser.getEmail())
                                          .build();
     }

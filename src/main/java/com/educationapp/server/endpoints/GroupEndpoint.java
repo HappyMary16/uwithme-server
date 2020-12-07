@@ -75,6 +75,7 @@ public class GroupEndpoint {
      *
      * @return
      */
+    @PreAuthorize("hasAuthority('TEACHER')")
     @GetMapping
     public ResponseEntity<?> getGroups() {
         final String userId = UserContextHolder.getId();

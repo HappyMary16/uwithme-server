@@ -63,8 +63,8 @@ public class ScheduleService {
         }
     }
 
-    public List<LessonApi> findLessonsById(final String username) {
-        final UserDb user = userRepository.findById(username).orElseThrow(UserNotFoundException::new);
+    public List<LessonApi> findLessonsById(final String userId) {
+        final UserDb user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         if (user.getRole().equals(STUDENT.getId())) {
             return new ArrayList<>(findLessonsByGroupId(user.getStudyGroup().getId()));
@@ -112,7 +112,7 @@ public class ScheduleService {
         if (Objects.nonNull(subject)) {
             final KeycloakUser teacher = keycloakServiceClient.getUserById(subject.getTeacher().getId());
             lesson.subjectName(subject.getName())
-                  .teacherName(teacher.getFamilyName());
+                  .teacherName(teacher.getLastName());
         } else {
             lesson.subjectName(scheduleDb.getSubjectName())
                   .teacherName(scheduleDb.getTeacherName());

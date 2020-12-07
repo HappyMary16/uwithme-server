@@ -11,14 +11,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ScheduleRepository extends CrudRepository<ScheduleDb, Long> {
 
-    @Query(value = "SELECT * FROM schedule s " +
-            "JOIN schedule_group sg ON s.id = sg.schedule_id " +
-            "WHERE sg.group_id = :groupId",
-            nativeQuery = true)
+    @Query("SELECT schedule " +
+            "FROM  ScheduleDb schedule " +
+            "JOIN ScheduleGroupDb scheduleGroup " +
+            "ON schedule.id = scheduleGroup.scheduleId " +
+            "WHERE scheduleGroup.groupId = :groupId")
     List<ScheduleDb> findAllByStudyGroupId(final Long groupId);
 
-    @Query(value = "SELECT * FROM schedule JOIN subjects ON schedule.subject_id = subjects.id WHERE subjects" +
-            ".teacher_id = :teacherId",
-            nativeQuery = true)
+    @Query("SELECT schedule " +
+            "FROM  ScheduleDb schedule " +
+            "WHERE schedule.subject.teacher.id = :teacherId")
     List<ScheduleDb> findAllByTeacherId(@Param("teacherId") final String teacherId);
 }

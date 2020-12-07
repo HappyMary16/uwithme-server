@@ -11,9 +11,9 @@
         <file>${log}</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>education-app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <maxFileSize>50MB</maxFileSize>
+            <maxFileSize>1MB</maxFileSize>
             <maxHistory>3</maxHistory>
-            <totalSizeCap>200MB</totalSizeCap>
+            <totalSizeCap>10MB</totalSizeCap>
         </rollingPolicy>
 
         <encoder>
