@@ -61,7 +61,7 @@ public class GroupEndpoint {
         return new ResponseEntity<>(studyGroupDataRepository.findAllByUniversityId(universityId), OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER', 'SERVICE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER', 'ROLE_SERVICE')")
     @GetMapping(value = "/{groupId}")
     public ResponseEntity<?> getStudyGroupById(@PathVariable("groupId") final Long groupId) {
         final Optional<StudyGroupDataDb> group = studyGroupDataRepository.findById(groupId);

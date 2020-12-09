@@ -37,7 +37,7 @@ public class ScheduleEndpoint {
         return new ResponseEntity<>(scheduleService.findUsersLessons(), OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER', 'SERVICE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER', 'ROLE_SERVICE')")
     @GetMapping("/group/{groupId}")
     public ResponseEntity<?> getLessonsByGroup(@PathVariable("groupId") Long groupId) {
         return new ResponseEntity<>(scheduleService.findLessonsByGroupId(groupId), OK);

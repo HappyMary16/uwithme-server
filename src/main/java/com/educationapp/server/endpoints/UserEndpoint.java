@@ -22,7 +22,7 @@ public class UserEndpoint {
 
     private final UserService userService;
 
-    @PreAuthorize("hasAnyAuthority('SERVICE')")
+    @PreAuthorize("hasAnyAuthority('ROLE_SERVICE')")
     @GetMapping(value = "/{userId}")
     public ResponseEntity<?> getUserById(@PathVariable(value = "userId") final String userId) {
         return new ResponseEntity<>(userService.findUserById(userId), OK);
@@ -51,14 +51,14 @@ public class UserEndpoint {
         return new ResponseEntity<>(users, OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER', 'SERVICE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER', 'ROLE_SERVICE')")
     @GetMapping(value = "/students/groupId/{groupId}")
     public ResponseEntity<?> getStudentsByGroupId(@PathVariable(value = "groupId") final Long groupId) {
         final List<UserApi> users = userService.findStudentsByGroupId(groupId);
         return new ResponseEntity<>(users, OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('SERVICE')")
+    @PreAuthorize("hasAnyAuthority('ROLE_SERVICE')")
     @GetMapping(value = "/teachers/groupId/{groupId}")
     public ResponseEntity<?> getTeachersByGroupId(@PathVariable(value = "groupId") final Long groupId) {
         final List<UserApi> users = userService.findTeachersByGroupId(groupId);
