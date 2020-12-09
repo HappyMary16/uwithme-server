@@ -134,9 +134,15 @@ public class UserService {
                              .collect(Collectors.toList());
     }
 
+    /**
+     * Returns user info without info in keycloak service
+     *
+     * @param userId for getting user
+     * @return user info without info in keycloak service
+     */
     public UserApi findUserById(final String userId) {
         return userRepository.findById(userId)
-                             .map(this::mapToUserApi)
+                             .map(this::mapUserDbToUserApi)
                              .orElseThrow(UserNotFoundException::new);
     }
 
