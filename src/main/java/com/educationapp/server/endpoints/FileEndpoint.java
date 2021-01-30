@@ -79,7 +79,7 @@ public class FileEndpoint {
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_SERVICE')")
-    @GetMapping("/{groupId}")
+    @GetMapping("/groupId/{groupId}")
     public ResponseEntity<?> getFilesByGroupId(@PathVariable final Long groupId) {
         return new ResponseEntity<>(fileService.findFilesByGroupId(groupId), OK);
     }
