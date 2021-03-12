@@ -146,6 +146,10 @@ public class UserService {
                              .orElseThrow(UserNotFoundException::new);
     }
 
+    public void deleteUser(final String userId) {
+        userRepository.deleteById(userId);
+    }
+
     private UserApi mapToUserApi(final UserDb userDb) {
         final KeycloakUser keycloakUser = keycloakServiceClient.getUserById(userDb.getId());
         return mapToUserApi(userDb, keycloakUser);

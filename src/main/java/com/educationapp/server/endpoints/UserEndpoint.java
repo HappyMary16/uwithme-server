@@ -1,6 +1,7 @@
 package com.educationapp.server.endpoints;
 
 import static com.educationapp.server.enums.Role.STUDENT;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
@@ -83,5 +84,13 @@ public class UserEndpoint {
     public ResponseEntity<?> addStudentToGroup(@RequestBody final AddStudentsToGroupApi addStudentsToGroupApi) {
         userService.addStudentToGroup(addStudentsToGroupApi.getStudentsIds(), addStudentsToGroupApi.getGroupId());
         return getStudentsByGroupId(addStudentsToGroupApi.getGroupId());
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER', 'STUDENT')")
+    @PostMapping()
+    public ResponseEntity<?> deleteUser() {
+        final String userId = UserContextHolder.getId();
+        userService.deleteUser(userId);
+        return new ResponseEntity<>(NO_CONTENT);
     }
 }
