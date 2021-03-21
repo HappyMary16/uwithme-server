@@ -1,12 +1,7 @@
 package com.educationapp.server.endpoints;
 
-import static com.educationapp.server.enums.Role.STUDENT;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static org.springframework.http.HttpStatus.OK;
-
-import java.util.List;
-
 import com.educationapp.server.enums.Role;
+import com.educationapp.server.models.api.UpdateUserApi;
 import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.models.api.admin.AddStudentsToGroupApi;
 import com.educationapp.server.security.UserContextHolder;
@@ -15,6 +10,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import static com.educationapp.server.enums.Role.STUDENT;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 
 @AllArgsConstructor
 @RestController
@@ -87,10 +88,16 @@ public class UserEndpoint {
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER', 'STUDENT')")
-    @PostMapping()
+    @DeleteMapping()
     public ResponseEntity<?> deleteUser() {
         final String userId = UserContextHolder.getId();
         userService.deleteUser(userId);
         return new ResponseEntity<>(NO_CONTENT);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER', 'STUDENT')")
+    @PutMapping()
+    public ResponseEntity<?> updateUser(@RequestBody final UpdateUserApi updateUserApi) {
+        return new ResponseEntity<>(userService.updateUser(updateUserApi), OK);
     }
 }

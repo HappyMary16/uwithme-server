@@ -4,10 +4,13 @@ import com.educationapp.server.models.KeycloakUser;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
+
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -32,5 +35,28 @@ public class KeycloakServiceClient {
         log.debug("Returned KeycloakUser: {}", response.getBody());
 
         return response.getBody();
+    }
+
+    @SneakyThrows
+    public KeycloakUser updateUser(final String userId, final KeycloakUser user) {
+        log.debug("Update Keycloak User with id {}", userId);
+
+        final String userUri = keycloakUrl + "/admin/realms/" + realm + "/users/" + userId;
+
+        final UserRepresentation userToUpdate = Optional.of(restOperations.getForEntity(userUri, UserRepresentation.class))
+                .map(ResponseEntity::getBody)
+                .stream()
+                .peek(u -> {
+                    u.setFirstName(user.getFirstName());
+                    u.setLastName(user.getLastName());
+                    u.setEmail(user.getEmail());
+                })
+                .findFirst()
+                .orElse(null);
+
+
+        restOperations.put(userUri, userToUpdate);
+
+        return getUserById(userId);
     }
 }

@@ -1,15 +1,10 @@
 package com.educationapp.server.services;
 
-import static com.educationapp.server.enums.Role.ADMIN;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import com.educationapp.server.clients.KeycloakServiceClient;
 import com.educationapp.server.exception.UserNotFoundException;
 import com.educationapp.server.models.KeycloakUser;
 import com.educationapp.server.models.api.RegisterApi;
+import com.educationapp.server.models.api.UpdateUserApi;
 import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.models.persistence.*;
 import com.educationapp.server.repositories.DepartmentRepository;
@@ -20,6 +15,12 @@ import com.educationapp.server.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static com.educationapp.server.enums.Role.ADMIN;
 
 @AllArgsConstructor
 @Slf4j
@@ -39,12 +40,12 @@ public class UserService {
         final StudyGroupDataDb groupProxy = studyGroupRepository.getProxyByIdIfExist(user.getGroupId());
 
         final UserDb toCreate = UserDb.builder().id(userId)
-                                      .role(user.getRole())
-                                      .isAdmin(false)
-                                      .universityId(user.getUniversityId())
-                                      .department(departmentProxy)
-                                      .studyGroup(groupProxy)
-                                      .build();
+                .role(user.getRole())
+                .isAdmin(false)
+                .universityId(user.getUniversityId())
+                .department(departmentProxy)
+                .studyGroup(groupProxy)
+                .build();
 
         if (user.getRole().equals(ADMIN.getId())) {
             final UniversityDb universityToCreate = new UniversityDb(user.getUniversityName());
@@ -59,7 +60,7 @@ public class UserService {
     public UserApi getUserApi() {
         final KeycloakUser keycloakUser = UserContextHolder.getKeycloakUser();
         final UserDb userDb = userRepository.findById(keycloakUser.getId())
-                                            .orElseThrow(() -> new UserNotFoundException(keycloakUser.getEmail()));
+                .orElseThrow(() -> new UserNotFoundException(keycloakUser.getEmail()));
 
         return mapToUserApi(userDb, keycloakUser);
     }
@@ -67,9 +68,9 @@ public class UserService {
     public List<UserApi> findTeachersByUniversityId() {
         final Long universityId = UserContextHolder.getUniversityId();
         final List<UserApi> teachers = userRepository.findAllByRoleAndUniversityId(2, universityId)
-                                                     .stream()
-                                                     .map(this::mapToUserApi)
-                                                     .collect(Collectors.toList());
+                .stream()
+                .map(this::mapToUserApi)
+                .collect(Collectors.toList());
 
         log.debug("Teachers by university id: {}. Result: {}", universityId, teachers);
 
@@ -78,17 +79,17 @@ public class UserService {
 
     public List<UserApi> findStudentsByGroupId(final Long groupId) {
         return userRepository.findAllByStudyGroupId(groupId)
-                             .stream()
-                             .map(this::mapToUserApi)
-                             .collect(Collectors.toList());
+                .stream()
+                .map(this::mapToUserApi)
+                .collect(Collectors.toList());
     }
 
     public UserApi removeStudentFromGroup(final String studentId) {
         final UserDb student = userRepository.findById(studentId)
-                                             .orElseThrow(UserNotFoundException::new)
-                                             .toBuilder()
-                                             .studyGroup(null)
-                                             .build();
+                .orElseThrow(UserNotFoundException::new)
+                .toBuilder()
+                .studyGroup(null)
+                .build();
         final UserDb updatedUser = userRepository.save(student);
         return mapToUserApi(updatedUser);
     }
@@ -110,16 +111,16 @@ public class UserService {
     public List<UserApi> findUsersWithoutGroup() {
         final Long universityId = UserContextHolder.getUniversityId();
         return userRepository.findAllByStudyGroupIsNullAndRoleAndUniversityId(1, universityId)
-                             .stream()
-                             .map(this::mapToUserApi)
-                             .collect(Collectors.toList());
+                .stream()
+                .map(this::mapToUserApi)
+                .collect(Collectors.toList());
     }
 
     public List<UserApi> findStudent(final String teacherId) {
         return userRepository.findStudentsByTeacherId(teacherId)
-                             .stream()
-                             .map(this::mapToUserApi)
-                             .collect(Collectors.toList());
+                .stream()
+                .map(this::mapToUserApi)
+                .collect(Collectors.toList());
     }
 
     public List<UserApi> findTeachers() {
@@ -129,9 +130,9 @@ public class UserService {
 
     public List<UserApi> findTeachersByGroupId(final Long groupId) {
         return userRepository.findTeachersByGroupId(groupId)
-                             .stream()
-                             .map(this::mapToUserApi)
-                             .collect(Collectors.toList());
+                .stream()
+                .map(this::mapToUserApi)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -142,12 +143,39 @@ public class UserService {
      */
     public UserApi findUserById(final String userId) {
         return userRepository.findById(userId)
-                             .map(this::mapUserDbToUserApi)
-                             .orElseThrow(UserNotFoundException::new);
+                .map(this::mapUserDbToUserApi)
+                .orElseThrow(UserNotFoundException::new);
     }
 
     public void deleteUser(final String userId) {
         userRepository.deleteById(userId);
+    }
+
+    public UserApi updateUser(final UpdateUserApi updateUserApi) {
+
+        final DepartmentDb departmentProxy = departmentRepository.getProxyByIdIfExist(updateUserApi.getDepartmentId());
+        final StudyGroupDataDb groupProxy = studyGroupRepository.getProxyByIdIfExist(updateUserApi.getStudyGroupId());
+        final UserDb toUpdate = userRepository.findById(UserContextHolder.getId())
+                .map(userDb -> userDb.toBuilder()
+                        .department(departmentProxy)
+                        .studyGroup(groupProxy)
+                        .universityId(updateUserApi.getUniversityId())
+                        .build())
+                .orElseThrow(() -> new UserNotFoundException(UserContextHolder.getId()));
+
+        userRepository.save(toUpdate);
+
+        final KeycloakUser keycloakUserToUpdate = UserContextHolder.getKeycloakUser()
+                .toBuilder()
+                .firstName(updateUserApi.getFirstName())
+                .lastName(updateUserApi.getLastName())
+                .email(updateUserApi.getEmail())
+                .middleName(updateUserApi.getSurname())
+                .build();
+
+        keycloakServiceClient.updateUser(UserContextHolder.getId(), keycloakUserToUpdate);
+
+        return findUserById(UserContextHolder.getId());
     }
 
     private UserApi mapToUserApi(final UserDb userDb) {
@@ -157,11 +185,11 @@ public class UserService {
 
     private UserApi mapToUserApi(final UserDb userDb, final KeycloakUser keycloakUser) {
         return mapUserDbToUserApi(userDb).toBuilder()
-                                         .firstName(keycloakUser.getFirstName())
-                                         .lastName(keycloakUser.getMiddleName())
-                                         .surname(keycloakUser.getLastName())
-                                         .email(keycloakUser.getEmail())
-                                         .build();
+                .firstName(keycloakUser.getFirstName())
+                .lastName(keycloakUser.getMiddleName())
+                .surname(keycloakUser.getLastName())
+                .email(keycloakUser.getEmail())
+                .build();
     }
 
     private UserApi mapUserDbToUserApi(final UserDb userDb) {
@@ -188,14 +216,14 @@ public class UserService {
         }
 
         return UserApi.builder()
-                      .id(userDb.getId())
-                      .role(userDb.getRole())
-                      .universityId(userDb.getUniversityId())
-                      .studyGroupName(studyGroup.getName())
-                      .studyGroupId(studyGroup.getId())
-                      .departmentName(department.getName())
-                      .instituteName(instituteName)
-                      .isAdmin(userDb.getIsAdmin())
-                      .build();
+                .id(userDb.getId())
+                .role(userDb.getRole())
+                .universityId(userDb.getUniversityId())
+                .studyGroupName(studyGroup.getName())
+                .studyGroupId(studyGroup.getId())
+                .departmentName(department.getName())
+                .instituteName(instituteName)
+                .isAdmin(userDb.getIsAdmin())
+                .build();
     }
 }
