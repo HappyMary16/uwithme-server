@@ -1,7 +1,8 @@
 # Education App
 
 This application created for management of university.
-                         
+Link: https://tcomad.tk
+
 #### Main functions:
 * schedule management
 * files management
