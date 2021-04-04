@@ -97,7 +97,7 @@ public class UserEndpoint {
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER', 'STUDENT')")
     @PutMapping()
-    public ResponseEntity<?> updateUser(@RequestBody final UpdateUserApi updateUserApi) {
-        return new ResponseEntity<>(userService.updateUser(updateUserApi), OK);
+    public UserApi updateUser(@RequestBody final UpdateUserApi updateUserApi) {
+        return userService.updateUser(updateUserApi);
     }
 }

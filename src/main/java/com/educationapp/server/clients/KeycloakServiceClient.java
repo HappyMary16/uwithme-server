@@ -8,6 +8,7 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
 import java.util.Optional;
@@ -55,7 +56,11 @@ public class KeycloakServiceClient {
                 .orElse(null);
 
 
-        restOperations.put(userUri, userToUpdate);
+        try {
+            restOperations.put(userUri, userToUpdate);
+        } catch (RestClientException e) {
+            log.error(e.getMessage());
+        }
 
         return getUserById(userId);
     }
