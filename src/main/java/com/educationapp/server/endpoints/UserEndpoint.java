@@ -96,7 +96,7 @@ public class UserEndpoint {
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER', 'STUDENT')")
-    @PutMapping()
+    @PostMapping()
     public UserApi updateUser(@RequestBody final UpdateUserApi updateUserApi) {
         return userService.updateUser(updateUserApi);
     }

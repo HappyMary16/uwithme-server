@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.educationapp.server.enums.Role.ADMIN;
+import static com.educationapp.server.security.UserContextHolder.*;
 
 @AllArgsConstructor
 @Slf4j
@@ -34,7 +35,7 @@ public class UserService {
     private final KeycloakServiceClient keycloakServiceClient;
 
     public String save(final RegisterApi user) {
-        final String userId = UserContextHolder.getId();
+        final String userId = getId();
 
         final DepartmentDb departmentProxy = departmentRepository.getProxyByIdIfExist(user.getDepartmentId());
         final StudyGroupDataDb groupProxy = studyGroupRepository.getProxyByIdIfExist(user.getGroupId());
@@ -58,7 +59,7 @@ public class UserService {
     }
 
     public UserApi getUserApi() {
-        final KeycloakUser keycloakUser = UserContextHolder.getKeycloakUser();
+        final KeycloakUser keycloakUser = getKeycloakUser();
         final UserDb userDb = userRepository.findById(keycloakUser.getId())
                 .orElseThrow(() -> new UserNotFoundException(keycloakUser.getEmail()));
 
@@ -142,8 +143,12 @@ public class UserService {
      * @return user info without info in keycloak service
      */
     public UserApi findUserById(final String userId) {
+        //TODO: doesn't work
         return userRepository.findById(userId)
                 .map(this::mapUserDbToUserApi)
+                .stream()
+                .peek(user -> log.info("User with id {}: {}", userId, user))
+                .findFirst()
                 .orElseThrow(UserNotFoundException::new);
     }
 
@@ -152,20 +157,23 @@ public class UserService {
     }
 
     public UserApi updateUser(final UpdateUserApi updateUserApi) {
+        log.info("Update user {} {} to {}", getKeycloakUser(), getUserDb(), updateUserApi);
 
         final DepartmentDb departmentProxy = departmentRepository.getProxyByIdIfExist(updateUserApi.getDepartmentId());
         final StudyGroupDataDb groupProxy = studyGroupRepository.getProxyByIdIfExist(updateUserApi.getStudyGroupId());
-        final UserDb toUpdate = userRepository.findById(UserContextHolder.getId())
+        final UserDb toUpdate = userRepository.findById(getId())
                 .map(userDb -> userDb.toBuilder()
                         .department(departmentProxy)
                         .studyGroup(groupProxy)
                         .universityId(updateUserApi.getUniversityId())
                         .build())
-                .orElseThrow(() -> new UserNotFoundException(UserContextHolder.getId()));
+                .orElseThrow(() -> new UserNotFoundException(getId()));
+
+        log.info("User id: {}. User to update {}", getId(), toUpdate);
 
         userRepository.save(toUpdate);
 
-        final KeycloakUser keycloakUserToUpdate = UserContextHolder.getKeycloakUser()
+        final KeycloakUser keycloakUserToUpdate = getKeycloakUser()
                 .toBuilder()
                 .firstName(updateUserApi.getFirstName())
                 .lastName(updateUserApi.getLastName())
@@ -173,9 +181,9 @@ public class UserService {
                 .middleName(updateUserApi.getSurname())
                 .build();
 
-        keycloakServiceClient.updateUser(UserContextHolder.getId(), keycloakUserToUpdate);
+        keycloakServiceClient.updateUser(getId(), keycloakUserToUpdate);
 
-        return findUserById(UserContextHolder.getId());
+        return getUserApi();
     }
 
     private UserApi mapToUserApi(final UserDb userDb) {
