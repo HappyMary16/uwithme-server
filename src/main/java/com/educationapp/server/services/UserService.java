@@ -1,6 +1,7 @@
 package com.educationapp.server.services;
 
 import com.educationapp.server.clients.KeycloakServiceClient;
+import com.educationapp.server.exception.LastAdminCannotBeDeleted;
 import com.educationapp.server.exception.UserNotFoundException;
 import com.educationapp.server.models.KeycloakUser;
 import com.educationapp.server.models.api.RegisterApi;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.educationapp.server.enums.Role.ADMIN;
@@ -76,6 +79,18 @@ public class UserService {
         log.debug("Teachers by university id: {}. Result: {}", universityId, teachers);
 
         return teachers;
+    }
+
+    public List<UserApi> findStudentsByUniversityId() {
+        final Long universityId = UserContextHolder.getUniversityId();
+        final List<UserApi> students = userRepository.findAllByRoleAndUniversityId(1, universityId)
+                .stream()
+                .map(this::mapToUserApi)
+                .collect(Collectors.toList());
+
+        log.debug("Students by university id: {}. Result: {}", universityId, students);
+
+        return students;
     }
 
     public List<UserApi> findStudentsByGroupId(final Long groupId) {
@@ -153,7 +168,23 @@ public class UserService {
     }
 
     public void deleteUser(final String userId) {
-        userRepository.deleteById(userId);
+        if (!Objects.equals(getRole(), ADMIN)) {
+            userRepository.deleteById(userId);
+            return;
+        }
+
+        final long adminsNumber = userRepository.findAllByRoleAndUniversityId(ADMIN.getId(), getUniversityId())
+                .stream()
+                .map(UserDb::getId)
+                .filter(Predicate.not(getId()::equals))
+                .count();
+
+        if (adminsNumber == 0) {
+            throw new LastAdminCannotBeDeleted();
+        }
+
+        Optional.ofNullable(getUniversityId())
+                .ifPresent(universityRepository::deleteById);
     }
 
     public UserApi updateUser(final UpdateUserApi updateUserApi) {

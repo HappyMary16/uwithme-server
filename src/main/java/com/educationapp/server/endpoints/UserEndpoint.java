@@ -1,6 +1,5 @@
 package com.educationapp.server.endpoints;
 
-import com.educationapp.server.enums.Role;
 import com.educationapp.server.models.api.UpdateUserApi;
 import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.models.api.admin.AddStudentsToGroupApi;
@@ -14,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.educationapp.server.enums.Role.STUDENT;
+import static com.educationapp.server.enums.Role.TEACHER;
+import static com.educationapp.server.security.UserContextHolder.getRole;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -30,24 +31,29 @@ public class UserEndpoint {
         return new ResponseEntity<>(userService.findUserById(userId), OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STUDENT')")
     @GetMapping(value = "/teachers")
     public ResponseEntity<?> getTeachersByUniversityId() {
-        final List<UserApi> users = userService.findTeachersByUniversityId();
+        List<UserApi> users;
+
+        if (STUDENT.equals(getRole())) {
+            users = userService.findTeachers();
+        } else {
+            users = userService.findTeachersByUniversityId();
+        }
 
         return new ResponseEntity<>(users, OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('TEACHER', 'STUDENT')")
-    @GetMapping
-    public ResponseEntity<?> getUserFriends() {
-        final Role userRole = UserContextHolder.getRole();
+    @PreAuthorize("hasAnyAuthority('TEACHER', 'ADMIN')")
+    @GetMapping(value = "/students")
+    public ResponseEntity<?> getStudents() {
         List<UserApi> users;
 
-        if (STUDENT.equals(userRole)) {
-            users = userService.findTeachers();
-        } else {
+        if (TEACHER.equals(getRole())) {
             users = userService.findStudent(UserContextHolder.getId());
+        } else {
+            users = userService.findStudentsByUniversityId();
         }
 
         return new ResponseEntity<>(users, OK);
