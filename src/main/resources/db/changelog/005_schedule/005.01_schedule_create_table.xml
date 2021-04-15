@@ -28,10 +28,10 @@
             <column name="auditory" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="subject_name" type="VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci">
+            <column name="subject_name" type="VARCHAR(50)">
                 <constraints nullable="true"/>
             </column>
-            <column name="teacher_name" type="VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci">
+            <column name="teacher_name" type="VARCHAR(50)">
                 <constraints nullable="true"/>
             </column>
         </createTable>

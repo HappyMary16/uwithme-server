@@ -1,10 +1,5 @@
 package com.educationapp.server.endpoints;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
-
-import java.util.Optional;
-
 import com.educationapp.server.models.api.admin.AddGroupApi;
 import com.educationapp.server.models.persistence.DepartmentDb;
 import com.educationapp.server.models.persistence.InstituteDb;
@@ -17,6 +12,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 
 @AllArgsConstructor
 @RestController
@@ -37,21 +37,21 @@ public class GroupEndpoint {
         final String departmentName = addGroupApi.getDepartmentName();
 
         final InstituteDb institute = instituteRepository.findByUniversityIdAndName(universityId, instituteName)
-                                                         .orElseGet(() -> InstituteDb.builder()
-                                                                                     .name(instituteName)
-                                                                                     .universityId(universityId)
-                                                                                     .build());
+                .orElseGet(() -> InstituteDb.builder()
+                        .name(instituteName)
+                        .universityId(universityId)
+                        .build());
         final DepartmentDb department = departmentRepository.findByInstituteIdAndName(institute.getId(), departmentName)
-                                                            .orElseGet(() -> DepartmentDb.builder()
-                                                                                         .institute(institute)
-                                                                                         .name(departmentName)
-                                                                                         .build());
+                .orElseGet(() -> DepartmentDb.builder()
+                        .institute(institute)
+                        .name(departmentName)
+                        .build());
         final StudyGroupDataDb group = StudyGroupDataDb.builder()
-                                                       .name(addGroupApi.getGroupName())
-                                                       .course(addGroupApi.getCourse())
-                                                       .department(department)
-                                                       .isVisible(addGroupApi.isShowingInRegistration())
-                                                       .build();
+                .name(addGroupApi.getGroupName())
+                .course(addGroupApi.getCourse())
+                .department(department)
+                .isVisible(addGroupApi.isShowingInRegistration())
+                .build();
 
         return new ResponseEntity<>(studyGroupDataRepository.save(group), OK);
     }
@@ -64,13 +64,9 @@ public class GroupEndpoint {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER', 'ROLE_SERVICE')")
     @GetMapping(value = "/{groupId}")
     public ResponseEntity<?> getStudyGroupById(@PathVariable("groupId") final Long groupId) {
-        final Optional<StudyGroupDataDb> group = studyGroupDataRepository.findById(groupId);
-
-        if (group.isPresent()) {
-            return new ResponseEntity<>(group.get(), OK);
-        } else {
-            return new ResponseEntity<>(NOT_FOUND);
-        }
+        return studyGroupDataRepository.findById(groupId)
+                .map(group -> new ResponseEntity<>(group, OK))
+                .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
     /**
@@ -85,5 +81,16 @@ public class GroupEndpoint {
 
         //add groups by curator
         return new ResponseEntity<>(studyGroupDataRepository.findAllByTeacher(userId), OK);
+    }
+
+    @PreAuthorize("hasAnyAuthority('STUDENT')")
+    @GetMapping("/user")
+    public ResponseEntity<StudyGroupDataDb> getGroup() {
+        final Long groupId = UserContextHolder.getGroupId();
+
+        return Optional.ofNullable(groupId)
+                .flatMap(studyGroupDataRepository::findById)
+                .map(group -> new ResponseEntity<>(group, OK))
+                .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 }
