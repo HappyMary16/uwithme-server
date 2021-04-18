@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -37,6 +39,19 @@ public class KeycloakServiceClient {
 
         return response.getBody();
     }
+
+    @SneakyThrows
+    public Map<String, KeycloakUser> getUsersByIds(final List<String> userIds) {
+        log.debug("Get KeycloakUsers for users with ids {}", userIds);
+//        final String getUserUri = keycloakUrl + "/admin/realms/" + realm + "/users/" + userIds;
+//
+//        final ResponseEntity<KeycloakUser> response = restOperations.getForEntity(getUserUri, KeycloakUser.class);
+
+//        log.debug("Returned KeycloakUsers: {}", response.getBody());
+
+        return Map.of();
+    }
+
 
     @SneakyThrows
     public KeycloakUser updateUser(final String userId, final KeycloakUser user) {
