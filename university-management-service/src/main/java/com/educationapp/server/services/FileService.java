@@ -1,25 +1,10 @@
 package com.educationapp.server.services;
 
-import static com.educationapp.server.enums.Role.STUDENT;
-import static com.educationapp.server.enums.Role.TEACHER;
-import static java.lang.String.format;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
+import com.educationapp.api.AccessToFileApi;
+import com.educationapp.api.FileApi;
+import com.educationapp.api.SaveFileApi;
 import com.educationapp.server.enums.Role;
 import com.educationapp.server.exception.FileStorageException;
-import com.educationapp.server.models.api.AccessToFileApi;
-import com.educationapp.server.models.api.FileApi;
-import com.educationapp.server.models.api.SaveFileApi;
 import com.educationapp.server.models.persistence.AccessToFileDB;
 import com.educationapp.server.models.persistence.FileDB;
 import com.educationapp.server.models.persistence.SubjectDB;
@@ -32,6 +17,21 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static com.educationapp.server.enums.Role.STUDENT;
+import static com.educationapp.server.enums.Role.TEACHER;
+import static java.lang.String.format;
 
 @Component
 public class FileService {

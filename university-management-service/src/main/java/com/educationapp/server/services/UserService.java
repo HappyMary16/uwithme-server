@@ -1,12 +1,12 @@
 package com.educationapp.server.services;
 
+import com.educationapp.api.KeycloakUserApi;
+import com.educationapp.api.RegisterApi;
+import com.educationapp.api.UpdateUserApi;
+import com.educationapp.api.UserApi;
 import com.educationapp.server.clients.KeycloakServiceClient;
 import com.educationapp.server.exception.LastAdminCannotBeDeleted;
 import com.educationapp.server.exception.UserNotFoundException;
-import com.educationapp.server.models.KeycloakUser;
-import com.educationapp.server.models.api.RegisterApi;
-import com.educationapp.server.models.api.UpdateUserApi;
-import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.models.persistence.*;
 import com.educationapp.server.repositories.DepartmentRepository;
 import com.educationapp.server.repositories.StudyGroupDataRepository;
@@ -62,7 +62,7 @@ public class UserService {
     }
 
     public UserApi getUserApi() {
-        final KeycloakUser keycloakUser = getKeycloakUser();
+        final KeycloakUserApi keycloakUser = getKeycloakUser();
         final UserDb userDb = userRepository.findById(keycloakUser.getId())
                 .orElseThrow(() -> new UserNotFoundException(keycloakUser.getEmail()));
 
@@ -204,7 +204,7 @@ public class UserService {
 
         userRepository.save(toUpdate);
 
-        final KeycloakUser keycloakUserToUpdate = getKeycloakUser()
+        final KeycloakUserApi keycloakUserToUpdate = getKeycloakUser()
                 .toBuilder()
                 .firstName(updateUserApi.getFirstName())
                 .lastName(updateUserApi.getLastName())
@@ -218,11 +218,11 @@ public class UserService {
     }
 
     private UserApi mapToUserApi(final UserDb userDb) {
-        final KeycloakUser keycloakUser = keycloakServiceClient.getUserById(userDb.getId());
+        final KeycloakUserApi keycloakUser = keycloakServiceClient.getUserById(userDb.getId());
         return mapToUserApi(userDb, keycloakUser);
     }
 
-    private UserApi mapToUserApi(final UserDb userDb, final KeycloakUser keycloakUser) {
+    private UserApi mapToUserApi(final UserDb userDb, final KeycloakUserApi keycloakUser) {
         return mapUserDbToUserApi(userDb).toBuilder()
                 .firstName(keycloakUser.getFirstName())
                 .lastName(keycloakUser.getMiddleName())

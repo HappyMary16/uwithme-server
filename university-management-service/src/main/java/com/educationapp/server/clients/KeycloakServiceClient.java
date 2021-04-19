@@ -1,6 +1,6 @@
 package com.educationapp.server.clients;
 
-import com.educationapp.server.models.KeycloakUser;
+import com.educationapp.api.KeycloakUserApi;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -29,11 +29,11 @@ public class KeycloakServiceClient {
     private final RestOperations restOperations;
 
     @SneakyThrows
-    public KeycloakUser getUserById(final String userId) {
+    public KeycloakUserApi getUserById(final String userId) {
         log.debug("Get KeycloakUser for user with id {}", userId);
         final String getUserUri = keycloakUrl + "/admin/realms/" + realm + "/users/" + userId;
 
-        final ResponseEntity<KeycloakUser> response = restOperations.getForEntity(getUserUri, KeycloakUser.class);
+        final ResponseEntity<KeycloakUserApi> response = restOperations.getForEntity(getUserUri, KeycloakUserApi.class);
 
         log.debug("Returned KeycloakUser: {}", response.getBody());
 
@@ -41,7 +41,7 @@ public class KeycloakServiceClient {
     }
 
     @SneakyThrows
-    public Map<String, KeycloakUser> getUsersByIds(final List<String> userIds) {
+    public Map<String, KeycloakUserApi> getUsersByIds(final List<String> userIds) {
         log.debug("Get KeycloakUsers for users with ids {}", userIds);
 //        final String getUserUri = keycloakUrl + "/admin/realms/" + realm + "/users/" + userIds;
 //
@@ -54,7 +54,7 @@ public class KeycloakServiceClient {
 
 
     @SneakyThrows
-    public KeycloakUser updateUser(final String userId, final KeycloakUser user) {
+    public KeycloakUserApi updateUser(final String userId, final KeycloakUserApi user) {
         log.debug("Update Keycloak User with id {}", userId);
 
         final String userUri = keycloakUrl + "/admin/realms/" + realm + "/users/" + userId;

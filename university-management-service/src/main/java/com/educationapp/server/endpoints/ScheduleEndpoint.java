@@ -1,15 +1,15 @@
 package com.educationapp.server.endpoints;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
-
-import com.educationapp.server.models.api.CreateLessonApi;
-import com.educationapp.server.models.api.admin.DeleteLessonApi;
+import com.educationapp.api.CreateLessonApi;
+import com.educationapp.api.DeleteLessonApi;
 import com.educationapp.server.services.ScheduleService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @AllArgsConstructor
 @RestController

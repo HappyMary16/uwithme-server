@@ -1,6 +1,6 @@
 package com.educationapp.server.endpoints;
 
-import com.educationapp.server.models.api.admin.AddInstituteApi;
+import com.educationapp.api.AddInstituteApi;
 import com.educationapp.server.models.persistence.InstituteDb;
 import com.educationapp.server.repositories.InstituteRepository;
 import com.educationapp.server.security.UserContextHolder;

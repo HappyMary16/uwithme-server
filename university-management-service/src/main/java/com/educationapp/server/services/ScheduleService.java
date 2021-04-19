@@ -1,12 +1,12 @@
 package com.educationapp.server.services;
 
+import com.educationapp.api.CreateLessonApi;
+import com.educationapp.api.DeleteLessonApi;
+import com.educationapp.api.KeycloakUserApi;
+import com.educationapp.api.LessonApi;
 import com.educationapp.server.clients.KeycloakServiceClient;
 import com.educationapp.server.enums.Role;
 import com.educationapp.server.exception.UserNotFoundException;
-import com.educationapp.server.models.KeycloakUser;
-import com.educationapp.server.models.api.CreateLessonApi;
-import com.educationapp.server.models.api.LessonApi;
-import com.educationapp.server.models.api.admin.DeleteLessonApi;
 import com.educationapp.server.models.persistence.*;
 import com.educationapp.server.repositories.*;
 import com.educationapp.server.security.UserContextHolder;
@@ -97,7 +97,7 @@ public class ScheduleService {
         }
     }
 
-    private LessonApi mapScheduleDbToLesson(final ScheduleDb scheduleDb, final Map<String, KeycloakUser> teachers) {
+    private LessonApi mapScheduleDbToLesson(final ScheduleDb scheduleDb, final Map<String, KeycloakUserApi> teachers) {
         final LessonApi.LessonApiBuilder lesson = LessonApi.builder()
                 .id(scheduleDb.getId())
                 .lessonTime(scheduleDb.getLessonNumber())
@@ -110,7 +110,7 @@ public class ScheduleService {
         if (Objects.nonNull(subject)) {
             final String teacherId = subject.getTeacher().getId();
 
-            final KeycloakUser teacher = Optional.ofNullable(teachers.get(teacherId))
+            final KeycloakUserApi teacher = Optional.ofNullable(teachers.get(teacherId))
                     .orElseGet(() -> keycloakServiceClient.getUserById(teacherId));
 
             lesson.subjectName(subject.getName())

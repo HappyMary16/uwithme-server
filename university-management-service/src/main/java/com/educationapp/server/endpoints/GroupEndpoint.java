@@ -1,6 +1,6 @@
 package com.educationapp.server.endpoints;
 
-import com.educationapp.server.models.api.admin.AddGroupApi;
+import com.educationapp.api.AddGroupApi;
 import com.educationapp.server.models.persistence.DepartmentDb;
 import com.educationapp.server.models.persistence.InstituteDb;
 import com.educationapp.server.models.persistence.StudyGroupDataDb;

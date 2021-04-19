@@ -1,8 +1,8 @@
 package com.educationapp.server.endpoints;
 
-import com.educationapp.server.models.api.UpdateUserApi;
-import com.educationapp.server.models.api.UserApi;
-import com.educationapp.server.models.api.admin.AddStudentsToGroupApi;
+import com.educationapp.api.AddStudentsToGroupApi;
+import com.educationapp.api.UpdateUserApi;
+import com.educationapp.api.UserApi;
 import com.educationapp.server.security.UserContextHolder;
 import com.educationapp.server.services.UserService;
 import lombok.AllArgsConstructor;

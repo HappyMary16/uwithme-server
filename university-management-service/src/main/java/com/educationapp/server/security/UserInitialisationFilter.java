@@ -1,13 +1,6 @@
 package com.educationapp.server.security;
 
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.educationapp.server.models.KeycloakUser;
+import com.educationapp.api.KeycloakUserApi;
 import com.educationapp.server.models.persistence.SimpleUserDb;
 import com.educationapp.server.repositories.SimpleUserRepository;
 import lombok.AllArgsConstructor;
@@ -15,6 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.representations.AccessToken;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Slf4j
 @AllArgsConstructor
@@ -39,7 +38,7 @@ public class UserInitialisationFilter extends OncePerRequestFilter {
 
         final String userId = token.getSubject();
         final SimpleUserDb userDb = userRepository.findById(userId).orElse(null);
-        final KeycloakUser keycloakUser = KeycloakUser.builder()
+        final KeycloakUserApi keycloakUser = KeycloakUserApi.builder()
                                                       .id(userId)
                                                       .firstName(token.getGivenName())
                                                       .middleName(token.getMiddleName())

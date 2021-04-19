@@ -8,6 +8,8 @@
     <modules>
         <module>university-management-service</module>
         <module>university-management-perf-tests</module>
+        <module>university-menagement-clients</module>
+        <module>university-manager-api</module>
     </modules>
     <name>EducationApp</name>
     <description>Project for file management in university</description>
@@ -35,4 +37,11 @@
         <keycloak.version>9.0.2</keycloak.version>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+    </dependencies>
 </project>

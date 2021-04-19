@@ -1,8 +1,6 @@
 package com.educationapp.server.endpoints;
 
-import static org.springframework.http.HttpStatus.OK;
-
-import com.educationapp.server.models.api.admin.AddLectureHallApi;
+import com.educationapp.api.AddLectureHallApi;
 import com.educationapp.server.models.persistence.BuildingDb;
 import com.educationapp.server.models.persistence.LectureHallDb;
 import com.educationapp.server.repositories.BuildingsRepository;
@@ -12,6 +10,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @AllArgsConstructor
 @RestController

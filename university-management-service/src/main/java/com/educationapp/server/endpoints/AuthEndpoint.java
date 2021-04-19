@@ -1,16 +1,16 @@
 package com.educationapp.server.endpoints;
 
-import static org.springframework.http.HttpStatus.OK;
-
+import com.educationapp.api.RegisterApi;
+import com.educationapp.api.UserApi;
 import com.educationapp.server.exception.EmptyFieldsException;
-import com.educationapp.server.models.api.RegisterApi;
-import com.educationapp.server.models.api.UserApi;
 import com.educationapp.server.services.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 @AllArgsConstructor

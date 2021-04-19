@@ -1,7 +1,7 @@
 package com.educationapp.server.security;
 
+import com.educationapp.api.KeycloakUserApi;
 import com.educationapp.server.enums.Role;
-import com.educationapp.server.models.KeycloakUser;
 import com.educationapp.server.models.persistence.SimpleUserDb;
 import lombok.Builder;
 import lombok.Value;
@@ -48,7 +48,7 @@ public class UserContextHolder {
         return threadLocalScope.get().getUserDb();
     }
 
-    public static KeycloakUser getKeycloakUser() {
+    public static KeycloakUserApi getKeycloakUser() {
         return threadLocalScope.get().getKeycloakUser();
     }
 
@@ -60,7 +60,7 @@ public class UserContextHolder {
     @Builder(toBuilder = true)
     public static class UserContext {
 
-        KeycloakUser keycloakUser;
+        KeycloakUserApi keycloakUser;
         SimpleUserDb userDb;
     }
 }

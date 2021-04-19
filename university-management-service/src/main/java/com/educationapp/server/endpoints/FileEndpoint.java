@@ -1,18 +1,8 @@
 package com.educationapp.server.endpoints;
 
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static org.springframework.http.HttpStatus.OK;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.educationapp.server.models.api.AccessToFileApi;
-import com.educationapp.server.models.api.SaveFileApi;
-import com.educationapp.server.models.api.UploadFileResponseApi;
+import com.educationapp.api.AccessToFileApi;
+import com.educationapp.api.SaveFileApi;
+import com.educationapp.api.UploadFileResponseApi;
 import com.educationapp.server.models.persistence.FileDB;
 import com.educationapp.server.repositories.FileRepository;
 import com.educationapp.server.security.UserContextHolder;
@@ -24,6 +14,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 
 @AllArgsConstructor
 @RestController
