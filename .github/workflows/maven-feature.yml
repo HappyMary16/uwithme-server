@@ -20,4 +20,4 @@ jobs:
     - name: Build with Maven
       run: mvn -B clean package -DskipTests
     - name: Maven Verify
-      run: mvn -B clean verify
+      run: mvn -B clean verify -DskipTests

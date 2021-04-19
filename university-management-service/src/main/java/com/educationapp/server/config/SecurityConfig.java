@@ -54,11 +54,10 @@ class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         return new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl());
     }
 
-    //TODO doesn't work :(
     @Override
     public void configure(final WebSecurity web) {
-        web.ignoring()
-                .antMatchers("/api/info/**");
+//        web.ignoring()
+//                .antMatchers("/api/info/**");
     }
 
     @Override
@@ -70,7 +69,7 @@ class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
                 .csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/").permitAll()
+                .antMatchers("/api/info/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterAfter(new UserInitialisationFilter(userRepository),
