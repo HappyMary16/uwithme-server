@@ -22,7 +22,7 @@ jobs:
       - name: Grant execute permission for mvnw
         run: chmod +x mvnw
       - name: Test and package with Mavwn
-        run: ./mvnw package
+        run: ./mvnw package -DskipTests
       - name: Grant execute permission for deploy script
         run: chmod +x ./deploy.sh
       - name: Deploy
