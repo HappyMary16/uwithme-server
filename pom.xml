@@ -10,6 +10,7 @@
         <module>university-management-perf-tests</module>
         <module>university-menagement-clients</module>
         <module>university-manager-api</module>
+        <module>university-with-me-func-tests</module>
     </modules>
     <name>EducationApp</name>
     <description>Project for file management in university</description>
@@ -43,5 +44,13 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+
     </dependencies>
 </project>
