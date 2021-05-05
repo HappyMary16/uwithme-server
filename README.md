@@ -21,4 +21,4 @@ Link: https://tcomad.tk
 mvn spring-boot:run
 ```
 ##### or you can use IDE:
-Run the ```main``` method in the ```com.educationapp.server.EducationApp``` class
+Run the ```main``` method in the ```EducationApp``` class

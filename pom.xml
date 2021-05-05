@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.educationapp</groupId>
+    <groupId>com.mborodin.uwm</groupId>
     <artifactId>EducationAppServer</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+
     <modules>
         <module>university-with-me-service</module>
         <module>university-with-me-perf-tests</module>
@@ -12,8 +14,10 @@
         <module>university-with-me-api</module>
         <module>university-with-me-func-tests</module>
     </modules>
+
     <name>EducationApp</name>
     <description>Project for file management in university</description>
+
     <packaging>pom</packaging>
 
     <parent>
