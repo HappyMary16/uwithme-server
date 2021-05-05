@@ -9,16 +9,13 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>university-management-perf-tests</artifactId>
 
+    <artifactId>university-with-me-perf-tests</artifactId>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <gatling.version>3.5.0</gatling.version>
         <gatling-maven-plugin.version>3.0.5</gatling-maven-plugin.version>
         <scala-maven-plugin.version>4.4.0</scala-maven-plugin.version>
-        <org.projectlombok.version>1.18.0</org.projectlombok.version>
-        <tcapi.version>0.17.0-SNAPSHOT</tcapi.version>
     </properties>
 
     <dependencies>

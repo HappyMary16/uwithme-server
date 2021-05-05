@@ -3,7 +3,7 @@ package com.educationapp;
 import javax.inject.Inject;
 
 import com.educationapp.clients.KeycloakServiceClient;
-import com.educationapp.configurations.TestConfig;
+import com.educationapp.config.TestConfig;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.BeforeClass;

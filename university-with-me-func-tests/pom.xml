@@ -16,6 +16,7 @@
     </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -38,14 +39,14 @@
 
         <dependency>
             <groupId>com.educationapp</groupId>
-            <artifactId>university-manager-api</artifactId>
+            <artifactId>university-with-me-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>com.educationapp</groupId>
-            <artifactId>university-menagement-clients</artifactId>
+            <artifactId>university-with-me-clients</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
@@ -60,5 +61,13 @@
             <version>2.3.10.RELEASE</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security.oauth</groupId>
+            <artifactId>spring-security-oauth2</artifactId>
+            <version>2.4.1.RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 </project>

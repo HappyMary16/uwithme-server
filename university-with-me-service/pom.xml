@@ -9,19 +9,19 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>university-management-service</artifactId>
+    <artifactId>university-with-me-service</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.educationapp</groupId>
-            <artifactId>university-manager-api</artifactId>
+            <artifactId>university-with-me-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>com.educationapp</groupId>
-            <artifactId>university-menagement-clients</artifactId>
+            <artifactId>university-with-me-clients</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
@@ -87,7 +87,6 @@
             <artifactId>spring-security-oauth2-autoconfigure</artifactId>
             <version>${spring-security-oauth2-autoconfigure.version}</version>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -109,6 +108,7 @@
                     </annotationProcessors>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

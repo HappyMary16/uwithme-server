@@ -6,10 +6,10 @@
     <artifactId>EducationAppServer</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <modules>
-        <module>university-management-service</module>
-        <module>university-management-perf-tests</module>
-        <module>university-menagement-clients</module>
-        <module>university-manager-api</module>
+        <module>university-with-me-service</module>
+        <module>university-with-me-perf-tests</module>
+        <module>university-with-me-clients</module>
+        <module>university-with-me-api</module>
         <module>university-with-me-func-tests</module>
     </modules>
     <name>EducationApp</name>
@@ -51,6 +51,5 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.30</version>
         </dependency>
-
     </dependencies>
 </project>
