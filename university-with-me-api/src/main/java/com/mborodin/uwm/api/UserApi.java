@@ -21,8 +21,6 @@ public class UserApi {
 
     private String surname;
 
-    private String username;
-
     private String phone;
 
     private String email;

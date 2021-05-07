@@ -191,7 +191,7 @@ public class UserService {
         log.info("Update user {} {} to {}", getKeycloakUser(), getUserDb(), updateUserApi);
 
         final DepartmentDb departmentProxy = departmentRepository.getProxyByIdIfExist(updateUserApi.getDepartmentId());
-        final StudyGroupDataDb groupProxy = studyGroupRepository.getProxyByIdIfExist(updateUserApi.getStudyGroupId());
+        final StudyGroupDataDb groupProxy = studyGroupRepository.getProxyByIdIfExist(updateUserApi.getGroupId());
         final UserDb toUpdate = userRepository.findById(getId())
                                               .map(userDb -> userDb.toBuilder()
                                                                    .department(departmentProxy)
@@ -203,16 +203,6 @@ public class UserService {
         log.info("User id: {}. User to update {}", getId(), toUpdate);
 
         userRepository.save(toUpdate);
-
-        final KeycloakUserApi keycloakUserToUpdate = getKeycloakUser()
-                .toBuilder()
-                .firstName(updateUserApi.getFirstName())
-                .lastName(updateUserApi.getLastName())
-                .email(updateUserApi.getEmail())
-                .middleName(updateUserApi.getSurname())
-                .build();
-
-        keycloakServiceClient.updateUser(getId(), keycloakUserToUpdate);
 
         return getUserApi();
     }
