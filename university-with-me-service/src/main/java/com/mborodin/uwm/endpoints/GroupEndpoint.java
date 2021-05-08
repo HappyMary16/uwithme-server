@@ -15,6 +15,7 @@ import com.mborodin.uwm.repositories.StudyGroupDataRepository;
 import com.mborodin.uwm.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,7 @@ public class GroupEndpoint {
 
     private final StudyGroupDataRepository studyGroupDataRepository;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @Secured("ROLE_ADMIN")
     @PostMapping
     public ResponseEntity<?> addGroup(@RequestBody final AddGroupApi addGroupApi) {
         final Long universityId = UserContextHolder.getUniversityId();

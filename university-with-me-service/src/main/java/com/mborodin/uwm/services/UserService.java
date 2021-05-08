@@ -14,6 +14,7 @@ import com.mborodin.uwm.api.RegisterApi;
 import com.mborodin.uwm.api.UpdateUserApi;
 import com.mborodin.uwm.api.UserApi;
 import com.mborodin.uwm.clients.KeycloakServiceClient;
+import com.mborodin.uwm.enums.Role;
 import com.mborodin.uwm.exception.LastAdminCannotBeDeleted;
 import com.mborodin.uwm.exception.UserNotFoundException;
 import com.mborodin.uwm.models.persistence.*;
@@ -58,6 +59,7 @@ public class UserService {
             toCreate.setUniversityId(universityId);
         }
 
+        keycloakServiceClient.addRole(userId, Role.getById(user.getRole()).name());
         return userRepository.save(toCreate).getId();
     }
 

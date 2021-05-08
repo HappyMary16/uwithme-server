@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -65,6 +66,23 @@ public class KeycloakServiceClient {
         log.debug("Returned KeycloakUsers: {}", response.getBody());
 
         return Map.of();
+    }
+
+    @SneakyThrows
+    public KeycloakUserApi addRole(final String userId, final String role) {
+        log.debug("Add user role: {} for user: ", role, userId);
+
+        final String userRole = "ROLE_" + role;
+        final String roleUri = keycloakUrl + "/admin/realms/" + realm + "/roles/" + userRole;
+
+        final RoleRepresentation roleRepresentation = restTemplate.getForEntity(roleUri, RoleRepresentation.class)
+                                                                  .getBody();
+
+        final String userUri = keycloakUrl + "/admin/realms/" + realm + "/users/" + userId + "/role-mappings/realm";
+
+        restTemplate.postForLocation(userUri, List.of(roleRepresentation));
+
+        return getUserById(userId);
     }
 
     @SneakyThrows
