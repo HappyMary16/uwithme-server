@@ -3,7 +3,6 @@ package com.mborodin.uwm.clients;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.mborodin.uwm.api.KeycloakUserApi;
@@ -12,12 +11,10 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.keycloak.representations.idm.RoleRepresentation;
-import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
@@ -81,35 +78,6 @@ public class KeycloakServiceClient {
         final String userUri = keycloakUrl + "/admin/realms/" + realm + "/users/" + userId + "/role-mappings/realm";
 
         restTemplate.postForLocation(userUri, List.of(roleRepresentation));
-
-        return getUserById(userId);
-    }
-
-    @SneakyThrows
-    public KeycloakUserApi updateUser(final String userId, final KeycloakUserApi user) {
-        log.debug("Update Keycloak User with id {}", userId);
-
-        final String userUri = keycloakUrl + "/admin/realms/" + realm + "/users/" + userId;
-
-        final UserRepresentation userToUpdate =
-                Optional.of(restTemplate.getForEntity(userUri, UserRepresentation.class))
-                        .map(ResponseEntity::getBody)
-                        .stream()
-                        .peek(u -> {
-                            u.setFirstName(user.getFirstName());
-                            //TODO: add middle name
-                            u.setLastName(user.getLastName());
-                            u.setEmail(user.getEmail());
-                        })
-                        .findFirst()
-                        .orElse(null);
-
-
-        try {
-            restTemplate.put(userUri, userToUpdate);
-        } catch (RestClientException e) {
-            log.error(e.getMessage());
-        }
 
         return getUserById(userId);
     }

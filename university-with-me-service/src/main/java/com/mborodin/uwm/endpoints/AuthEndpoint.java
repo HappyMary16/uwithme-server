@@ -1,14 +1,11 @@
 package com.mborodin.uwm.endpoints;
 
-import static org.springframework.http.HttpStatus.OK;
-
 import com.mborodin.uwm.api.RegisterApi;
 import com.mborodin.uwm.api.UserApi;
 import com.mborodin.uwm.exception.EmptyFieldsException;
 import com.mborodin.uwm.services.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,8 +18,8 @@ public class AuthEndpoint {
     private final UserService userService;
 
     @GetMapping("/signIn")
-    public ResponseEntity<?> authenticateUser() {
-        return new ResponseEntity<>(userService.getUserApi(), OK);
+    public UserApi authenticateUser() {
+        return userService.getUserApi();
     }
 
     @PostMapping("/signUp")

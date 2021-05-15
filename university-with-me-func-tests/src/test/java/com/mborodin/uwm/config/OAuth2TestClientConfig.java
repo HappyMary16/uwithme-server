@@ -34,7 +34,7 @@ public class OAuth2TestClientConfig {
         return details;
     }
 
-    @Bean(name = "restTemplateUser1")
+    @Bean(name = "restTemplateAdmin")
     public RestTemplate restTemplate() {
         OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(oauth2ProtectedResourceDetails());
         oAuth2RestTemplate.getOAuth2ClientContext().getAccessTokenRequest().set("username", user1Username);
