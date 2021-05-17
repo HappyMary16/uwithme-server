@@ -1,37 +1,44 @@
 package com.mborodin.uwm.clients;
 
-import com.mborodin.uwm.api.KeycloakUserApi;
-import lombok.NoArgsConstructor;
+import com.mborodin.uwm.api.AddGroupApi;
+import com.mborodin.uwm.api.GroupApi;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
-@NoArgsConstructor
+@AllArgsConstructor
 public class GroupServiceClient {
 
-    @Value("${university-with-me.host:localhost}")
     private String host;
-    @Value("${university-with-me.port:${server.port}}")
     private int port;
-
     private RestTemplate restTemplate;
 
-    public GroupServiceClient(final RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    @SneakyThrows
+    public GroupApi getGroupById(final Long groupId) {
+        log.debug("Register User: {}", groupId);
+
+        final String getUserUri = "http://" + host + ":" + port + "/api/groups/" + groupId;
+
+        final ResponseEntity<GroupApi> response = restTemplate.getForEntity(getUserUri, GroupApi.class);
+
+        log.debug("Created User: {}", response.getBody());
+
+        return response.getBody();
     }
 
     @SneakyThrows
-    public KeycloakUserApi getUserById(final String userId) {
-//        log.debug("Get KeycloakUser for user with id {}", userId);
-//        final String getUserUri = keycloakUrl + "/admin/realms/" + realm + "/users/" + userId;
-//
-//        final ResponseEntity<KeycloakUserApi> response = restTemplate.getForEntity(getUserUri, KeycloakUserApi.class);
-//
-//        log.debug("Returned KeycloakUser: {}", response.getBody());
-//
-//        return response.getBody();
-        return null;
+    public Long createGroup(final AddGroupApi group) {
+        log.debug("Register User: {}", group);
+
+        final String getUserUri = "http://" + host + ":" + port + "/api/groups";
+
+        final ResponseEntity<Long> response = restTemplate.postForEntity(getUserUri, group, Long.class);
+
+        log.debug("Created User: {}", response.getBody());
+
+        return response.getBody();
     }
 }

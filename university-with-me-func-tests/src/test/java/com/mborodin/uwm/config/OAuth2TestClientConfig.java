@@ -13,9 +13,9 @@ public class OAuth2TestClientConfig {
 
     @Value("${oauth.client}")
     private String clientId;
-    @Value("${oauth.server}")
+    @Value("${keycloak.auth-server-url}")
     private String serverUri;
-    @Value("${oauth.realm}")
+    @Value("${keycloak.realm}")
     private String realm;
     @Value("${oauth.user1.username}")
     private String user1Username;

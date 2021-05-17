@@ -1,7 +1,6 @@
 package com.mborodin.uwm.config;
 
-import javax.inject.Inject;
-
+import com.mborodin.uwm.ClientFactory;
 import com.mborodin.uwm.clients.AuthServiceClient;
 import com.mborodin.uwm.clients.GroupServiceClient;
 import lombok.RequiredArgsConstructor;
@@ -14,16 +13,16 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class ClientConfig {
 
-    @Inject
-    private ApplicationContext context;
+    private final ApplicationContext context;
+    private final ClientFactory clientFactory;
 
     @Bean
     public GroupServiceClient groupServiceClient() {
-        return new GroupServiceClient(context.getBean("restTemplateAdmin", RestTemplate.class));
+        return clientFactory.getGroupServiceClient(context.getBean("restTemplateAdmin", RestTemplate.class));
     }
 
     @Bean(name = "authServiceClientAdmin")
     public AuthServiceClient authServiceClientAdmin() {
-        return new AuthServiceClient(context.getBean("restTemplateAdmin", RestTemplate.class));
+        return clientFactory.getAuthServiceClient(context.getBean("restTemplateAdmin", RestTemplate.class));
     }
 }

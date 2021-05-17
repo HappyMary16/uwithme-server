@@ -32,7 +32,7 @@ public class GroupEndpoint {
 
     @Secured("ROLE_ADMIN")
     @PostMapping
-    public ResponseEntity<?> addGroup(@RequestBody final AddGroupApi addGroupApi) {
+    public Long addGroup(@RequestBody final AddGroupApi addGroupApi) {
         final Long universityId = UserContextHolder.getUniversityId();
         final String instituteName = addGroupApi.getInstituteName();
         final String departmentName = addGroupApi.getDepartmentName();
@@ -54,7 +54,7 @@ public class GroupEndpoint {
                                                        .isVisible(addGroupApi.isShowingInRegistration())
                                                        .build();
 
-        return new ResponseEntity<>(studyGroupDataRepository.save(group), OK);
+        return studyGroupDataRepository.save(group).getId();
     }
 
     @GetMapping(value = "/universityId/{universityId}")
