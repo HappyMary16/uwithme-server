@@ -29,7 +29,6 @@ public class GroupTests extends AbstractBaseTest {
         final Long groupId = groupServiceClient.createGroup(addGroupApi);
         final GroupApi createdGroup = groupServiceClient.getGroupById(groupId);
 
-
         final GroupApi expectedGroup = GroupApi.builder()
                                                .id(groupId)
                                                .name("TEST")
