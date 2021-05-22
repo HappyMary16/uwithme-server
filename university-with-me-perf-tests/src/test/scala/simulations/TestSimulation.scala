@@ -7,14 +7,14 @@ import io.gatling.http.request.builder.HttpRequestBuilder.toActionBuilder
 
 import scala.concurrent.duration.DurationInt
 
-class TestSimulation extends Simulation {
+class StudentCreationSimulation extends Simulation {
 
-  val uWithMeService = "http://ec2-18-189-141-10.us-east-2.compute.amazonaws.com"
-  val keycloakService = "http://ec2-18-224-55-223.us-east-2.compute.amazonaws.com"
+  val uWithMeService = "http://localhost:8081"
+  val keycloakService = "https://auth.tcomad.tk/auth"
 
   val feeder = csv("generate.csv").circular
 
-  val theScenarioBuilder: ScenarioBuilder = scenario("Scenario1")
+  val theScenarioBuilder: ScenarioBuilder = scenario("StudentCreationScenario")
     .feed(feeder)
     .exec(
       http("keycloakAuth")
