@@ -5,24 +5,14 @@ import io.gatling.core.structure.ScenarioBuilder
 import io.gatling.http.Predef._
 import io.gatling.http.request.builder.HttpRequestBuilder.toActionBuilder
 
+import scala.concurrent.duration.DurationInt
+
 class TestSimulation extends Simulation {
 
   val uWithMeService = "http://ec2-18-189-141-10.us-east-2.compute.amazonaws.com"
   val keycloakService = "http://ec2-18-224-55-223.us-east-2.compute.amazonaws.com"
 
-  before {
-    println("***** My simulation is about to begin! *****")
-  }
-
-  after {
-    println("***** My simulation has ended! ******")
-  }
-
-  val feeder = csv("generate.csv").random
-
-  //  foreach(records, "record") {
-  //    exec(flattenMapIntoAttributes("${record}"))
-  //  }
+  val feeder = csv("generate.csv").circular
 
   val theScenarioBuilder: ScenarioBuilder = scenario("Scenario1")
     .feed(feeder)
@@ -50,7 +40,7 @@ class TestSimulation extends Simulation {
     http("studentRegistration")
       .post(uWithMeService + "/api/auth/signUp")
       .header("Authorization", "Bearer ${token}")
-      .body(StringBody("""{ "role": "1", "instituteId": "1", "universityId": "1", "departmentId": "1", "groupId": "1" }"""))
+      .body(StringBody("""{ "role": "1", "instituteId": "1", "universityId": "1", "departmentId": "1" }"""))
       .asJson
   ).exec(
     http("deleteUser")
@@ -60,6 +50,8 @@ class TestSimulation extends Simulation {
   )
 
   setUp(
-    theScenarioBuilder.inject(atOnceUsers(1))
+    theScenarioBuilder.inject(rampConcurrentUsers(1) to (50) during (1.minutes),
+      constantConcurrentUsers(500) during (1.minutes),
+      rampConcurrentUsers(500) to (1) during (1.minutes))
   ) //.protocols(theHttpProtocolBuilder)
 }
