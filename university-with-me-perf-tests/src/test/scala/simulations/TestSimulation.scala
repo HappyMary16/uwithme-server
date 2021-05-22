@@ -3,10 +3,12 @@ package simulations
 import io.gatling.core.Predef._
 import io.gatling.core.structure.ScenarioBuilder
 import io.gatling.http.Predef._
-import io.gatling.http.protocol.HttpProtocolBuilder
 import io.gatling.http.request.builder.HttpRequestBuilder.toActionBuilder
 
 class TestSimulation extends Simulation {
+
+  val uWithMeService = "http://ec2-18-189-141-10.us-east-2.compute.amazonaws.com"
+  val keycloakService = "http://ec2-18-224-55-223.us-east-2.compute.amazonaws.com"
 
   before {
     println("***** My simulation is about to begin! *****")
@@ -16,45 +18,44 @@ class TestSimulation extends Simulation {
     println("***** My simulation has ended! ******")
   }
 
-  val keycloakAuth: HttpProtocolBuilder = http
-    .baseUrl("https://auth.tcomad.tk")
+  val feeder = csv("generate.csv").random
 
-  val theHttpProtocolBuilder: HttpProtocolBuilder = http
-    .baseUrl("http://localhost:8081")
-
+  //  foreach(records, "record") {
+  //    exec(flattenMapIntoAttributes("${record}"))
+  //  }
 
   val theScenarioBuilder: ScenarioBuilder = scenario("Scenario1")
+    .feed(feeder)
     .exec(
       http("keycloakAuth")
-        .post("https://auth.tcomad.tk/auth/realms/test/protocol/openid-connect/token")
+        .post(keycloakService + "/auth/realms/test/protocol/openid-connect/token")
         .formParam("grant_type", "password")
         .formParam("client_id", "EducationApp-UI")
-        .formParam("username", "test-user-1")
-        .formParam("password", "test-user-1")
-        .check(jsonPath("$.access_token").saveAs("auth"))
-      //        .check(regex("access_token: (.*)").find.saveAs("auth"))
+        .formParam("username", "${username}")
+        .formParam("password", "${password}")
+        .check(jsonPath("$.access_token").saveAs("token"))
     ).exec(
     http("getUniversities")
-      .get("http://localhost:8081/api/info/universities")
+      .get(uWithMeService + "/api/info/universities")
   ).exec(
     http("getInstitutes")
-      .get("http://localhost:8081/api/info/institutes/1")
+      .get(uWithMeService + "/api/info/institutes/1")
   ).exec(
     http("getDepartments")
-      .get("http://localhost:8081/api/info/departments/1")
+      .get(uWithMeService + "/api/info/departments/1")
   ).exec(
     http("getGroups")
-      .get("http://localhost:8081/api/info/groups/1")
+      .get(uWithMeService + "/api/info/groups/1")
   ).exec(
     http("studentRegistration")
-      .post("http://localhost:8081/api/auth/signUp")
-      .header("Authorization", "Bearer ${auth}")
+      .post(uWithMeService + "/api/auth/signUp")
+      .header("Authorization", "Bearer ${token}")
       .body(StringBody("""{ "role": "1", "instituteId": "1", "universityId": "1", "departmentId": "1", "groupId": "1" }"""))
       .asJson
   ).exec(
     http("deleteUser")
-      .delete("http://localhost:8081/api/users")
-      .header("Authorization", "Bearer ${auth}")
+      .delete(uWithMeService + "/api/users")
+      .header("Authorization", "Bearer ${token}")
       .asJson
   )
 
