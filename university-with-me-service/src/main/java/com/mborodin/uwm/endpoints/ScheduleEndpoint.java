@@ -1,7 +1,11 @@
 package com.mborodin.uwm.endpoints;
 
-import static org.springframework.http.HttpStatus.CREATED;
+import static com.mborodin.uwm.enums.Role.TEACHER;
+import static com.mborodin.uwm.security.UserContextHolder.getId;
+import static com.mborodin.uwm.security.UserContextHolder.getRole;
 import static org.springframework.http.HttpStatus.OK;
+
+import java.util.Objects;
 
 import com.mborodin.uwm.api.CreateLessonApi;
 import com.mborodin.uwm.api.DeleteLessonApi;
@@ -18,11 +22,17 @@ public class ScheduleEndpoint {
 
     private final ScheduleService scheduleService;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER')")
     @PostMapping
-    public ResponseEntity<?> addLesson(@RequestBody CreateLessonApi createLessonApi) {
-        scheduleService.createLesson(createLessonApi);
-        return new ResponseEntity<>(CREATED);
+    public void addLesson(@RequestBody CreateLessonApi createLessonApi) {
+        final CreateLessonApi toCreate = Objects.equals(getRole(), TEACHER)
+                ? createLessonApi.toBuilder()
+                                 .teacherId(getId())
+                                 .teacherName(null)
+                                 .build()
+                : createLessonApi;
+
+        scheduleService.createLesson(toCreate);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
