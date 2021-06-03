@@ -23,6 +23,7 @@ jobs:
         with:
           name: EducationApp
           path: ./university-with-me-service/target/EducationApp.jar
+          retention-days: 1
   image-build:
     needs: build-archive
     runs-on: ubuntu-latest
