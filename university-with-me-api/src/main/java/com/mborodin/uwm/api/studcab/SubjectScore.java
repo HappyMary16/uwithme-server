@@ -23,13 +23,13 @@ public class SubjectScore {
     @JsonAlias("kafedra")
     private String department;
     @JsonAlias("oc_bol")
-    private String scoreBologna;
+    private int scoreBologna;
     @JsonAlias("oc_ects")
     private String score_ECTS;
     @JsonAlias("oc_naz")
     private String scoreNational;
     @JsonAlias("oc_short")
-    private String scoreNationalShort;
+    private int scoreNationalShort;
     @JsonAlias("prepod")
     private String teacher;
     @JsonAlias("subj_id")

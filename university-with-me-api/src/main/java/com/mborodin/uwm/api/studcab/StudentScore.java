@@ -14,7 +14,7 @@ public class StudentScore {
     private String fullName;
     private String group;
     @JsonAlias("n")
-    private String place;
+    private int place;
     @JsonAlias("sbal5")
     private String scoreNationalShort;
     @JsonAlias("sbal100")

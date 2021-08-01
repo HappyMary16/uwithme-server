@@ -25,7 +25,7 @@ public class StudentInfo {
     @JsonAlias("kid")
     private String departmentId;
     @JsonAlias("kurs")
-    private String course;
+    private int course;
     @JsonAlias("imya")
     private String firstName;
     @JsonAlias("oplata")

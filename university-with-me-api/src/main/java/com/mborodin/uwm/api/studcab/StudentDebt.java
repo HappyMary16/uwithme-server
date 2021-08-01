@@ -21,11 +21,11 @@ public class StudentDebt {
     @JsonAlias("kafedra")
     private String department;
     @JsonAlias("kurs")
-    private String course;
+    private int course;
     @JsonAlias("prepod")
     private String teacher;
     @JsonAlias("semestr")
-    private String semester;
+    private int semester;
     @JsonAlias("subj_id")
     private String subjectId;
     private String subject;

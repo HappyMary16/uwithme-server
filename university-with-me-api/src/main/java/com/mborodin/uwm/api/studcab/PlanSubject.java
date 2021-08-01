@@ -25,9 +25,9 @@ public class PlanSubject {
     @JsonAlias("kafedra")
     private String department;
     @JsonAlias("kurs")
-    private String course;
+    private int course;
     @JsonAlias("semestr")
-    private String semester;
+    private int semester;
     @JsonAlias("subj_id")
     private String subjectId;
     private String subject;
