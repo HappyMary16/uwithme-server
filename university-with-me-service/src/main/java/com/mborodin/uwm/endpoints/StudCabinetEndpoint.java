@@ -9,7 +9,10 @@ import com.mborodin.uwm.api.studcab.*;
 import com.mborodin.uwm.clients.StudCabinetClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,22 +23,32 @@ public class StudCabinetEndpoint {
 
     @PreAuthorize("hasAuthority('STUDENT')")
     @GetMapping("/students")
-    public StudentInfo getStudentInfo(@RequestBody final AuthEntity authEntity) {
-        return studCabinetClient.getStudentInfo(authEntity.getEmail(), authEntity.getPassword());
+    public StudentInfo getStudentInfo(@QueryParam("email") final String email,
+                                      @QueryParam("password") final String password) {
+        final List<StudentInfo> studentInfos = studCabinetClient.getStudentInfo(email, password);
+
+        if (studentInfos.isEmpty()) {
+            //TODO: fix
+            throw new RuntimeException();
+        }
+
+        return studentInfos.get(0);
     }
 
     @PreAuthorize("hasAuthority('STUDENT')")
     @GetMapping("/subjects/scores/{semesterId}")
     public List<SubjectScore> getSubjectScores(@PathVariable final int semesterId,
-                                               @RequestBody final AuthEntity authEntity) {
-        return studCabinetClient.getSubjectScores(authEntity.getEmail(), authEntity.getPassword(), semesterId);
+                                               @QueryParam("email") final String email,
+                                               @QueryParam("password") final String password) {
+        return studCabinetClient.getSubjectScores(email, password, semesterId);
     }
 
     @PreAuthorize("hasAuthority('STUDENT')")
     @GetMapping("/subjects/{semesterId}")
     public List<PlanSubject> getPlanSubjects(@PathVariable final int semesterId,
-                                             @RequestBody final AuthEntity authEntity) {
-        return studCabinetClient.getPlanSubjects(authEntity.getEmail(), authEntity.getPassword(), semesterId);
+                                             @QueryParam("email") final String email,
+                                             @QueryParam("password") final String password) {
+        return studCabinetClient.getPlanSubjects(email, password, semesterId);
     }
 
     @PreAuthorize("hasAuthority('STUDENT')")
@@ -48,8 +61,9 @@ public class StudCabinetEndpoint {
 
     @PreAuthorize("hasAuthority('STUDENT')")
     @GetMapping("/students/debts")
-    public List<StudentDebt> getStudentDebts(@RequestBody final AuthEntity authEntity) {
-        return studCabinetClient.getStudentDebts(authEntity.getEmail(), authEntity.getPassword());
+    public List<StudentDebt> getStudentDebts(@QueryParam("email") final String email,
+                                             @QueryParam("password") final String password) {
+        return studCabinetClient.getStudentDebts(email, password);
     }
 
     @PreAuthorize("hasAuthority('STUDENT')")

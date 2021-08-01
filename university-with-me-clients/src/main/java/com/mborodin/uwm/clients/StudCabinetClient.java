@@ -14,8 +14,8 @@ public interface StudCabinetClient {
 
     @RequestMapping(method = RequestMethod.GET,
             value = "/kabinet?email={email}&pass={password}&page=1")
-    StudentInfo getStudentInfo(@PathVariable("email") String email,
-                               @PathVariable("password") String password);
+    List<StudentInfo> getStudentInfo(@PathVariable("email") String email,
+                                     @PathVariable("password") String password);
 
     @RequestMapping(method = RequestMethod.GET,
             value = "/kabinet?email={email}&pass={password}&page=2&semestr={semester}")
