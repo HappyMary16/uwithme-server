@@ -32,7 +32,6 @@
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring.version>2.3.10.RELEASE</spring.version>
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <liquibase.version>3.10.1</liquibase.version>
         <lombok.version>1.18.6</lombok.version>
@@ -40,7 +39,20 @@
         <javax.version>7.0</javax.version>
         <spring-security-oauth2-autoconfigure.version>2.3.9.RELEASE</spring-security-oauth2-autoconfigure.version>
         <keycloak.version>9.0.2</keycloak.version>
+        <spring.cloud-version>Hoxton.SR11</spring.cloud-version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring.cloud-version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>

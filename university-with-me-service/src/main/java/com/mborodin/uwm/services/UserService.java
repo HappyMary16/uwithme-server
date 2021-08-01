@@ -59,7 +59,7 @@ public class UserService {
             toCreate.setUniversityId(universityId);
         }
 
-        keycloakServiceClient.addRole(userId, Role.getById(user.getRole()).name());
+        keycloakServiceClient.assignRole(userId, Role.getById(user.getRole()).name());
         return userRepository.save(toCreate).getId();
     }
 
@@ -210,7 +210,7 @@ public class UserService {
     }
 
     private UserApi mapToUserApi(final UserDb userDb) {
-        final KeycloakUserApi keycloakUser = keycloakServiceClient.getUserById(userDb.getId());
+        final KeycloakUserApi keycloakUser = keycloakServiceClient.getUser(userDb.getId());
         return mapToUserApi(userDb, keycloakUser);
     }
 
