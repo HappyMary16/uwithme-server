@@ -10,12 +10,12 @@ import java.util.Objects;
 import com.mborodin.uwm.api.CreateLessonApi;
 import com.mborodin.uwm.api.DeleteLessonApi;
 import com.mborodin.uwm.services.ScheduleService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/lessons")
 public class ScheduleEndpoint {
