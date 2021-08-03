@@ -50,7 +50,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: EducationApp
-          path: ./university-with-me-service/target/EducationApp.jar
+          path: ./EducationApp
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
