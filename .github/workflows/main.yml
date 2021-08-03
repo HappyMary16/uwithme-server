@@ -58,5 +58,7 @@ jobs:
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
       - name: Grant execute permission for deploy script
         run: chmod +x ./deploy.sh
+      - name: Grant execute permission for deploy script 2
+        run: chmod 777 ./university-with-me-service/target/EducationApp.jar
       - name: Deploy
         run: ./deploy.sh
