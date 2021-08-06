@@ -25,7 +25,7 @@ public class SubjectScore {
     @JsonAlias("oc_bol")
     private int scoreBologna;
     @JsonAlias("oc_ects")
-    private String score_ECTS;
+    private String scoreECTS;
     @JsonAlias("oc_naz")
     private String scoreNational;
     @JsonAlias("oc_short")
