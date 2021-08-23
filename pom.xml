@@ -36,6 +36,7 @@
         <liquibase.version>3.10.1</liquibase.version>
         <lombok.version>1.18.6</lombok.version>
         <mysql.version>8.0.15</mysql.version>
+        <postgresql.version>42.2.23</postgresql.version>
         <javax.version>7.0</javax.version>
         <spring-security-oauth2-autoconfigure.version>2.3.9.RELEASE</spring-security-oauth2-autoconfigure.version>
         <keycloak.version>9.0.2</keycloak.version>
