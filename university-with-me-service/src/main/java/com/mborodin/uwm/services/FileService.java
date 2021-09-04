@@ -2,7 +2,8 @@ package com.mborodin.uwm.services;
 
 import static com.mborodin.uwm.enums.Role.STUDENT;
 import static com.mborodin.uwm.enums.Role.TEACHER;
-import static java.lang.String.format;
+import static com.mborodin.uwm.security.UserContextHolder.getId;
+import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -18,14 +19,17 @@ import java.util.stream.Collectors;
 import com.mborodin.uwm.api.AccessToFileApi;
 import com.mborodin.uwm.api.FileApi;
 import com.mborodin.uwm.api.SaveFileApi;
+import com.mborodin.uwm.api.exceptions.filestorage.CouldNotLoadFileException;
+import com.mborodin.uwm.api.exceptions.filestorage.CouldNotStoreAvatarException;
+import com.mborodin.uwm.api.exceptions.filestorage.CouldNotStoreFileException;
 import com.mborodin.uwm.enums.Role;
-import com.mborodin.uwm.exception.FileStorageException;
 import com.mborodin.uwm.models.persistence.AccessToFileDB;
 import com.mborodin.uwm.models.persistence.FileDB;
 import com.mborodin.uwm.models.persistence.SubjectDB;
 import com.mborodin.uwm.repositories.AccessToFileRepository;
 import com.mborodin.uwm.repositories.FileRepository;
 import com.mborodin.uwm.security.UserContextHolder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -33,6 +37,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Component
 public class FileService {
 
@@ -64,7 +69,7 @@ public class FileService {
     }
 
     public String saveFile(final SaveFileApi file) {
-        final String username = UserContextHolder.getId();
+        final String username = getId();
         final String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()));
 
         final SubjectDB subjectDb = subjectService.findUsersSubjects()
@@ -79,7 +84,8 @@ public class FileService {
                                                       .resolve(file.getFileTypeId().toString());
 
             if (directory.toString().contains("..")) {
-                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + directory);
+                log.error("Directory contains invalid symbols. Directory: {}", directory);
+                throw new CouldNotStoreFileException(getLanguages(), file.getFile().getName());
             }
 
             if (Files.notExists(directory)) {
@@ -95,19 +101,17 @@ public class FileService {
                                            file.getFileTypeId()));
             return fileName;
         } catch (IOException e) {
-            throw new FileStorageException("Could not store file " + file.getFile().getName() + ". Please try again!",
-                                           e);
+            throw new CouldNotStoreFileException(getLanguages(), file.getFile().getName());
         }
     }
 
     public void updateAvatar(final MultipartFile avatar) {
-        final String userId = UserContextHolder.getId();
-        final Path targetLocation = userAvatarStorageLocation.resolve(userId + ".jpg");
+        final Path targetLocation = userAvatarStorageLocation.resolve(getId() + ".jpg");
 
         try {
             Files.copy(avatar.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new FileStorageException(format("Could not store avatar for user %s. Please try again!", userId), e);
+            throw new CouldNotStoreAvatarException(getLanguages());
         }
     }
 
@@ -172,7 +176,8 @@ public class FileService {
         try {
             Files.createDirectories(path);
         } catch (Exception ex) {
-            throw new FileStorageException(format("Could not create the directory with path %s", path), ex);
+            log.error("Could not create the directory with path {}", path);
+            ex.printStackTrace();
         }
     }
 
@@ -181,8 +186,7 @@ public class FileService {
         try {
             resource = new UrlResource(path.toUri());
         } catch (MalformedURLException e) {
-            e.printStackTrace();
-            throw new FileStorageException(format("Could not load file with path %s", path), e);
+            throw new CouldNotLoadFileException(getLanguages(), path.toString());
         }
 
         if (resource.exists()) {

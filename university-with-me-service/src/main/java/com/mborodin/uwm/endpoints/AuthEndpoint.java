@@ -1,8 +1,10 @@
 package com.mborodin.uwm.endpoints;
 
+import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
+
 import com.mborodin.uwm.api.RegisterApi;
 import com.mborodin.uwm.api.UserApi;
-import com.mborodin.uwm.exception.EmptyFieldsException;
+import com.mborodin.uwm.api.exceptions.EmptyFieldsException;
 import com.mborodin.uwm.services.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,11 +35,11 @@ public class AuthEndpoint {
     private void validateRegistrationApiValid(final RegisterApi registerApi) {
         final Integer role = registerApi.getRole();
         if (role == null) {
-            throw new EmptyFieldsException();
+            throw new EmptyFieldsException(getLanguages());
         }
 
         if (role == 3 && StringUtils.isEmpty(registerApi.getUniversityName())) {
-            throw new EmptyFieldsException();
+            throw new EmptyFieldsException(getLanguages());
         }
 
         if (role != 3) {
@@ -48,7 +50,7 @@ public class AuthEndpoint {
             if (result) {
                 return;
             }
-            throw new EmptyFieldsException();
+            throw new EmptyFieldsException(getLanguages());
         }
     }
 }

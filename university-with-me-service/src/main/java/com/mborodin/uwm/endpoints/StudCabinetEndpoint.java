@@ -1,10 +1,13 @@
 package com.mborodin.uwm.endpoints;
 
+import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
+
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.QueryParam;
 
+import com.mborodin.uwm.api.exceptions.IncorrectAuthDataException;
 import com.mborodin.uwm.api.studcab.*;
 import com.mborodin.uwm.clients.StudCabinetClient;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +31,7 @@ public class StudCabinetEndpoint {
         final List<StudentInfo> studentInfos = studCabinetClient.getStudentInfo(email, password);
 
         if (studentInfos.isEmpty()) {
-            //TODO: fix
-            throw new RuntimeException();
+            throw new IncorrectAuthDataException(getLanguages());
         }
 
         return studentInfos.get(0);

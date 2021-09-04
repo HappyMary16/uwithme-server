@@ -2,6 +2,7 @@ package com.mborodin.uwm.services;
 
 import static com.mborodin.uwm.enums.Role.STUDENT;
 import static com.mborodin.uwm.enums.Role.TEACHER;
+import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -13,9 +14,9 @@ import com.mborodin.uwm.api.CreateLessonApi;
 import com.mborodin.uwm.api.DeleteLessonApi;
 import com.mborodin.uwm.api.KeycloakUserApi;
 import com.mborodin.uwm.api.LessonApi;
+import com.mborodin.uwm.api.exceptions.UserNotFoundException;
 import com.mborodin.uwm.clients.KeycloakServiceClient;
 import com.mborodin.uwm.enums.Role;
-import com.mborodin.uwm.exception.UserNotFoundException;
 import com.mborodin.uwm.models.persistence.*;
 import com.mborodin.uwm.repositories.*;
 import com.mborodin.uwm.security.UserContextHolder;
@@ -59,7 +60,8 @@ public class ScheduleService {
     }
 
     public List<LessonApi> findLessonsById(final String userId) {
-        final UserDb user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        final UserDb user = userRepository.findById(userId)
+                                          .orElseThrow(() -> new UserNotFoundException(getLanguages()));
 
         if (user.getRole().equals(STUDENT.getId())) {
             return new ArrayList<>(findLessonsByGroupId(user.getStudyGroup().getId()));

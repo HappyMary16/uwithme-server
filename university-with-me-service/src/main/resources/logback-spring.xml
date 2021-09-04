@@ -10,7 +10,7 @@
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${log}</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>education-app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>logs/education-app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxFileSize>1MB</maxFileSize>
             <maxHistory>3</maxHistory>
             <totalSizeCap>10MB</totalSizeCap>

@@ -1,5 +1,7 @@
 package com.mborodin.uwm.security;
 
+import static org.springframework.http.HttpHeaders.ACCEPT_LANGUAGE;
+
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
@@ -50,6 +52,7 @@ public class UserInitialisationFilter extends OncePerRequestFilter {
         UserContextHolder.setUserContext(UserContextHolder.UserContext.builder()
                                                                       .keycloakUser(keycloakUser)
                                                                       .userDb(userDb)
+                                                                      .languages(request.getHeader(ACCEPT_LANGUAGE))
                                                                       .build());
 
         filterChain.doFilter(request, response);

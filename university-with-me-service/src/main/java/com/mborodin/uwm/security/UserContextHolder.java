@@ -52,6 +52,10 @@ public class UserContextHolder {
         return threadLocalScope.get().getKeycloakUser();
     }
 
+    public static String getLanguages() {
+        return threadLocalScope.get().getLanguages();
+    }
+
     public static void setUserContext(UserContext user) {
         threadLocalScope.set(user);
     }
@@ -62,5 +66,6 @@ public class UserContextHolder {
 
         KeycloakUserApi keycloakUser;
         SimpleUserDb userDb;
+        String languages;
     }
 }

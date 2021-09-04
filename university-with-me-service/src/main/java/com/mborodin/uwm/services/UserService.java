@@ -13,10 +13,10 @@ import com.mborodin.uwm.api.KeycloakUserApi;
 import com.mborodin.uwm.api.RegisterApi;
 import com.mborodin.uwm.api.UpdateUserApi;
 import com.mborodin.uwm.api.UserApi;
+import com.mborodin.uwm.api.exceptions.LastAdminCannotBeDeleted;
+import com.mborodin.uwm.api.exceptions.UserNotFoundException;
 import com.mborodin.uwm.clients.KeycloakServiceClient;
 import com.mborodin.uwm.enums.Role;
-import com.mborodin.uwm.exception.LastAdminCannotBeDeleted;
-import com.mborodin.uwm.exception.UserNotFoundException;
 import com.mborodin.uwm.models.persistence.*;
 import com.mborodin.uwm.repositories.DepartmentRepository;
 import com.mborodin.uwm.repositories.StudyGroupDataRepository;
@@ -66,7 +66,8 @@ public class UserService {
     public UserApi getUserApi() {
         final KeycloakUserApi keycloakUser = getKeycloakUser();
         final UserDb userDb = userRepository.findById(keycloakUser.getId())
-                                            .orElseThrow(() -> new UserNotFoundException(keycloakUser.getEmail()));
+                                            .orElseThrow(() -> new UserNotFoundException(getLanguages(),
+                                                                                         keycloakUser.getEmail()));
 
         return mapToUserApi(userDb, keycloakUser);
     }
@@ -104,7 +105,7 @@ public class UserService {
 
     public UserApi removeStudentFromGroup(final String studentId) {
         final UserDb student = userRepository.findById(studentId)
-                                             .orElseThrow(UserNotFoundException::new)
+                                             .orElseThrow(() -> new UserNotFoundException(getLanguages()))
                                              .toBuilder()
                                              .studyGroup(null)
                                              .build();
@@ -166,7 +167,7 @@ public class UserService {
                              .stream()
                              .peek(user -> log.info("User with id {}: {}", userId, user))
                              .findFirst()
-                             .orElseThrow(UserNotFoundException::new);
+                             .orElseThrow(() -> new UserNotFoundException(getLanguages()));
     }
 
     public void deleteUser(final String userId) {
@@ -182,7 +183,7 @@ public class UserService {
                                                 .count();
 
         if (adminsNumber == 0) {
-            throw new LastAdminCannotBeDeleted();
+            throw new LastAdminCannotBeDeleted(getLanguages());
         }
 
         Optional.ofNullable(getUniversityId())
