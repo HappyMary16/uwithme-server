@@ -36,4 +36,13 @@
         </dependency>
     </dependencies>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>university-with-me-api</name>
+            <uniqueVersion>true</uniqueVersion>
+            <url>https://maven.pkg.github.com/HappyMary16/education-app-server</url>
+        </repository>
+    </distributionManagement>
+
 </project>
