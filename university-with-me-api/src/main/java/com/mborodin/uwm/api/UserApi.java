@@ -1,6 +1,7 @@
 package com.mborodin.uwm.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.mborodin.uwm.api.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +26,7 @@ public class UserApi {
 
     private String email;
 
-    private Integer role;
+    private Role role;
 
     private String studyGroupName;
 

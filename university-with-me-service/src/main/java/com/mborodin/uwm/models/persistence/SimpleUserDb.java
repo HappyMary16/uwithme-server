@@ -1,16 +1,16 @@
 package com.mborodin.uwm.models.persistence;
 
-import java.io.Serializable;
+import com.mborodin.uwm.api.enums.Role;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.io.Serializable;
 
 @Data
 @Entity
@@ -26,8 +26,12 @@ public class SimpleUserDb implements Serializable {
     @Column(name = "id")
     private String id;
 
+    @Deprecated
+    @Column(name = "old_role")
+    private Integer oldRole;
+
     @Column(name = "role")
-    private Integer role;
+    private Role role;
 
     @Column(name = "is_admin")
     private Boolean isAdmin;

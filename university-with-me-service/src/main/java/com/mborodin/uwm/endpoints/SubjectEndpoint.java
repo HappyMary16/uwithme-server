@@ -1,6 +1,6 @@
 package com.mborodin.uwm.endpoints;
 
-import static com.mborodin.uwm.enums.Role.ADMIN;
+import static com.mborodin.uwm.api.enums.Role.ROLE_ADMIN;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class SubjectEndpoint {
 
     @GetMapping
     public ResponseEntity<List<SubjectDB>> getSubjects() {
-        if (ADMIN.equals(UserContextHolder.getRole())) {
+        if (ROLE_ADMIN.equals(UserContextHolder.getRole())) {
             final Long universityId = UserContextHolder.getUniversityId();
             return new ResponseEntity<>(subjectRepository.findAllByUniversityId(universityId), OK);
         } else {

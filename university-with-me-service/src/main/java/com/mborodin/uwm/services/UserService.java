@@ -1,14 +1,5 @@
 package com.mborodin.uwm.services;
 
-import static com.mborodin.uwm.enums.Role.ADMIN;
-import static com.mborodin.uwm.security.UserContextHolder.*;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 import com.mborodin.uwm.api.KeycloakUserApi;
 import com.mborodin.uwm.api.RegisterApi;
 import com.mborodin.uwm.api.UpdateUserApi;
@@ -16,7 +7,6 @@ import com.mborodin.uwm.api.UserApi;
 import com.mborodin.uwm.api.exceptions.LastAdminCannotBeDeleted;
 import com.mborodin.uwm.api.exceptions.UserNotFoundException;
 import com.mborodin.uwm.clients.KeycloakServiceClient;
-import com.mborodin.uwm.enums.Role;
 import com.mborodin.uwm.models.persistence.*;
 import com.mborodin.uwm.repositories.DepartmentRepository;
 import com.mborodin.uwm.repositories.StudyGroupDataRepository;
@@ -26,6 +16,15 @@ import com.mborodin.uwm.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static com.mborodin.uwm.api.enums.Role.*;
+import static com.mborodin.uwm.security.UserContextHolder.*;
 
 @AllArgsConstructor
 @Slf4j
@@ -52,14 +51,14 @@ public class UserService {
                                       .studyGroup(groupProxy)
                                       .build();
 
-        if (user.getRole().equals(ADMIN.getId())) {
+        if (Objects.equals(user.getRole(), ROLE_ADMIN)) {
             final UniversityDb universityToCreate = new UniversityDb(user.getUniversityName());
             final Long universityId = universityRepository.save(universityToCreate).getId();
 
             toCreate.setUniversityId(universityId);
         }
 
-        keycloakServiceClient.assignRole(userId, Role.getById(user.getRole()).name());
+        keycloakServiceClient.assignRole(userId, user.getRole().name());
         return userRepository.save(toCreate).getId();
     }
 
@@ -74,7 +73,7 @@ public class UserService {
 
     public List<UserApi> findTeachersByUniversityId() {
         final Long universityId = UserContextHolder.getUniversityId();
-        final List<UserApi> teachers = userRepository.findAllByRoleAndUniversityId(2, universityId)
+        final List<UserApi> teachers = userRepository.findAllByRoleAndUniversityId(ROLE_TEACHER, universityId)
                                                      .stream()
                                                      .map(this::mapToUserApi)
                                                      .collect(Collectors.toList());
@@ -86,7 +85,7 @@ public class UserService {
 
     public List<UserApi> findStudentsByUniversityId() {
         final Long universityId = UserContextHolder.getUniversityId();
-        final List<UserApi> students = userRepository.findAllByRoleAndUniversityId(1, universityId)
+        final List<UserApi> students = userRepository.findAllByRoleAndUniversityId(ROLE_STUDENT, universityId)
                                                      .stream()
                                                      .map(this::mapToUserApi)
                                                      .collect(Collectors.toList());
@@ -129,7 +128,7 @@ public class UserService {
 
     public List<UserApi> findUsersWithoutGroup() {
         final Long universityId = UserContextHolder.getUniversityId();
-        return userRepository.findAllByStudyGroupIsNullAndRoleAndUniversityId(1, universityId)
+        return userRepository.findAllByStudyGroupIsNullAndRoleAndUniversityId(ROLE_STUDENT, universityId)
                              .stream()
                              .map(this::mapToUserApi)
                              .collect(Collectors.toList());
@@ -171,12 +170,12 @@ public class UserService {
     }
 
     public void deleteUser(final String userId) {
-        if (!Objects.equals(getRole(), ADMIN)) {
+        if (!Objects.equals(getRole(), ROLE_ADMIN)) {
             userRepository.deleteById(userId);
             return;
         }
 
-        final long adminsNumber = userRepository.findAllByRoleAndUniversityId(ADMIN.getId(), getUniversityId())
+        final long adminsNumber = userRepository.findAllByRoleAndUniversityId(ROLE_ADMIN, getUniversityId())
                                                 .stream()
                                                 .map(UserDb::getId)
                                                 .filter(Predicate.not(getId()::equals))

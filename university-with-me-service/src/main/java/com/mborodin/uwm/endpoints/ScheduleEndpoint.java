@@ -1,6 +1,6 @@
 package com.mborodin.uwm.endpoints;
 
-import static com.mborodin.uwm.enums.Role.TEACHER;
+import static com.mborodin.uwm.api.enums.Role.ROLE_TEACHER;
 import static com.mborodin.uwm.security.UserContextHolder.getId;
 import static com.mborodin.uwm.security.UserContextHolder.getRole;
 import static org.springframework.http.HttpStatus.OK;
@@ -25,7 +25,7 @@ public class ScheduleEndpoint {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'TEACHER')")
     @PostMapping
     public void addLesson(@RequestBody CreateLessonApi createLessonApi) {
-        final CreateLessonApi toCreate = Objects.equals(getRole(), TEACHER)
+        final CreateLessonApi toCreate = Objects.equals(getRole(), ROLE_TEACHER)
                 ? createLessonApi.toBuilder()
                                  .teacherId(getId())
                                  .teacherName(null)

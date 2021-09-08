@@ -1,4 +1,4 @@
-package com.mborodin.uwm.enums;
+package com.mborodin.uwm.api.enums;
 
 import lombok.Getter;
 

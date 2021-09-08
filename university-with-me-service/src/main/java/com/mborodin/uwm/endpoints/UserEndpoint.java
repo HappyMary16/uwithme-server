@@ -1,16 +1,9 @@
 package com.mborodin.uwm.endpoints;
 
-import static com.mborodin.uwm.enums.Role.STUDENT;
-import static com.mborodin.uwm.enums.Role.TEACHER;
-import static com.mborodin.uwm.security.UserContextHolder.getRole;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static org.springframework.http.HttpStatus.OK;
-
-import java.util.List;
-
 import com.mborodin.uwm.api.AddStudentsToGroupApi;
 import com.mborodin.uwm.api.UpdateUserApi;
 import com.mborodin.uwm.api.UserApi;
+import com.mborodin.uwm.clients.KeycloakServiceClient;
 import com.mborodin.uwm.security.UserContextHolder;
 import com.mborodin.uwm.services.UserService;
 import lombok.AllArgsConstructor;
@@ -18,12 +11,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+import static com.mborodin.uwm.api.enums.Role.ROLE_STUDENT;
+import static com.mborodin.uwm.api.enums.Role.ROLE_TEACHER;
+import static com.mborodin.uwm.security.UserContextHolder.getRole;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
+
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/users")
 public class UserEndpoint {
 
     private final UserService userService;
+    private final KeycloakServiceClient keycloakServiceClient;
 
     @PreAuthorize("hasAnyAuthority('ROLE_SERVICE')")
     @GetMapping(value = "/{userId}")
@@ -36,7 +38,7 @@ public class UserEndpoint {
     public ResponseEntity<?> getTeachersByUniversityId() {
         List<UserApi> users;
 
-        if (STUDENT.equals(getRole())) {
+        if (ROLE_STUDENT.equals(getRole())) {
             users = userService.findTeachers();
         } else {
             users = userService.findTeachersByUniversityId();
@@ -50,9 +52,10 @@ public class UserEndpoint {
     public ResponseEntity<?> getStudents() {
         List<UserApi> users;
 
-        if (TEACHER.equals(getRole())) {
+        if (ROLE_TEACHER.equals(getRole())) {
             users = userService.findStudent(UserContextHolder.getId());
         } else {
+            keycloakServiceClient.getUsersByRole("ROLE_STUDENT", Integer.MAX_VALUE);
             users = userService.findStudentsByUniversityId();
         }
 

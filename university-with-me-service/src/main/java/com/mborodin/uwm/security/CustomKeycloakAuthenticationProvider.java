@@ -1,11 +1,5 @@
 package com.mborodin.uwm.security;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import com.mborodin.uwm.enums.Role;
 import com.mborodin.uwm.models.persistence.SimpleUserDb;
 import com.mborodin.uwm.repositories.SimpleUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +10,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class CustomKeycloakAuthenticationProvider extends KeycloakAuthenticationProvider {
@@ -29,7 +28,7 @@ public class CustomKeycloakAuthenticationProvider extends KeycloakAuthentication
 
         final SimpleUserDb user = userRepository.findById(token.getPrincipal().toString()).orElse(null);
         if (Objects.nonNull(user)) {
-            final String role = Role.getById(user.getRole()).name();
+            final String role = user.getRole().name();
             roles.add(role);
         }
 
