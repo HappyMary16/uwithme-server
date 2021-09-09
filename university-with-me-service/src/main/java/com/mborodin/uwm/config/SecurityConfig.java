@@ -1,7 +1,6 @@
 package com.mborodin.uwm.config;
 
 import com.mborodin.uwm.repositories.SimpleUserRepository;
-import com.mborodin.uwm.security.CustomKeycloakAuthenticationProvider;
 import com.mborodin.uwm.security.UserInitialisationFilter;
 import com.mborodin.uwm.security.UserLogoutFilter;
 import lombok.AllArgsConstructor;
@@ -36,11 +35,6 @@ class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         KeycloakAuthenticationProvider keycloakAuthenticationProvider = keycloakAuthenticationProvider();
         keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper());
         auth.authenticationProvider(keycloakAuthenticationProvider);
-    }
-
-    @Override
-    protected KeycloakAuthenticationProvider keycloakAuthenticationProvider() {
-        return new CustomKeycloakAuthenticationProvider(userRepository);
     }
 
     @Bean

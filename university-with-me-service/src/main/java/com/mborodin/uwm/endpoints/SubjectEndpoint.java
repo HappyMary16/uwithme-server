@@ -32,7 +32,7 @@ public class SubjectEndpoint {
         }
     }
 
-    @PreAuthorize("hasAuthority('TEACHER')")
+    @PreAuthorize("hasAuthority('ROLE_TEACHER')")
     @PostMapping("/{username:.+}/{subjectName:.+}")
     public ResponseEntity<?> saveSubject(@PathVariable("subjectName") final String subjectName,
                                          @PathVariable("username") final String username) {

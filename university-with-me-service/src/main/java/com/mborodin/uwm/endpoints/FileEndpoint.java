@@ -1,15 +1,5 @@
 package com.mborodin.uwm.endpoints;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.mborodin.uwm.api.AccessToFileApi;
 import com.mborodin.uwm.api.SaveFileApi;
 import com.mborodin.uwm.api.UploadFileResponseApi;
@@ -25,6 +15,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.OK;
+
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/files")
@@ -34,7 +33,7 @@ public class FileEndpoint {
 
     private final FileRepository fileRepository;
 
-    @PreAuthorize("hasAuthority('TEACHER')")
+    @PreAuthorize("hasAuthority('ROLE_TEACHER')")
     @PostMapping("/{subjectName}/{fileType:[1-2]}")
     public ResponseEntity<?> uploadMultipleFiles(@RequestParam("files") final MultipartFile[] files,
                                                  @PathVariable("subjectName") final String subjectName,
@@ -72,45 +71,45 @@ public class FileEndpoint {
                              .body(resource);
     }
 
-    @PreAuthorize("hasAnyAuthority('STUDENT', 'TEACHER')")
+    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_TEACHER')")
     @GetMapping
     public ResponseEntity<?> getFiles() {
         return new ResponseEntity<>(fileService.findAllFiles(), OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_SERVICE')")
+    @PreAuthorize("hasAnyRole('ROLE_SERVICE')")
     @GetMapping("/groupId/{groupId}")
     public ResponseEntity<?> getFilesByGroupId(@PathVariable final Long groupId) {
         return new ResponseEntity<>(fileService.findFilesByGroupId(groupId), OK);
     }
 
-    @PreAuthorize("hasAuthority('TEACHER')")
+    @PreAuthorize("hasAuthority('ROLE_TEACHER')")
     @PostMapping("/access")
     public ResponseEntity<?> addAccessToFiles(@RequestBody final AccessToFileApi accessToFileApi) {
         fileService.addAccessToFile(accessToFileApi);
         return new ResponseEntity<>(OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('TEACHER', 'STUDENT')")
+    @PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_STUDENT')")
     @PostMapping("/avatar")
     public ResponseEntity<?> uploadAvatar(@RequestParam("file") final MultipartFile avatar) {
         fileService.updateAvatar(avatar);
         return new ResponseEntity<>(OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('TEACHER', 'STUDENT')")
+    @PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_STUDENT')")
     @GetMapping("/avatar")
     public ResponseEntity<?> getAvatar() {
         return getAvatar(UserContextHolder.getId());
     }
 
-    @PreAuthorize("hasAnyAuthority('TEACHER', 'STUDENT', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_STUDENT', 'ROLE_ADMIN')")
     @GetMapping("/avatar/{userId:.+}")
-    public ResponseEntity<?> getAvatar(@PathVariable("userId") final String userId) {
+    public ResponseEntity<Resource> getAvatar(@PathVariable("userId") final String userId) {
         final Resource resource = fileService.loadAvatar(userId);
 
         if (resource == null) {
-            return new ResponseEntity<>(NOT_FOUND);
+            return null;
         } else {
             String contentType;
             try {

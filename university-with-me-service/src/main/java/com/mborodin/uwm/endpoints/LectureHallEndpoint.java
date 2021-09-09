@@ -1,7 +1,5 @@
 package com.mborodin.uwm.endpoints;
 
-import java.util.List;
-
 import com.mborodin.uwm.api.AddLectureHallApi;
 import com.mborodin.uwm.models.persistence.BuildingDb;
 import com.mborodin.uwm.models.persistence.LectureHallDb;
@@ -12,6 +10,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/lectureHalls")
@@ -21,14 +21,14 @@ public class LectureHallEndpoint {
 
     private final LectureHallRepository lectureHallRepository;
 
-    @PreAuthorize("hasAnyAuthority('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_ADMIN')")
     @GetMapping
     public List<LectureHallDb> getLectureHalls() {
         final Long universityId = UserContextHolder.getUniversityId();
         return lectureHallRepository.findAllByUniversityId(universityId);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping
     public LectureHallDb addLectureHall(@RequestBody final AddLectureHallApi addLectureHallApi) {
         final Long universityId = UserContextHolder.getUniversityId();

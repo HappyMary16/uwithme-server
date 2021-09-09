@@ -28,6 +28,7 @@ public class UserDb implements Serializable {
     private Integer oldRole;
 
     @Column(name = "role")
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @Column(name = "is_admin")

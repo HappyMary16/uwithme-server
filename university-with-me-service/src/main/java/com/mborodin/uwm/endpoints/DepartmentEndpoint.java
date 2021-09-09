@@ -1,10 +1,5 @@
 package com.mborodin.uwm.endpoints;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
-
-import java.util.Optional;
-
 import com.mborodin.uwm.api.AddDepartmentApi;
 import com.mborodin.uwm.models.persistence.DepartmentDb;
 import com.mborodin.uwm.models.persistence.InstituteDb;
@@ -16,6 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
+
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/departments")
@@ -25,7 +25,7 @@ public class DepartmentEndpoint {
 
     private final DepartmentRepository departmentRepository;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<?> addDepartment(@RequestBody final AddDepartmentApi addDepartmentApi) {
         final Long universityId = UserContextHolder.getUniversityId();
@@ -50,7 +50,7 @@ public class DepartmentEndpoint {
         return new ResponseEntity<>(departmentRepository.findAllByUniversityId(universityId), OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('STUDENT', 'TEACHER')")
+    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_TEACHER')")
     @GetMapping("/user")
     public ResponseEntity<DepartmentDb> getDepartment() {
         final var departmentId = UserContextHolder.getUserDb().getDepartmentId();
