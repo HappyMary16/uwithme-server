@@ -1,7 +1,7 @@
 package com.mborodin.uwm.security;
 
 import com.mborodin.uwm.api.KeycloakUserApi;
-import com.mborodin.uwm.enums.Role;
+import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.models.persistence.SimpleUserDb;
 import lombok.Builder;
 import lombok.Value;
@@ -28,9 +28,21 @@ public class UserContextHolder {
             return null;
         }
 
-        final Integer role = user.getRole();
+        final Role role = user.getRole();
         if (role != null) {
-            return Role.getById(role);
+            return role;
+        }
+
+        final Integer oldRole = user.getOldRole();
+        if (oldRole != null) {
+            switch (oldRole) {
+                case 1:
+                    return Role.ROLE_STUDENT;
+                case 2:
+                    return Role.ROLE_TEACHER;
+                case 3:
+                    return Role.ROLE_ADMIN;
+            }
         }
         return null;
     }

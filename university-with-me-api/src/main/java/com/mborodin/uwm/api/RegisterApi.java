@@ -1,11 +1,11 @@
 package com.mborodin.uwm.api;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
+import com.mborodin.uwm.api.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+
+import javax.validation.constraints.NotNull;
 
 @Data
 @Builder(toBuilder = true)
@@ -13,8 +13,7 @@ import lombok.Data;
 public class RegisterApi {
 
     @NotNull
-    @Size(max = 3)
-    private Integer role;
+    private Role role;
 
     private Long groupId;
 

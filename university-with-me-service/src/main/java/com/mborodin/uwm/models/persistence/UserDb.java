@@ -1,13 +1,13 @@
 package com.mborodin.uwm.models.persistence;
 
-import java.io.Serializable;
-
-import javax.persistence.*;
-
+import com.mborodin.uwm.api.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
 @Entity
@@ -23,8 +23,13 @@ public class UserDb implements Serializable {
     @Column(name = "id")
     private String id;
 
+    @Deprecated
+    @Column(name = "old_role")
+    private Integer oldRole;
+
     @Column(name = "role")
-    private Integer role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Column(name = "is_admin")
     private Boolean isAdmin;

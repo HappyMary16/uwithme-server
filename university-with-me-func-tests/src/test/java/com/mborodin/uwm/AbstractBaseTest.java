@@ -1,9 +1,7 @@
 package com.mborodin.uwm;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import com.mborodin.uwm.api.RegisterApi;
+import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.clients.AuthServiceClient;
 import com.mborodin.uwm.config.ClientConfig;
 import com.mborodin.uwm.config.OAuth2TestClientConfig;
@@ -12,6 +10,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 @Test
 @TestPropertySource("classpath:application.properties")
@@ -27,7 +28,7 @@ public abstract class AbstractBaseTest extends AbstractTestNGSpringContextTests 
     @BeforeClass
     public void setupUsers() {
         authServiceClientAdmin.register(RegisterApi.builder()
-                                                   .role(3)
+                                                   .role(Role.ROLE_ADMIN)
                                                    .universityName("TEST")
                                                    .build());
     }

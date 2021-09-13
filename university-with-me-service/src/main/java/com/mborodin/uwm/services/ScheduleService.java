@@ -1,28 +1,27 @@
 package com.mborodin.uwm.services;
 
-import static com.mborodin.uwm.enums.Role.STUDENT;
-import static com.mborodin.uwm.enums.Role.TEACHER;
-import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
-
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import javax.ws.rs.NotFoundException;
-
 import com.mborodin.uwm.api.CreateLessonApi;
 import com.mborodin.uwm.api.DeleteLessonApi;
 import com.mborodin.uwm.api.KeycloakUserApi;
 import com.mborodin.uwm.api.LessonApi;
+import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.api.exceptions.UserNotFoundException;
 import com.mborodin.uwm.clients.KeycloakServiceClient;
-import com.mborodin.uwm.enums.Role;
 import com.mborodin.uwm.models.persistence.*;
 import com.mborodin.uwm.repositories.*;
 import com.mborodin.uwm.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import javax.ws.rs.NotFoundException;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static com.mborodin.uwm.api.enums.Role.ROLE_STUDENT;
+import static com.mborodin.uwm.api.enums.Role.ROLE_TEACHER;
+import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
 
 @Service
 @AllArgsConstructor
@@ -49,10 +48,10 @@ public class ScheduleService {
     public List<LessonApi> findUsersLessons() {
         final Role userRole = UserContextHolder.getRole();
 
-        if (STUDENT.equals(userRole)) {
+        if (ROLE_STUDENT.equals(userRole)) {
             final Long groupId = UserContextHolder.getGroupId();
             return new ArrayList<>(findLessonsByGroupId(groupId));
-        } else if (TEACHER.equals(userRole)) {
+        } else if (ROLE_TEACHER.equals(userRole)) {
             return findLessonsByTeacherId(UserContextHolder.getId());
         } else {
             throw new RuntimeException("Schedule exist only for students and teacher");
@@ -63,9 +62,9 @@ public class ScheduleService {
         final UserDb user = userRepository.findById(userId)
                                           .orElseThrow(() -> new UserNotFoundException(getLanguages()));
 
-        if (user.getRole().equals(STUDENT.getId())) {
+        if (Objects.equals(user.getRole(), ROLE_STUDENT)) {
             return new ArrayList<>(findLessonsByGroupId(user.getStudyGroup().getId()));
-        } else if (user.getRole().equals(TEACHER.getId())) {
+        } else if (Objects.equals(user.getRole(), ROLE_TEACHER)) {
             return findLessonsByTeacherId(user.getId());
         } else {
             throw new RuntimeException("Schedule exist only for students and teacher");

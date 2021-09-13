@@ -1,6 +1,6 @@
 package com.mborodin.uwm.api.exceptions;
 
-import static com.mborodin.uwm.api.enums.SupportedLanguage.UK;
+import static com.mborodin.uwm.api.enums.SupportedLanguage.UA;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -47,7 +47,7 @@ public abstract class UwmException extends RuntimeException {
                     message = getEnMessage(params);
                 }
                 return;
-            case UK:
+            case UA:
                 if (params.length == 0) {
                     message = getUkMessage();
                 } else {
@@ -58,7 +58,7 @@ public abstract class UwmException extends RuntimeException {
 
     private SupportedLanguage getSupportedLanguage(String languages) {
         if (Objects.isNull(languages)) {
-            return UK;
+            return UA;
         }
 
         //TODO: it may not work, verify before using
@@ -68,7 +68,7 @@ public abstract class UwmException extends RuntimeException {
                      .map(this::getSupportedByLanguage)
                      .filter(Objects::nonNull)
                      .findFirst()
-                     .orElse(UK);
+                     .orElse(UA);
     }
 
     private SupportedLanguage getSupportedByLanguage(String language) {

@@ -1,14 +1,16 @@
 package com.mborodin.uwm.clients;
 
-import java.util.List;
-
 import com.mborodin.uwm.api.KeycloakUserApi;
+import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.config.ClientAuthConfig;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @FeignClient(name = "keycloakServiceClient",
         url = "${keycloak.auth-server-url}/admin/realms/${keycloak.realm}",
@@ -17,6 +19,9 @@ public interface KeycloakServiceClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/users/{userId}")
     KeycloakUserApi getUser(@PathVariable("userId") String userId);
+
+    @RequestMapping(method = RequestMethod.GET, value = "/roles/{role}/users")
+    List<KeycloakUserApi> getUsersByRole(@PathVariable("role") Role role, @RequestParam("max") int max);
 
     @RequestMapping(method = RequestMethod.GET, value = "/roles/ROLE_{role}")
     RoleRepresentation getRole(@PathVariable("role") String role);

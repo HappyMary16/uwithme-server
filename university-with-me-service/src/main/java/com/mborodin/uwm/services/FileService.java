@@ -1,7 +1,7 @@
 package com.mborodin.uwm.services;
 
-import static com.mborodin.uwm.enums.Role.STUDENT;
-import static com.mborodin.uwm.enums.Role.TEACHER;
+import static com.mborodin.uwm.api.enums.Role.ROLE_STUDENT;
+import static com.mborodin.uwm.api.enums.Role.ROLE_TEACHER;
 import static com.mborodin.uwm.security.UserContextHolder.getId;
 import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
 
@@ -22,7 +22,7 @@ import com.mborodin.uwm.api.SaveFileApi;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotLoadFileException;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotStoreAvatarException;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotStoreFileException;
-import com.mborodin.uwm.enums.Role;
+import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.models.persistence.AccessToFileDB;
 import com.mborodin.uwm.models.persistence.FileDB;
 import com.mborodin.uwm.models.persistence.SubjectDB;
@@ -137,10 +137,10 @@ public class FileService {
 
     public List<FileApi> findAllFiles() {
         final Role userRole = UserContextHolder.getRole();
-        if (STUDENT.equals(userRole)) {
+        if (ROLE_STUDENT.equals(userRole)) {
             final Long studyGroupId = UserContextHolder.getGroupId();
             return findFilesByGroupId(studyGroupId);
-        } else if (TEACHER.equals(userRole)) {
+        } else if (ROLE_TEACHER.equals(userRole)) {
             return subjectService.findUsersSubjects()
                                  .stream()
                                  .map(SubjectDB::getId)

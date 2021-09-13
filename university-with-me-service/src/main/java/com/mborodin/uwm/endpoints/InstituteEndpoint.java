@@ -23,7 +23,7 @@ public class InstituteEndpoint {
     private final InstituteRepository instituteRepository;
     private final InstituteService instituteService;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<?> addInstitute(@RequestBody final AddInstituteApi addInstituteApi) {
         final Long universityId = UserContextHolder.getUniversityId();
@@ -40,7 +40,7 @@ public class InstituteEndpoint {
         return new ResponseEntity<>(instituteRepository.findAllByUniversityId(universityId), OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('STUDENT', 'TEACHER')")
+    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_TEACHER')")
     @GetMapping("/user")
     public ResponseEntity<InstituteDb> getInstitute() {
         final InstituteDb institute = instituteService.getInstituteForUser();
