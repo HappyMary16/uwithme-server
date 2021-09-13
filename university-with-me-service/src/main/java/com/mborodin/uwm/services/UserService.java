@@ -52,6 +52,7 @@ public class UserService {
                 .universityId(user.getUniversityId())
                 .department(departmentProxy)
                 .studyGroup(groupProxy)
+                .oldRole(1)
                 .build();
 
         if (Objects.equals(user.getRole(), ROLE_ADMIN)) {
