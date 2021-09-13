@@ -23,7 +23,7 @@ public interface KeycloakServiceClient {
     @RequestMapping(method = RequestMethod.GET, value = "/roles/{role}/users")
     List<KeycloakUserApi> getUsersByRole(@PathVariable("role") Role role, @RequestParam("max") int max);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/roles/ROLE_{role}")
+    @RequestMapping(method = RequestMethod.GET, value = "/roles/{role}")
     RoleRepresentation getRole(@PathVariable("role") String role);
 
     @RequestMapping(method = RequestMethod.POST, value = "/users/{userId}/role-mappings/realm")
