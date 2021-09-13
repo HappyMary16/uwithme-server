@@ -45,6 +45,8 @@ public interface UserRepository extends JpaRepository<UserDb, String> {
 
     List<UserDb> findAllByRoleAndUniversityId(Role role, Long universityId);
 
+    List<UserDb> findAllByIsAdminIsTrueAndUniversityId(Long universityId);
+
     default UserDb getProxyByIdIfExist(final String id) {
         return id != null
                 ? getOne(id)

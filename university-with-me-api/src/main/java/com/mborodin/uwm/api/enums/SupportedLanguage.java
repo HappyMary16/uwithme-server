@@ -1,13 +1,13 @@
 package com.mborodin.uwm.api.enums;
 
-import java.util.List;
-
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 public enum SupportedLanguage {
 
-    UK(List.of("uk", "uk-UK")),
+    UA(List.of("ua", "ua-UA")),
     EN(List.of("en", "en-US"));
 
     private final List<String> representations;
