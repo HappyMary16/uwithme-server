@@ -21,7 +21,7 @@ public class LectureHallEndpoint {
 
     private final LectureHallRepository lectureHallRepository;
 
-    @PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_ADMIN')")
     @GetMapping
     public List<LectureHallDb> getLectureHalls() {
         final Long universityId = UserContextHolder.getUniversityId();

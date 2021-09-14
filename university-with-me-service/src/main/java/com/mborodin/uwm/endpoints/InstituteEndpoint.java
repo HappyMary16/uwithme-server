@@ -40,7 +40,7 @@ public class InstituteEndpoint {
         return new ResponseEntity<>(instituteRepository.findAllByUniversityId(universityId), OK);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_TEACHER')")
     @GetMapping("/user")
     public ResponseEntity<InstituteDb> getInstitute() {
         final InstituteDb institute = instituteService.getInstituteForUser();

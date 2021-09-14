@@ -25,13 +25,13 @@ public class UserEndpoint {
 
     private final UserService userService;
 
-    @PreAuthorize("hasAnyRole('ROLE_SERVICE')")
+    @PreAuthorize("hasAnyAuthority('ROLE_SERVICE')")
     @GetMapping(value = "/{userId}")
     public ResponseEntity<?> getUserById(@PathVariable(value = "userId") final String userId) {
         return new ResponseEntity<>(userService.findUserById(userId), OK);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STUDENT')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_STUDENT')")
     @GetMapping(value = "/teachers")
     public List<UserApi> getTeachersByUniversityId() {
         List<UserApi> users;
@@ -45,7 +45,7 @@ public class UserEndpoint {
         return users;
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_ADMIN')")
     @GetMapping(value = "/students")
     public List<UserApi> getStudents() {
         List<UserApi> users;
@@ -59,7 +59,7 @@ public class UserEndpoint {
         return users;
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping(value = "/admins")
     public List<UserApi> getAdmins() {
         List<UserApi> users;
@@ -73,14 +73,14 @@ public class UserEndpoint {
         return users;
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_SERVICE')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_SERVICE')")
     @GetMapping(value = "/students/groupId/{groupId}")
     public ResponseEntity<?> getStudentsByGroupId(@PathVariable(value = "groupId") final Long groupId) {
         final List<UserApi> users = userService.findStudentsByGroupId(groupId);
         return new ResponseEntity<>(users, OK);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_SERVICE')")
+    @PreAuthorize("hasAnyAuthority('ROLE_SERVICE')")
     @GetMapping(value = "/teachers/groupId/{groupId}")
     public ResponseEntity<?> getTeachersByGroupId(@PathVariable(value = "groupId") final Long groupId) {
         final List<UserApi> users = userService.findTeachersByGroupId(groupId);
@@ -107,7 +107,7 @@ public class UserEndpoint {
         return getStudentsByGroupId(addStudentsToGroupApi.getGroupId());
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_STUDENT')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_STUDENT')")
     @DeleteMapping()
     public ResponseEntity<?> deleteUser() {
         final String userId = UserContextHolder.getId();
@@ -115,13 +115,13 @@ public class UserEndpoint {
         return new ResponseEntity<>(NO_CONTENT);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_STUDENT')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_STUDENT')")
     @PutMapping()
     public UserApi updateUser(@RequestBody final UpdateUserApi updateUserApi) {
         return userService.updateUser(updateUserApi);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/{userId}")
     public void assignRole(@PathVariable(value = "userId") final String  userId, @RequestBody final Role role) {
         userService.assignRole(userId, role);

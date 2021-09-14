@@ -22,7 +22,7 @@ public class ScheduleEndpoint {
 
     private final ScheduleService scheduleService;
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER')")
     @PostMapping
     public void addLesson(@RequestBody CreateLessonApi createLessonApi) {
         final CreateLessonApi toCreate = Objects.equals(getRole(), ROLE_TEACHER)
@@ -41,13 +41,13 @@ public class ScheduleEndpoint {
         return new ResponseEntity<>(scheduleService.deleteLesson(deleteLessonApi), OK);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_TEACHER')")
     @GetMapping
     public ResponseEntity<?> getLessons() {
         return new ResponseEntity<>(scheduleService.findUsersLessons(), OK);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_SERVICE')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_SERVICE')")
     @GetMapping("/group/{groupId}")
     public ResponseEntity<?> getLessonsByGroup(@PathVariable("groupId") Long groupId) {
         return new ResponseEntity<>(scheduleService.findLessonsByGroupId(groupId), OK);

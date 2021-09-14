@@ -202,6 +202,7 @@ public class UserService {
     public void deleteUser(final String userId) {
         if (!Objects.equals(getRole(), ROLE_ADMIN)) {
             userRepository.deleteById(userId);
+            keycloakServiceClient.unAssignRole(userId, getRole());
             return;
         }
 

@@ -50,7 +50,7 @@ public class DepartmentEndpoint {
         return new ResponseEntity<>(departmentRepository.findAllByUniversityId(universityId), OK);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_TEACHER')")
     @GetMapping("/user")
     public ResponseEntity<DepartmentDb> getDepartment() {
         final var departmentId = UserContextHolder.getUserDb().getDepartmentId();

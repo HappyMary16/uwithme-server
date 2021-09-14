@@ -62,7 +62,7 @@ public class GroupEndpoint {
         return new ResponseEntity<>(studyGroupDataRepository.findAllByUniversityId(universityId), OK);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_SERVICE')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_SERVICE')")
     @GetMapping(value = "/{groupId}")
     public ResponseEntity<?> getStudyGroupById(@PathVariable("groupId") final Long groupId) {
         return studyGroupDataRepository.findById(groupId)
@@ -84,7 +84,7 @@ public class GroupEndpoint {
         return new ResponseEntity<>(studyGroupDataRepository.findAllByTeacher(userId), OK);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_STUDENT')")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT')")
     @GetMapping("/user")
     public ResponseEntity<StudyGroupDataDb> getGroup() {
         final Long groupId = UserContextHolder.getGroupId();

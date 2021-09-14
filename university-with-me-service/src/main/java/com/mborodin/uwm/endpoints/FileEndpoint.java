@@ -71,13 +71,13 @@ public class FileEndpoint {
                              .body(resource);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_TEACHER')")
     @GetMapping
     public ResponseEntity<?> getFiles() {
         return new ResponseEntity<>(fileService.findAllFiles(), OK);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_SERVICE')")
+    @PreAuthorize("hasAnyAuthority('ROLE_SERVICE')")
     @GetMapping("/groupId/{groupId}")
     public ResponseEntity<?> getFilesByGroupId(@PathVariable final Long groupId) {
         return new ResponseEntity<>(fileService.findFilesByGroupId(groupId), OK);
@@ -90,20 +90,20 @@ public class FileEndpoint {
         return new ResponseEntity<>(OK);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_STUDENT')")
+    @PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_STUDENT')")
     @PostMapping("/avatar")
     public ResponseEntity<?> uploadAvatar(@RequestParam("file") final MultipartFile avatar) {
         fileService.updateAvatar(avatar);
         return new ResponseEntity<>(OK);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_STUDENT')")
+    @PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_STUDENT')")
     @GetMapping("/avatar")
     public ResponseEntity<?> getAvatar() {
         return getAvatar(UserContextHolder.getId());
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_STUDENT', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_STUDENT', 'ROLE_ADMIN')")
     @GetMapping("/avatar/{userId:.+}")
     public ResponseEntity<Resource> getAvatar(@PathVariable("userId") final String userId) {
         final Resource resource = fileService.loadAvatar(userId);

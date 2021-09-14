@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
 @RestController
-@PreAuthorize("hasAnyRole('ROLE_TEACHER', 'ROLE_ADMIN')")
+@PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_ADMIN')")
 @RequestMapping("/api/buildings")
 public class BuildingsEndpoint {
 
