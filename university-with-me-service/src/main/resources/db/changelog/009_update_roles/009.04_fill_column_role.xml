@@ -7,11 +7,11 @@
         <sql>
             UPDATE users
             SET role = 'ROLE_STUDENT'
-            WHERE old_role = 1 AND (role = null || role = '');
+            WHERE old_role = 1 AND (role = null OR role = '');
 
             UPDATE users
             SET role = 'ROLE_TEACHER'
-            WHERE old_role = 2 AND (role = null || role = '');
+            WHERE old_role = 2 AND (role = null OR role = '');
 
             UPDATE users
             SET is_admin = true
