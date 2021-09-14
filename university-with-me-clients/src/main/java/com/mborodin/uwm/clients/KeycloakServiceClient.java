@@ -34,4 +34,13 @@ public interface KeycloakServiceClient {
         final RoleRepresentation roleRepresentation = getRole(role);
         assignRole(userId, List.of(roleRepresentation));
     }
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/users/{userId}/role-mappings/realm")
+    RoleRepresentation unAssignRole(@PathVariable("userId") String userId,
+                                  List<RoleRepresentation> roleRepresentations);
+
+    default void unAssignRole(final String userId, final Role role) {
+        final RoleRepresentation roleRepresentation = getRole(role.name());
+        unAssignRole(userId, List.of(roleRepresentation));
+    }
 }
