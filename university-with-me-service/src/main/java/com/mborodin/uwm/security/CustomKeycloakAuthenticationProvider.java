@@ -1,5 +1,6 @@
 package com.mborodin.uwm.security;
 
+import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.models.persistence.SimpleUserDb;
 import com.mborodin.uwm.repositories.SimpleUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,14 +28,15 @@ public class CustomKeycloakAuthenticationProvider extends KeycloakAuthentication
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         KeycloakAuthenticationToken token = (KeycloakAuthenticationToken) authentication;
 
-        final SimpleUserDb user = userRepository.findById(token.getPrincipal().toString()).orElse(null);
-        if (Objects.nonNull(user)) {
-            final String role = user.getRole().name();
-            roles.add(role);
-            if (user.getIsAdmin()) {
-                roles.add(ROLE_ADMIN.name());
-            }
-        }
+        final var user = userRepository.findById(token.getPrincipal().toString());
+
+        user.map(SimpleUserDb::getRole)
+                .map(Role::name)
+                .ifPresent(roles::add);
+
+        user.map(SimpleUserDb::getIsAdmin)
+                .filter(isAdmin -> isAdmin)
+                .ifPresent((isAdmin) -> roles.add(ROLE_ADMIN.name()));
 
         Set<GrantedAuthority> keycloakAuthorities = addKeycloakRoles(token);
         Set<GrantedAuthority> grantedAuthorities = addUserAuthorities(keycloakAuthorities);
