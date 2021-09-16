@@ -30,8 +30,8 @@ public interface KeycloakServiceClient {
     RoleRepresentation assignRole(@PathVariable("userId") String userId,
                                   List<RoleRepresentation> roleRepresentations);
 
-    default void assignRole(final String userId, final String role) {
-        final RoleRepresentation roleRepresentation = getRole(role);
+    default void assignRole(final String userId, final Role role) {
+        final RoleRepresentation roleRepresentation = getRole(role.name());
         assignRole(userId, List.of(roleRepresentation));
     }
 

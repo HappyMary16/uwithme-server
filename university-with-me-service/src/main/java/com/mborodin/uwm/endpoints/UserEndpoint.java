@@ -122,8 +122,16 @@ public class UserEndpoint {
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @PutMapping("/{userId}")
-    public void assignRole(@PathVariable(value = "userId") final String  userId, @RequestBody final Role role) {
-        userService.assignRole(userId, role);
+    @PutMapping("/{userId}/roles/{role}")
+    public String assignRole(@PathVariable(value = "userId") final String  userId,
+                           @PathVariable(value = "role") final Role role) {
+        return userService.assignRole(userId, role);
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @DeleteMapping("/{userId}/roles/{role}")
+    public String unAssignRole(@PathVariable(value = "userId") final String  userId,
+                           @PathVariable(value = "role") final Role role) {
+        return userService.unAssignRole(userId, role);
     }
 }

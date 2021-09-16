@@ -18,7 +18,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.ForbiddenException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -62,21 +61,35 @@ public class UserService {
             toCreate.setUniversityId(universityId);
         }
 
-        keycloakServiceClient.assignRole(userId, user.getRole().name());
+        keycloakServiceClient.assignRole(userId, user.getRole());
         return userRepository.save(toCreate).getId();
     }
 
     public String assignRole(final String userId, final Role role) {
-        if (!Objects.equals(getRole(), ROLE_ADMIN)) {
-            throw new ForbiddenException();
-        }
-
         final var user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(getLanguages()));
 
-        user.setRole(role);
+        if (Objects.equals(role, ROLE_ADMIN)) {
+            user.setIsAdmin(true);
+        } else {
+            user.setRole(role);
+        }
 
-        keycloakServiceClient.assignRole(userId, role.name());
+        keycloakServiceClient.assignRole(userId, role);
+        return userRepository.save(user).getId();
+    }
+
+    public String unAssignRole(final String userId, final Role role) {
+        final var user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(getLanguages()));
+
+        if (Objects.equals(role, ROLE_ADMIN)) {
+            user.setIsAdmin(false);
+        } else {
+            user.setRole(null);
+        }
+
+        keycloakServiceClient.unAssignRole(userId, role);
         return userRepository.save(user).getId();
     }
 
@@ -110,7 +123,7 @@ public class UserService {
         final List<UserApi> users;
 
         if (Objects.equals(role, ROLE_ADMIN)) {
-            users = userRepository.findAllByIsAdminIsTrueAndUniversityId(universityId)
+            users = userRepository.findAllByIsAdminAndUniversityId(true, universityId)
                     .stream()
                     .map(user -> mapToUserApi(user, keycloakUsers.get(user.getId())))
                     .collect(Collectors.toList());
