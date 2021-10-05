@@ -1,5 +1,15 @@
 package com.mborodin.uwm.endpoints;
 
+import static com.mborodin.uwm.api.enums.Role.ROLE_STUDENT;
+import static com.mborodin.uwm.api.enums.Role.ROLE_TEACHER;
+import static com.mborodin.uwm.security.UserContextHolder.getRole;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
+
+import java.util.List;
+
+import javax.ws.rs.QueryParam;
+
 import com.mborodin.uwm.api.AddStudentsToGroupApi;
 import com.mborodin.uwm.api.UpdateUserApi;
 import com.mborodin.uwm.api.UserApi;
@@ -8,15 +18,9 @@ import com.mborodin.uwm.security.UserContextHolder;
 import com.mborodin.uwm.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-import static com.mborodin.uwm.api.enums.Role.*;
-import static com.mborodin.uwm.security.UserContextHolder.getRole;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static org.springframework.http.HttpStatus.OK;
 
 @AllArgsConstructor
 @RestController
@@ -60,17 +64,9 @@ public class UserEndpoint {
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @GetMapping(value = "/admins")
-    public List<UserApi> getAdmins() {
-        List<UserApi> users;
-
-        if (ROLE_TEACHER.equals(getRole())) {
-            users = userService.findStudent(UserContextHolder.getId());
-        } else {
-            users = userService.findAllUsersByRole(ROLE_ADMIN);
-        }
-
-        return users;
+    @GetMapping
+    public List<UserApi> getUsersByRole(@QueryParam("role") @NonNull Role role) {
+        return userService.findAllUsersByRole(role);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_SERVICE')")
