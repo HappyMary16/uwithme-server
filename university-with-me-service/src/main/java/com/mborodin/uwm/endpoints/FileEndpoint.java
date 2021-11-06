@@ -70,6 +70,7 @@ public class FileEndpoint {
                              .body(resource);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_SERVICE')")
     @GetMapping("/{fileId}/info")
     public FileApi getFileInfo(@PathVariable final Long fileId) {
         return fileService.findFileById(fileId);
