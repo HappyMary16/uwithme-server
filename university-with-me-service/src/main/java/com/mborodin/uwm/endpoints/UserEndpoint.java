@@ -27,7 +27,7 @@ public class UserEndpoint {
 
     private final UserService userService;
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_SERVICE')")
     @GetMapping(value = "/{userId}")
     public UserApi getUserById(@PathVariable(value = "userId") final String userId) {
         return userService.findUserById(userId);
