@@ -19,10 +19,10 @@ import java.util.stream.Collectors;
 import com.mborodin.uwm.api.AccessToFileApi;
 import com.mborodin.uwm.api.FileApi;
 import com.mborodin.uwm.api.SaveFileApi;
+import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotLoadFileException;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotStoreAvatarException;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotStoreFileException;
-import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.models.persistence.AccessToFileDB;
 import com.mborodin.uwm.models.persistence.FileDB;
 import com.mborodin.uwm.models.persistence.SubjectDB;
@@ -170,6 +170,17 @@ public class FileService {
                                                                           .orElse(null))
                                      .filter(Objects::nonNull)
                                      .collect(Collectors.toList());
+    }
+
+    public FileApi findFileById(final Long fileId) {
+        return fileRepository.findById(fileId)
+                             .map(fileDb -> new FileApi(
+                                     fileDb.getId(),
+                                     fileDb.getName(),
+                                     fileDb.getFileTypeId(),
+                                     fileDb.getSubjectId(),
+                                     null))
+                             .orElse(null);
     }
 
     private void createDirectorySuppressException(final Path path) {

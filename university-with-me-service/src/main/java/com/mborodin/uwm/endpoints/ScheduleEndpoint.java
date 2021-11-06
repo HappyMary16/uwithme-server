@@ -2,16 +2,15 @@ package com.mborodin.uwm.endpoints;
 
 import static com.mborodin.uwm.api.enums.Role.ROLE_TEACHER;
 import static com.mborodin.uwm.security.UserContextHolder.getId;
-import static com.mborodin.uwm.security.UserContextHolder.getRole;
-import static org.springframework.http.HttpStatus.OK;
+import static com.mborodin.uwm.security.UserContextHolder.hasRole;
 
-import java.util.Objects;
+import java.util.List;
 
 import com.mborodin.uwm.api.CreateLessonApi;
 import com.mborodin.uwm.api.DeleteLessonApi;
+import com.mborodin.uwm.api.LessonApi;
 import com.mborodin.uwm.services.ScheduleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +24,7 @@ public class ScheduleEndpoint {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER')")
     @PostMapping
     public void addLesson(@RequestBody CreateLessonApi createLessonApi) {
-        final CreateLessonApi toCreate = Objects.equals(getRole(), ROLE_TEACHER)
+        final CreateLessonApi toCreate = hasRole(ROLE_TEACHER)
                 ? createLessonApi.toBuilder()
                                  .teacherId(getId())
                                  .teacherName(null)
@@ -37,24 +36,24 @@ public class ScheduleEndpoint {
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping
-    public ResponseEntity<?> deleteLesson(@RequestBody DeleteLessonApi deleteLessonApi) {
-        return new ResponseEntity<>(scheduleService.deleteLesson(deleteLessonApi), OK);
+    public LessonApi deleteLesson(@RequestBody DeleteLessonApi deleteLessonApi) {
+        return scheduleService.deleteLesson(deleteLessonApi);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_TEACHER')")
     @GetMapping
-    public ResponseEntity<?> getLessons() {
-        return new ResponseEntity<>(scheduleService.findUsersLessons(), OK);
+    public List<LessonApi> getLessons() {
+        return scheduleService.findUsersLessons();
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_SERVICE')")
     @GetMapping("/group/{groupId}")
-    public ResponseEntity<?> getLessonsByGroup(@PathVariable("groupId") Long groupId) {
-        return new ResponseEntity<>(scheduleService.findLessonsByGroupId(groupId), OK);
+    public List<LessonApi> getLessonsByGroup(@PathVariable("groupId") Long groupId) {
+        return scheduleService.findLessonsByGroupId(groupId);
     }
 
     @GetMapping("/username/{userId}")
-    public ResponseEntity<?> getLessonsByUserId(@PathVariable("userId") String userId) {
-        return new ResponseEntity<>(scheduleService.findLessonsById(userId), OK);
+    public List<LessonApi> getLessonsByUserId(@PathVariable("userId") String userId) {
+        return scheduleService.findLessonsById(userId);
     }
 }

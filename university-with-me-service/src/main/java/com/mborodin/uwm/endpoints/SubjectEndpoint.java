@@ -1,16 +1,17 @@
 package com.mborodin.uwm.endpoints;
 
-import static com.mborodin.uwm.api.enums.Role.ROLE_ADMIN;
-import static org.springframework.http.HttpStatus.OK;
+import static com.mborodin.uwm.security.UserContextHolder.getId;
 
 import java.util.List;
+import java.util.Objects;
+
+import javax.ws.rs.ForbiddenException;
 
 import com.mborodin.uwm.models.persistence.SubjectDB;
 import com.mborodin.uwm.repositories.SubjectRepository;
 import com.mborodin.uwm.security.UserContextHolder;
 import com.mborodin.uwm.services.SubjectService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,21 +23,27 @@ public class SubjectEndpoint {
     private final SubjectService subjectService;
     private final SubjectRepository subjectRepository;
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping
-    public ResponseEntity<List<SubjectDB>> getSubjects() {
-        if (ROLE_ADMIN.equals(UserContextHolder.getRole())) {
-            final Long universityId = UserContextHolder.getUniversityId();
-            return new ResponseEntity<>(subjectRepository.findAllByUniversityId(universityId), OK);
-        } else {
-            return new ResponseEntity<>(subjectService.findUsersSubjects(), OK);
+    public List<SubjectDB> getSubjects() {
+        final Long universityId = UserContextHolder.getUniversityId();
+        return subjectRepository.findAllByUniversityId(universityId);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_STUDENT')")
+    @GetMapping("/{userId}")
+    public List<SubjectDB> getSubjects(@PathVariable("userId") final String userId) {
+        if (Objects.equals(userId, getId())) {
+            return subjectService.findUsersSubjects();
         }
+
+        throw new ForbiddenException();
     }
 
     @PreAuthorize("hasAuthority('ROLE_TEACHER')")
-    @PostMapping("/{username:.+}/{subjectName:.+}")
-    public ResponseEntity<?> saveSubject(@PathVariable("subjectName") final String subjectName,
-                                         @PathVariable("username") final String username) {
-        subjectService.save(username, subjectName);
-        return new ResponseEntity<>(OK);
+    @PostMapping("/{userId}/{subjectName}")
+    public SubjectDB saveSubject(@PathVariable("subjectName") final String subjectName,
+                                 @PathVariable("userId") final String userId) {
+        return subjectService.save(userId, subjectName);
     }
 }

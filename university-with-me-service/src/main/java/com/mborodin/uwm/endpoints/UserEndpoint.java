@@ -2,9 +2,8 @@ package com.mborodin.uwm.endpoints;
 
 import static com.mborodin.uwm.api.enums.Role.ROLE_STUDENT;
 import static com.mborodin.uwm.api.enums.Role.ROLE_TEACHER;
-import static com.mborodin.uwm.security.UserContextHolder.getRole;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static org.springframework.http.HttpStatus.OK;
+import static com.mborodin.uwm.security.UserContextHolder.getGroupId;
+import static com.mborodin.uwm.security.UserContextHolder.hasRole;
 
 import java.util.List;
 
@@ -17,7 +16,6 @@ import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.security.UserContextHolder;
 import com.mborodin.uwm.services.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,35 +27,37 @@ public class UserEndpoint {
 
     private final UserService userService;
 
-    @PreAuthorize("hasAnyAuthority('ROLE_SERVICE')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     @GetMapping(value = "/{userId}")
-    public ResponseEntity<?> getUserById(@PathVariable(value = "userId") final String userId) {
-        return new ResponseEntity<>(userService.findUserById(userId), OK);
+    public UserApi getUserById(@PathVariable(value = "userId") final String userId) {
+        return userService.findUserById(userId);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_STUDENT')")
+    @PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_STUDENT')")
     @GetMapping(value = "/teachers")
-    public List<UserApi> getTeachersByUniversityId() {
+    public List<UserApi> getRelativeTeachers() {
         List<UserApi> users;
 
-        if (ROLE_STUDENT.equals(getRole())) {
-            users = userService.findTeachers();
+        if (hasRole(ROLE_STUDENT)) {
+            final Long groupId = UserContextHolder.getGroupId();
+            users = userService.findTeachersByGroupId(groupId);
         } else {
-            users = userService.findAllUsersByRole(ROLE_TEACHER);
+            final Long departmentId = UserContextHolder.getUserDb().getDepartmentId();
+            users = userService.findTeachersByDepartmentId(departmentId);
         }
 
         return users;
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_STUDENT')")
     @GetMapping(value = "/students")
     public List<UserApi> getStudents() {
         List<UserApi> users;
 
-        if (ROLE_TEACHER.equals(getRole())) {
-            users = userService.findStudent(UserContextHolder.getId());
+        if (hasRole(ROLE_TEACHER)) {
+            users = userService.findStudentsByTeacherId(UserContextHolder.getId());
         } else {
-            users = userService.findAllUsersByRole(ROLE_STUDENT);
+            users = userService.findStudentsByGroupId(getGroupId());
         }
 
         return users;
@@ -71,44 +71,43 @@ public class UserEndpoint {
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_SERVICE')")
     @GetMapping(value = "/students/groupId/{groupId}")
-    public ResponseEntity<?> getStudentsByGroupId(@PathVariable(value = "groupId") final Long groupId) {
+    public List<UserApi> getStudentsByGroupId(@PathVariable(value = "groupId") final Long groupId) {
         final List<UserApi> users = userService.findStudentsByGroupId(groupId);
-        return new ResponseEntity<>(users, OK);
+        return users;
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_SERVICE')")
     @GetMapping(value = "/teachers/groupId/{groupId}")
-    public ResponseEntity<?> getTeachersByGroupId(@PathVariable(value = "groupId") final Long groupId) {
+    public List<UserApi> getTeachersByGroupId(@PathVariable(value = "groupId") final Long groupId) {
         final List<UserApi> users = userService.findTeachersByGroupId(groupId);
-        return new ResponseEntity<>(users, OK);
+        return users;
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping(value = "/group/studentId/{studentId}")
-    public ResponseEntity<?> removeStudentFromGroup(@PathVariable(value = "studentId") final String studentId) {
-        return new ResponseEntity<>(userService.removeStudentFromGroup(studentId), OK);
+    public UserApi removeStudentFromGroup(@PathVariable(value = "studentId") final String studentId) {
+        return userService.removeStudentFromGroup(studentId);
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping(value = "/students/without/group")
-    public ResponseEntity<?> getStudentsWithoutGroup() {
+    public List<UserApi> getStudentsWithoutGroup() {
         final List<UserApi> users = userService.findUsersWithoutGroup();
-        return new ResponseEntity<>(users, OK);
+        return users;
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping(value = "/group")
-    public ResponseEntity<?> addStudentToGroup(@RequestBody final AddStudentsToGroupApi addStudentsToGroupApi) {
+    public List<UserApi> addStudentToGroup(@RequestBody final AddStudentsToGroupApi addStudentsToGroupApi) {
         userService.addStudentToGroup(addStudentsToGroupApi.getStudentsIds(), addStudentsToGroupApi.getGroupId());
         return getStudentsByGroupId(addStudentsToGroupApi.getGroupId());
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_STUDENT')")
     @DeleteMapping()
-    public ResponseEntity<?> deleteUser() {
+    public void deleteUser() {
         final String userId = UserContextHolder.getId();
         userService.deleteUser(userId);
-        return new ResponseEntity<>(NO_CONTENT);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_STUDENT')")
@@ -119,15 +118,15 @@ public class UserEndpoint {
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/{userId}/roles/{role}")
-    public String assignRole(@PathVariable(value = "userId") final String  userId,
-                           @PathVariable(value = "role") final Role role) {
+    public String assignRole(@PathVariable(value = "userId") final String userId,
+                             @PathVariable(value = "role") final Role role) {
         return userService.assignRole(userId, role);
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/{userId}/roles/{role}")
-    public String unAssignRole(@PathVariable(value = "userId") final String  userId,
-                           @PathVariable(value = "role") final Role role) {
+    public String unAssignRole(@PathVariable(value = "userId") final String userId,
+                               @PathVariable(value = "role") final Role role) {
         return userService.unAssignRole(userId, role);
     }
 }

@@ -1,5 +1,10 @@
 package com.mborodin.uwm.security;
 
+import static com.mborodin.uwm.api.enums.Role.ROLE_ADMIN;
+
+import java.util.Objects;
+import java.util.Optional;
+
 import com.mborodin.uwm.api.KeycloakUserApi;
 import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.models.persistence.SimpleUserDb;
@@ -22,6 +27,18 @@ public class UserContextHolder {
         return getKeycloakUser().getId();
     }
 
+    public static boolean hasRole(final Role role) {
+        final SimpleUserDb user = getUserDb();
+        if (Objects.equals(role, user.getRole())) {
+            return true;
+        }
+
+        final boolean isAdmin = Optional.ofNullable(user.getIsAdmin())
+                                        .orElse(false);
+
+        return Objects.equals(role, ROLE_ADMIN) && isAdmin;
+    }
+
     public static Role getRole() {
         final SimpleUserDb user = getUserDb();
         if (user == null) {
@@ -33,17 +50,6 @@ public class UserContextHolder {
             return role;
         }
 
-        final Integer oldRole = user.getOldRole();
-        if (oldRole != null) {
-            switch (oldRole) {
-                case 1:
-                    return Role.ROLE_STUDENT;
-                case 2:
-                    return Role.ROLE_TEACHER;
-                case 3:
-                    return Role.ROLE_ADMIN;
-            }
-        }
         return null;
     }
 

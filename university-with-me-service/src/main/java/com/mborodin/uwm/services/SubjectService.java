@@ -2,11 +2,11 @@ package com.mborodin.uwm.services;
 
 import static com.mborodin.uwm.api.enums.Role.ROLE_STUDENT;
 import static com.mborodin.uwm.api.enums.Role.ROLE_TEACHER;
+import static com.mborodin.uwm.security.UserContextHolder.hasRole;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.models.persistence.AccessToFileDB;
 import com.mborodin.uwm.models.persistence.SubjectDB;
 import com.mborodin.uwm.models.persistence.UserDb;
@@ -28,8 +28,7 @@ public class SubjectService {
     private final FileRepository fileRepository;
 
     public List<SubjectDB> findUsersSubjects() {
-        final Role userRole = UserContextHolder.getRole();
-        if (ROLE_STUDENT.equals(userRole)) {
+        if (hasRole(ROLE_STUDENT)) {
             final List<AccessToFileDB> accessToFileDBS =
                     accessToFileRepository.findAllByStudyGroupId(UserContextHolder.getGroupId());
 
@@ -41,7 +40,7 @@ public class SubjectService {
                                   .map(subjectId -> subjectRepository.findById(subjectId).get())
                                   .collect(Collectors.toList());
 
-        } else if (ROLE_TEACHER.equals(userRole)) {
+        } else if (hasRole(ROLE_TEACHER)) {
             return subjectRepository.findAllByTeacherId(UserContextHolder.getId());
         }
 
