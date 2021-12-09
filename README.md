@@ -2,7 +2,7 @@
 
 This application created for management of university.
 
-Link: https://tcomad.tk
+Link: https://u-with-me.education
 
 #### Main functions:
 * schedule management
