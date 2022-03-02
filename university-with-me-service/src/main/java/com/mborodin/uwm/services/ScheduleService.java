@@ -1,5 +1,15 @@
 package com.mborodin.uwm.services;
 
+import static com.mborodin.uwm.api.enums.Role.ROLE_STUDENT;
+import static com.mborodin.uwm.api.enums.Role.ROLE_TEACHER;
+import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
+
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import javax.ws.rs.NotFoundException;
+
 import com.mborodin.uwm.api.CreateLessonApi;
 import com.mborodin.uwm.api.DeleteLessonApi;
 import com.mborodin.uwm.api.KeycloakUserApi;
@@ -7,21 +17,12 @@ import com.mborodin.uwm.api.LessonApi;
 import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.api.exceptions.UserNotFoundException;
 import com.mborodin.uwm.clients.KeycloakServiceClient;
-import com.mborodin.uwm.models.persistence.*;
+import com.mborodin.uwm.model.persistence.*;
 import com.mborodin.uwm.repositories.*;
 import com.mborodin.uwm.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import javax.ws.rs.NotFoundException;
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import static com.mborodin.uwm.api.enums.Role.ROLE_STUDENT;
-import static com.mborodin.uwm.api.enums.Role.ROLE_TEACHER;
-import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
 
 @Service
 @AllArgsConstructor
@@ -63,7 +64,7 @@ public class ScheduleService {
                                           .orElseThrow(() -> new UserNotFoundException(getLanguages()));
 
         if (Objects.equals(user.getRole(), ROLE_STUDENT)) {
-            return new ArrayList<>(findLessonsByGroupId(user.getStudyGroup().getId()));
+            return new ArrayList<>(findLessonsByGroupId(user.getGroupId()));
         } else if (Objects.equals(user.getRole(), ROLE_TEACHER)) {
             return findLessonsByTeacherId(user.getId());
         } else {

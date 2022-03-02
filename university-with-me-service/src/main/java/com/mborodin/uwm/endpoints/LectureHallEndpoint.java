@@ -1,16 +1,16 @@
 package com.mborodin.uwm.endpoints;
 
+import java.util.List;
+
 import com.mborodin.uwm.api.AddLectureHallApi;
-import com.mborodin.uwm.models.persistence.BuildingDb;
-import com.mborodin.uwm.models.persistence.LectureHallDb;
+import com.mborodin.uwm.model.persistence.BuildingDb;
+import com.mborodin.uwm.model.persistence.LectureHallDb;
 import com.mborodin.uwm.repositories.BuildingsRepository;
 import com.mborodin.uwm.repositories.LectureHallRepository;
 import com.mborodin.uwm.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @AllArgsConstructor
 @RestController

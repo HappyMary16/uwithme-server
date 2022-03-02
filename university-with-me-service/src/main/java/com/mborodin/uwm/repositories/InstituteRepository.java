@@ -3,7 +3,7 @@ package com.mborodin.uwm.repositories;
 import java.util.List;
 import java.util.Optional;
 
-import com.mborodin.uwm.models.persistence.InstituteDb;
+import com.mborodin.uwm.model.persistence.InstituteDb;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

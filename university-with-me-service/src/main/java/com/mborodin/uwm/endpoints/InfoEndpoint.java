@@ -2,8 +2,6 @@ package com.mborodin.uwm.endpoints;
 
 import static org.springframework.http.HttpStatus.OK;
 
-import com.mborodin.uwm.models.persistence.DepartmentDb;
-import com.mborodin.uwm.models.persistence.InstituteDb;
 import com.mborodin.uwm.repositories.DepartmentRepository;
 import com.mborodin.uwm.repositories.InstituteRepository;
 import com.mborodin.uwm.repositories.StudyGroupDataRepository;
@@ -40,13 +38,11 @@ public class InfoEndpoint {
 
     @GetMapping(value = "/departments/{instituteId}")
     public ResponseEntity<?> getDepartments(@PathVariable("instituteId") final Long instituteId) {
-        final InstituteDb instituteDb = instituteRepository.getProxyByIdIfExist(instituteId);
-        return new ResponseEntity<>(departmentRepository.findAllByInstitute(instituteDb), OK);
+        return new ResponseEntity<>(departmentRepository.findAllByInstituteId(instituteId), OK);
     }
 
     @GetMapping(value = "/groups/{departmentId}")
     public ResponseEntity<?> getStudyGroups(@PathVariable("departmentId") final Long departmentId) {
-        final DepartmentDb department = departmentRepository.getProxyByIdIfExist(departmentId);
-        return new ResponseEntity<>(studyGroupRepository.findAllByIsVisibleAndDepartment(true, department), OK);
+        return new ResponseEntity<>(studyGroupRepository.findAllByVisibleAndDepartmentId(true, departmentId), OK);
     }
 }

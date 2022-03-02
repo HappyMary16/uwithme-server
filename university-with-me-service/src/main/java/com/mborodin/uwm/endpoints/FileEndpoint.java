@@ -11,7 +11,7 @@ import com.mborodin.uwm.api.AccessToFileApi;
 import com.mborodin.uwm.api.FileApi;
 import com.mborodin.uwm.api.SaveFileApi;
 import com.mborodin.uwm.api.UploadFileResponseApi;
-import com.mborodin.uwm.models.persistence.FileDB;
+import com.mborodin.uwm.model.persistence.FileDB;
 import com.mborodin.uwm.repositories.FileRepository;
 import com.mborodin.uwm.security.UserContextHolder;
 import com.mborodin.uwm.services.FileService;

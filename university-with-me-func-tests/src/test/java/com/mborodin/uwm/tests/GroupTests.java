@@ -6,8 +6,7 @@ import static org.testng.AssertJUnit.assertNotNull;
 import javax.inject.Inject;
 
 import com.mborodin.uwm.AbstractBaseTest;
-import com.mborodin.uwm.api.AddGroupApi;
-import com.mborodin.uwm.api.GroupApi;
+import com.mborodin.uwm.api.structure.GroupApi;
 import com.mborodin.uwm.clients.GroupServiceClient;
 import org.testng.annotations.Test;
 
@@ -18,13 +17,12 @@ public class GroupTests extends AbstractBaseTest {
 
     @Test
     void groupCreation() {
-        final AddGroupApi addGroupApi = AddGroupApi.builder()
-                                                   .instituteName("TEST")
-                                                   .departmentName("TEST")
-                                                   .groupName("TEST")
-                                                   .course(1)
-                                                   .isShowingInRegistration(false)
-                                                   .build();
+        final GroupApi addGroupApi = GroupApi.builder()
+                                             .departmentId(1)
+                                             .name("TEST")
+                                             .course(1)
+                                             .visible(false)
+                                             .build();
 
         final Long groupId = groupServiceClient.createGroup(addGroupApi);
         final GroupApi createdGroup = groupServiceClient.getGroupById(groupId);
@@ -32,7 +30,7 @@ public class GroupTests extends AbstractBaseTest {
         final GroupApi expectedGroup = GroupApi.builder()
                                                .id(groupId)
                                                .name("TEST")
-                                               .isVisible(false)
+                                               .visible(false)
                                                .course(1)
                                                .build();
 

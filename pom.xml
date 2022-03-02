@@ -41,6 +41,7 @@
         <spring-security-oauth2-autoconfigure.version>2.3.9.RELEASE</spring-security-oauth2-autoconfigure.version>
         <keycloak.version>9.0.2</keycloak.version>
         <spring.cloud-version>Hoxton.SR11</spring.cloud-version>
+        <mapstract.version>1.4.2.Final</mapstract.version>
     </properties>
 
     <dependencyManagement>

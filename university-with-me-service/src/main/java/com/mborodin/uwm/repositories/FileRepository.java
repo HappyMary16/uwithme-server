@@ -3,7 +3,7 @@ package com.mborodin.uwm.repositories;
 import java.util.List;
 import java.util.Optional;
 
-import com.mborodin.uwm.models.persistence.FileDB;
+import com.mborodin.uwm.model.persistence.FileDB;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

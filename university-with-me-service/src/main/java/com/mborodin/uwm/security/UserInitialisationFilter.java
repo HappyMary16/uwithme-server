@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.mborodin.uwm.api.KeycloakUserApi;
-import com.mborodin.uwm.models.persistence.SimpleUserDb;
+import com.mborodin.uwm.model.persistence.SimpleUserDb;
 import com.mborodin.uwm.repositories.SimpleUserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

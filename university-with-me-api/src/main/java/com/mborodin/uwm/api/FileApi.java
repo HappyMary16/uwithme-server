@@ -2,27 +2,26 @@ package com.mborodin.uwm.api;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotNull;
-
+import com.mborodin.uwm.api.enums.FileType;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
+@Data
+@Builder(toBuilder = true)
 @AllArgsConstructor
-@Getter
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FileApi {
 
-    @NotNull
-    private Long fileId;
-
-    @NotNull
+    private long fileId;
     private String fileName;
-
-    @NotNull
+    @Deprecated
     private Integer type;
-
-    @NotNull
-    private Long subjectId;
-
-    @NotNull
-    private Date timeStartAccess;
+    private FileType fileType;
+    private long subjectId;
+    private long teacherId;
+    private Date startAccessTime;
 }

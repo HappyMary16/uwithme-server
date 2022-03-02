@@ -7,7 +7,7 @@ import java.util.Objects;
 
 import javax.ws.rs.ForbiddenException;
 
-import com.mborodin.uwm.models.persistence.SubjectDB;
+import com.mborodin.uwm.model.persistence.SubjectDB;
 import com.mborodin.uwm.repositories.SubjectRepository;
 import com.mborodin.uwm.security.UserContextHolder;
 import com.mborodin.uwm.services.SubjectService;

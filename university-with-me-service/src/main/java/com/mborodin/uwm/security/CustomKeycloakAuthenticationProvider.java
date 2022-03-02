@@ -1,7 +1,13 @@
 package com.mborodin.uwm.security;
 
+import static com.mborodin.uwm.api.enums.Role.ROLE_ADMIN;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.mborodin.uwm.api.enums.Role;
-import com.mborodin.uwm.models.persistence.SimpleUserDb;
+import com.mborodin.uwm.model.persistence.SimpleUserDb;
 import com.mborodin.uwm.repositories.SimpleUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.adapters.springsecurity.account.KeycloakRole;
@@ -11,12 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static com.mborodin.uwm.api.enums.Role.ROLE_ADMIN;
 
 @RequiredArgsConstructor
 public class CustomKeycloakAuthenticationProvider extends KeycloakAuthenticationProvider {

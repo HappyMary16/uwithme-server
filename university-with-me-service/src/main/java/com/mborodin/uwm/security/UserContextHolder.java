@@ -7,7 +7,8 @@ import java.util.Optional;
 
 import com.mborodin.uwm.api.KeycloakUserApi;
 import com.mborodin.uwm.api.enums.Role;
-import com.mborodin.uwm.models.persistence.SimpleUserDb;
+import com.mborodin.uwm.api.exceptions.UserNotFoundException;
+import com.mborodin.uwm.model.persistence.SimpleUserDb;
 import lombok.Builder;
 import lombok.Value;
 
@@ -15,9 +16,9 @@ public class UserContextHolder {
 
     private static final InheritableThreadLocal<UserContext> threadLocalScope = new InheritableThreadLocal<>();
 
-    public static Long getUniversityId() {
+    public static long getUniversityId() {
         if (getUserDb() == null) {
-            return null;
+            throw new UserNotFoundException(getLanguages(), getKeycloakUser().getEmail());
         }
 
         return getUserDb().getUniversityId();

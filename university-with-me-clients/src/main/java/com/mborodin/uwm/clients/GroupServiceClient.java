@@ -1,7 +1,6 @@
 package com.mborodin.uwm.clients;
 
-import com.mborodin.uwm.api.AddGroupApi;
-import com.mborodin.uwm.api.GroupApi;
+import com.mborodin.uwm.api.structure.GroupApi;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +29,7 @@ public class GroupServiceClient {
     }
 
     @SneakyThrows
-    public Long createGroup(final AddGroupApi group) {
+    public Long createGroup(final GroupApi group) {
         log.debug("Register User: {}", group);
 
         final String getUserUri = "http://" + host + ":" + port + "/api/groups";
