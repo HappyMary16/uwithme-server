@@ -3,7 +3,7 @@ package com.mborodin.uwm.repositories;
 import java.util.List;
 import java.util.Optional;
 
-import com.mborodin.uwm.models.persistence.BuildingDb;
+import com.mborodin.uwm.model.persistence.BuildingDb;
 import org.springframework.data.repository.CrudRepository;
 
 public interface BuildingsRepository extends CrudRepository<BuildingDb, Long> {

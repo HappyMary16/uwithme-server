@@ -2,7 +2,7 @@ package com.mborodin.uwm.repositories;
 
 import java.util.List;
 
-import com.mborodin.uwm.models.persistence.StudyGroupDb;
+import com.mborodin.uwm.model.persistence.StudyGroupDb;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

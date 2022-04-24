@@ -11,7 +11,7 @@ import com.mborodin.uwm.api.DeleteLessonApi;
 import com.mborodin.uwm.api.LessonApi;
 import com.mborodin.uwm.services.ScheduleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class ScheduleEndpoint {
 
     private final ScheduleService scheduleService;
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER')")
+    @Secured({"ROLE_ADMIN", "ROLE_TEACHER"})
     @PostMapping
     public void addLesson(@RequestBody CreateLessonApi createLessonApi) {
         final CreateLessonApi toCreate = hasRole(ROLE_TEACHER)
@@ -34,19 +34,19 @@ public class ScheduleEndpoint {
         scheduleService.createLesson(toCreate);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Secured("ROLE_ADMIN")
     @DeleteMapping
     public LessonApi deleteLesson(@RequestBody DeleteLessonApi deleteLessonApi) {
         return scheduleService.deleteLesson(deleteLessonApi);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_TEACHER')")
+    @Secured({"ROLE_STUDENT", "ROLE_TEACHER"})
     @GetMapping
     public List<LessonApi> getLessons() {
         return scheduleService.findUsersLessons();
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_SERVICE')")
+    @Secured({"ROLE_ADMIN", "ROLE_TEACHER", "ROLE_SERVICE"})
     @GetMapping("/group/{groupId}")
     public List<LessonApi> getLessonsByGroup(@PathVariable("groupId") Long groupId) {
         return scheduleService.findLessonsByGroupId(groupId);

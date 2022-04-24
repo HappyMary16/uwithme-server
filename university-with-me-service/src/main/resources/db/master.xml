@@ -18,4 +18,6 @@
     <include file="changelog/007_admin_role/007.00_master.xml" relativeToChangelogFile="true"/>
     <include file="changelog/008_lesson_hall/008.00_master.xml" relativeToChangelogFile="true"/>
     <include file="changelog/009_update_roles/009.00_master.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/010_add_university_id_to_all_entities/010.00_master.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/011_update_user_table/011.00_master.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

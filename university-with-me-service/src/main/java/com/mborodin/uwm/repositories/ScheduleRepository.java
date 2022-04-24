@@ -2,7 +2,7 @@ package com.mborodin.uwm.repositories;
 
 import java.util.List;
 
-import com.mborodin.uwm.models.persistence.ScheduleDb;
+import com.mborodin.uwm.model.persistence.ScheduleDb;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

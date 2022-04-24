@@ -4,6 +4,7 @@ import static com.mborodin.uwm.api.enums.Role.ROLE_STUDENT;
 import static com.mborodin.uwm.api.enums.Role.ROLE_TEACHER;
 import static com.mborodin.uwm.security.UserContextHolder.getId;
 import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
+import static com.mborodin.uwm.security.UserContextHolder.hasRole;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -19,13 +20,13 @@ import java.util.stream.Collectors;
 import com.mborodin.uwm.api.AccessToFileApi;
 import com.mborodin.uwm.api.FileApi;
 import com.mborodin.uwm.api.SaveFileApi;
-import com.mborodin.uwm.api.enums.Role;
+import com.mborodin.uwm.api.enums.FileType;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotLoadFileException;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotStoreAvatarException;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotStoreFileException;
-import com.mborodin.uwm.models.persistence.AccessToFileDB;
-import com.mborodin.uwm.models.persistence.FileDB;
-import com.mborodin.uwm.models.persistence.SubjectDB;
+import com.mborodin.uwm.model.persistence.AccessToFileDB;
+import com.mborodin.uwm.model.persistence.FileDB;
+import com.mborodin.uwm.model.persistence.SubjectDB;
 import com.mborodin.uwm.repositories.AccessToFileRepository;
 import com.mborodin.uwm.repositories.FileRepository;
 import com.mborodin.uwm.security.UserContextHolder;
@@ -136,21 +137,23 @@ public class FileService {
     }
 
     public List<FileApi> findAllFiles() {
-        final Role userRole = UserContextHolder.getRole();
-        if (ROLE_STUDENT.equals(userRole)) {
+        if (hasRole(ROLE_STUDENT)) {
             final Long studyGroupId = UserContextHolder.getGroupId();
             return findFilesByGroupId(studyGroupId);
-        } else if (ROLE_TEACHER.equals(userRole)) {
+        } else if (hasRole(ROLE_TEACHER)) {
             return subjectService.findUsersSubjects()
                                  .stream()
                                  .map(SubjectDB::getId)
                                  .map(fileRepository::findAllBySubjectId)
                                  .flatMap(List::stream)
-                                 .map(fileDB -> new FileApi(fileDB.getId(),
-                                                            fileDB.getName(),
-                                                            fileDB.getFileTypeId(),
-                                                            fileDB.getSubjectId(),
-                                                            fileDB.getCreateDate()))
+                                 .map(fileDB -> FileApi.builder()
+                                                       .fileId(fileDB.getId())
+                                                       .fileName(fileDB.getName())
+                                                       .type(fileDB.getFileTypeId())
+                                                       .fileType(FileType.getById(fileDB.getFileTypeId()))
+                                                       .subjectId(fileDB.getSubjectId())
+                                                       .startAccessTime(fileDB.getCreateDate())
+                                                       .build())
                                  .collect(Collectors.toList());
         }
 
@@ -160,26 +163,30 @@ public class FileService {
     public List<FileApi> findFilesByGroupId(final Long groupId) {
         return accessToFileRepository.findAllByStudyGroupId(groupId)
                                      .stream()
-                                     .map(accessToFileDB -> fileRepository.findById(accessToFileDB.getFileId())
-                                                                          .map(fileDb -> new FileApi(
-                                                                                  accessToFileDB.getFileId(),
-                                                                                  fileDb.getName(),
-                                                                                  fileDb.getFileTypeId(),
-                                                                                  fileDb.getSubjectId(),
-                                                                                  accessToFileDB.getDateAddAccess()))
-                                                                          .orElse(null))
+                                     .map(accessToFileDB -> fileRepository
+                                             .findById(accessToFileDB.getFileId())
+                                             .map(fileDb -> FileApi.builder()
+                                                                   .fileId(accessToFileDB.getFileId())
+                                                                   .fileName(fileDb.getName())
+                                                                   .type(fileDb.getFileTypeId())
+                                                                   .fileType(FileType.getById(fileDb.getFileTypeId()))
+                                                                   .subjectId(fileDb.getSubjectId())
+                                                                   .startAccessTime(accessToFileDB.getDateAddAccess())
+                                                                   .build())
+                                             .orElse(null))
                                      .filter(Objects::nonNull)
                                      .collect(Collectors.toList());
     }
 
     public FileApi findFileById(final Long fileId) {
         return fileRepository.findById(fileId)
-                             .map(fileDb -> new FileApi(
-                                     fileDb.getId(),
-                                     fileDb.getName(),
-                                     fileDb.getFileTypeId(),
-                                     fileDb.getSubjectId(),
-                                     null))
+                             .map(fileDb -> FileApi.builder()
+                                                   .fileId(fileDb.getId())
+                                                   .fileName(fileDb.getName())
+                                                   .type(fileDb.getFileTypeId())
+                                                   .fileType(FileType.getById(fileDb.getFileTypeId()))
+                                                   .subjectId(fileDb.getSubjectId())
+                                                   .build())
                              .orElse(null);
     }
 

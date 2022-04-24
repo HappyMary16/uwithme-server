@@ -7,9 +7,9 @@ import static com.mborodin.uwm.security.UserContextHolder.hasRole;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.mborodin.uwm.models.persistence.AccessToFileDB;
-import com.mborodin.uwm.models.persistence.SubjectDB;
-import com.mborodin.uwm.models.persistence.UserDb;
+import com.mborodin.uwm.model.persistence.AccessToFileDB;
+import com.mborodin.uwm.model.persistence.SubjectDB;
+import com.mborodin.uwm.model.persistence.UserDb;
 import com.mborodin.uwm.repositories.AccessToFileRepository;
 import com.mborodin.uwm.repositories.FileRepository;
 import com.mborodin.uwm.repositories.SubjectRepository;
