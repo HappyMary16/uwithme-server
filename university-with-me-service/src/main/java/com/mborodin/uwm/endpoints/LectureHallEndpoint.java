@@ -9,7 +9,7 @@ import com.mborodin.uwm.repositories.BuildingsRepository;
 import com.mborodin.uwm.repositories.LectureHallRepository;
 import com.mborodin.uwm.security.UserContextHolder;
 import lombok.AllArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
@@ -21,14 +21,14 @@ public class LectureHallEndpoint {
 
     private final LectureHallRepository lectureHallRepository;
 
-    @PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_ADMIN')")
+    @Secured({"ROLE_TEACHER", "ROLE_ADMIN"})
     @GetMapping
     public List<LectureHallDb> getLectureHalls() {
         final Long universityId = UserContextHolder.getUniversityId();
         return lectureHallRepository.findAllByUniversityId(universityId);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Secured("ROLE_ADMIN")
     @PostMapping
     public LectureHallDb addLectureHall(@RequestBody final AddLectureHallApi addLectureHallApi) {
         final Long universityId = UserContextHolder.getUniversityId();

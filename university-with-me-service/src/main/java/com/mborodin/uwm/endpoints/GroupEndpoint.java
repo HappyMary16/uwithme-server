@@ -16,7 +16,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -48,7 +47,7 @@ public class GroupEndpoint {
         return new ResponseEntity<>(studyGroupDataRepository.findAllByUniversityId(universityId), OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_SERVICE')")
+    @Secured({"ROLE_ADMIN", "ROLE_TEACHER", "ROLE_SERVICE"})
     @GetMapping(value = "/{groupId}")
     public ResponseEntity<?> getStudyGroupById(@PathVariable("groupId") final Long groupId) {
         return studyGroupDataRepository.findById(groupId)
@@ -56,7 +55,7 @@ public class GroupEndpoint {
                                        .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
-    @PreAuthorize("hasAuthority('ROLE_TEACHER')")
+    @Secured("ROLE_TEACHER")
     @GetMapping
     public ResponseEntity<?> getGroups() {
         final String userId = UserContextHolder.getId();
@@ -65,7 +64,7 @@ public class GroupEndpoint {
         return new ResponseEntity<>(studyGroupDataRepository.findAllByTeacher(userId), OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT')")
+    @Secured("ROLE_STUDENT")
     @GetMapping("/user")
     public ResponseEntity<StudyGroupDataDb> getGroup() {
         final Long groupId = UserContextHolder.getGroupId();

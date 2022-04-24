@@ -4,6 +4,7 @@ import static com.mborodin.uwm.api.enums.Role.ROLE_STUDENT;
 import static com.mborodin.uwm.api.enums.Role.ROLE_TEACHER;
 import static com.mborodin.uwm.security.UserContextHolder.getId;
 import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
+import static com.mborodin.uwm.security.UserContextHolder.hasRole;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -20,7 +21,6 @@ import com.mborodin.uwm.api.AccessToFileApi;
 import com.mborodin.uwm.api.FileApi;
 import com.mborodin.uwm.api.SaveFileApi;
 import com.mborodin.uwm.api.enums.FileType;
-import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotLoadFileException;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotStoreAvatarException;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotStoreFileException;
@@ -137,11 +137,10 @@ public class FileService {
     }
 
     public List<FileApi> findAllFiles() {
-        final Role userRole = UserContextHolder.getRole();
-        if (ROLE_STUDENT.equals(userRole)) {
+        if (hasRole(ROLE_STUDENT)) {
             final Long studyGroupId = UserContextHolder.getGroupId();
             return findFilesByGroupId(studyGroupId);
-        } else if (ROLE_TEACHER.equals(userRole)) {
+        } else if (hasRole(ROLE_TEACHER)) {
             return subjectService.findUsersSubjects()
                                  .stream()
                                  .map(SubjectDB::getId)

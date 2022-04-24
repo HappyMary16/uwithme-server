@@ -1,5 +1,8 @@
 package com.mborodin.uwm.api;
 
+import java.util.List;
+
+import com.mborodin.uwm.api.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,4 +22,5 @@ public class KeycloakUserApi {
     private String middleName;
     private String lastName;
     private String email;
+    private List<Role> roles;
 }

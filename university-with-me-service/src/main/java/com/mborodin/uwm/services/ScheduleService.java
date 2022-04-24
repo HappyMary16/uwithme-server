@@ -3,6 +3,7 @@ package com.mborodin.uwm.services;
 import static com.mborodin.uwm.api.enums.Role.ROLE_STUDENT;
 import static com.mborodin.uwm.api.enums.Role.ROLE_TEACHER;
 import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
+import static com.mborodin.uwm.security.UserContextHolder.hasRole;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -14,7 +15,6 @@ import com.mborodin.uwm.api.CreateLessonApi;
 import com.mborodin.uwm.api.DeleteLessonApi;
 import com.mborodin.uwm.api.KeycloakUserApi;
 import com.mborodin.uwm.api.LessonApi;
-import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.api.exceptions.UserNotFoundException;
 import com.mborodin.uwm.clients.KeycloakServiceClient;
 import com.mborodin.uwm.model.persistence.*;
@@ -47,12 +47,10 @@ public class ScheduleService {
     }
 
     public List<LessonApi> findUsersLessons() {
-        final Role userRole = UserContextHolder.getRole();
-
-        if (ROLE_STUDENT.equals(userRole)) {
+        if (hasRole(ROLE_STUDENT)) {
             final Long groupId = UserContextHolder.getGroupId();
             return new ArrayList<>(findLessonsByGroupId(groupId));
-        } else if (ROLE_TEACHER.equals(userRole)) {
+        } else if (hasRole(ROLE_TEACHER)) {
             return findLessonsByTeacherId(UserContextHolder.getId());
         } else {
             throw new RuntimeException("Schedule exist only for students and teacher");
@@ -63,13 +61,14 @@ public class ScheduleService {
         final UserDb user = userRepository.findById(userId)
                                           .orElseThrow(() -> new UserNotFoundException(getLanguages()));
 
-        if (Objects.equals(user.getRole(), ROLE_STUDENT)) {
-            return new ArrayList<>(findLessonsByGroupId(user.getGroupId()));
-        } else if (Objects.equals(user.getRole(), ROLE_TEACHER)) {
-            return findLessonsByTeacherId(user.getId());
-        } else {
-            throw new RuntimeException("Schedule exist only for students and teacher");
-        }
+//        if (Objects.equals(user.getRole(), ROLE_STUDENT)) {
+//            return new ArrayList<>(findLessonsByGroupId(user.getGroupId()));
+//        } else if (Objects.equals(user.getRole(), ROLE_TEACHER)) {
+//            return findLessonsByTeacherId(user.getId());
+//        } else {
+//            throw new RuntimeException("Schedule exist only for students and teacher");
+//        }
+        return null;
     }
 
     public LessonApi deleteLesson(final DeleteLessonApi deleteLessonApi) {

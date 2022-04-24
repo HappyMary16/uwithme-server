@@ -12,7 +12,7 @@ import com.mborodin.uwm.repositories.SubjectRepository;
 import com.mborodin.uwm.security.UserContextHolder;
 import com.mborodin.uwm.services.SubjectService;
 import lombok.AllArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
@@ -23,14 +23,14 @@ public class SubjectEndpoint {
     private final SubjectService subjectService;
     private final SubjectRepository subjectRepository;
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Secured("ROLE_ADMIN")
     @GetMapping
     public List<SubjectDB> getSubjects() {
         final Long universityId = UserContextHolder.getUniversityId();
         return subjectRepository.findAllByUniversityId(universityId);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_STUDENT')")
+    @Secured({"ROLE_TEACHER", "ROLE_STUDENT"})
     @GetMapping("/{userId}")
     public List<SubjectDB> getSubjects(@PathVariable("userId") final String userId) {
         if (Objects.equals(userId, getId())) {
@@ -40,7 +40,7 @@ public class SubjectEndpoint {
         throw new ForbiddenException();
     }
 
-    @PreAuthorize("hasAuthority('ROLE_TEACHER')")
+    @Secured("ROLE_TEACHER")
     @PostMapping("/{userId}/{subjectName}")
     public SubjectDB saveSubject(@PathVariable("subjectName") final String subjectName,
                                  @PathVariable("userId") final String userId) {

@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,7 +32,7 @@ public class FileEndpoint {
 
     private final FileRepository fileRepository;
 
-    @PreAuthorize("hasAuthority('ROLE_TEACHER')")
+    @Secured("ROLE_TEACHER")
     @PostMapping("/{subjectName}/{fileType:[1-2]}")
     public List<UploadFileResponseApi> uploadMultipleFiles(@RequestParam("files") final MultipartFile[] files,
                                                            @PathVariable("subjectName") final String subjectName,
@@ -70,43 +70,43 @@ public class FileEndpoint {
                              .body(resource);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_SERVICE')")
+    @Secured("ROLE_SERVICE")
     @GetMapping("/{fileId}/info")
     public FileApi getFileInfo(@PathVariable final Long fileId) {
         return fileService.findFileById(fileId);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_TEACHER')")
+    @Secured({"ROLE_STUDENT", "ROLE_TEACHER"})
     @GetMapping
     public List<FileApi> getFiles() {
         return fileService.findAllFiles();
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_SERVICE')")
+    @Secured("ROLE_SERVICE")
     @GetMapping("/groupId/{groupId}")
     public List<FileApi> getFilesByGroupId(@PathVariable final Long groupId) {
         return fileService.findFilesByGroupId(groupId);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_TEACHER')")
+    @Secured("ROLE_TEACHER")
     @PostMapping("/access")
     public void addAccessToFiles(@RequestBody final AccessToFileApi accessToFileApi) {
         fileService.addAccessToFile(accessToFileApi);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_STUDENT')")
+    @Secured({"ROLE_TEACHER", "ROLE_STUDENT"})
     @PostMapping("/avatar")
     public void uploadAvatar(@RequestParam("file") final MultipartFile avatar) {
         fileService.updateAvatar(avatar);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_STUDENT')")
+    @Secured({"ROLE_TEACHER", "ROLE_STUDENT"})
     @GetMapping("/avatar")
     public ResponseEntity<Resource> getAvatar() {
         return getAvatar(UserContextHolder.getId());
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_STUDENT', 'ROLE_ADMIN')")
+    @Secured({"ROLE_TEACHER", "ROLE_STUDENT", "ROLE_ADMIN"})
     @GetMapping("/avatar/{userId:.+}")
     public ResponseEntity<Resource> getAvatar(@PathVariable("userId") final String userId) {
         final Resource resource = fileService.loadAvatar(userId);

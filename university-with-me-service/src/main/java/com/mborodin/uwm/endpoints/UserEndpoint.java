@@ -17,7 +17,7 @@ import com.mborodin.uwm.security.UserContextHolder;
 import com.mborodin.uwm.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.lang.NonNull;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
@@ -27,13 +27,13 @@ public class UserEndpoint {
 
     private final UserService userService;
 
-    @PreAuthorize("hasAnyAuthority('ROLE_SERVICE')")
+    @Secured("ROLE_SERVICE")
     @GetMapping(value = "/{userId}")
     public UserApi getUserById(@PathVariable(value = "userId") final String userId) {
         return userService.findUserById(userId);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_STUDENT')")
+    @Secured({"ROLE_TEACHER", "ROLE_STUDENT"})
     @GetMapping(value = "/teachers")
     public List<UserApi> getRelativeTeachers() {
         List<UserApi> users;
@@ -49,7 +49,7 @@ public class UserEndpoint {
         return users;
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_STUDENT')")
+    @Secured({"ROLE_TEACHER", "ROLE_STUDENT"})
     @GetMapping(value = "/students")
     public List<UserApi> getStudents() {
         List<UserApi> users;
@@ -63,67 +63,67 @@ public class UserEndpoint {
         return users;
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Secured("ROLE_ADMIN")
     @GetMapping
     public List<UserApi> getUsersByRole(@QueryParam("role") @NonNull Role role) {
         return userService.findAllUsersByRole(role);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_SERVICE')")
+    @Secured({"ROLE_ADMIN", "ROLE_TEACHER", "ROLE_SERVICE"})
     @GetMapping(value = "/students/groupId/{groupId}")
     public List<UserApi> getStudentsByGroupId(@PathVariable(value = "groupId") final Long groupId) {
         final List<UserApi> users = userService.findStudentsByGroupId(groupId);
         return users;
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_SERVICE')")
+    @Secured("ROLE_SERVICE")
     @GetMapping(value = "/teachers/groupId/{groupId}")
     public List<UserApi> getTeachersByGroupId(@PathVariable(value = "groupId") final Long groupId) {
         final List<UserApi> users = userService.findTeachersByGroupId(groupId);
         return users;
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Secured("ROLE_ADMIN")
     @DeleteMapping(value = "/group/studentId/{studentId}")
     public UserApi removeStudentFromGroup(@PathVariable(value = "studentId") final String studentId) {
         return userService.removeStudentFromGroup(studentId);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Secured("ROLE_ADMIN")
     @GetMapping(value = "/students/without/group")
     public List<UserApi> getStudentsWithoutGroup() {
         final List<UserApi> users = userService.findUsersWithoutGroup();
         return users;
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Secured("ROLE_ADMIN")
     @PutMapping(value = "/group")
     public List<UserApi> addStudentToGroup(@RequestBody final AddStudentsToGroupApi addStudentsToGroupApi) {
         userService.addStudentToGroup(addStudentsToGroupApi.getStudentsIds(), addStudentsToGroupApi.getGroupId());
         return getStudentsByGroupId(addStudentsToGroupApi.getGroupId());
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_STUDENT')")
+    @Secured({"ROLE_TEACHER", "ROLE_ADMIN", "ROLE_STUDENT"})
     @DeleteMapping()
     public void deleteUser() {
         final String userId = UserContextHolder.getId();
         userService.deleteUser(userId);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TEACHER', 'ROLE_STUDENT')")
+    @Secured({"ROLE_TEACHER", "ROLE_ADMIN", "ROLE_STUDENT"})
     @PutMapping()
     public UserApi updateUser(@RequestBody final UpdateUserApi updateUserApi) {
         return userService.updateUser(updateUserApi);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Secured("ROLE_ADMIN")
     @PutMapping("/{userId}/roles/{role}")
     public String assignRole(@PathVariable(value = "userId") final String userId,
                              @PathVariable(value = "role") final Role role) {
         return userService.assignRole(userId, role);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{userId}/roles/{role}")
     public String unAssignRole(@PathVariable(value = "userId") final String userId,
                                @PathVariable(value = "role") final Role role) {

@@ -14,7 +14,7 @@ import com.mborodin.uwm.repositories.DepartmentRepository;
 import com.mborodin.uwm.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -26,7 +26,7 @@ public class DepartmentEndpoint {
     private final DepartmentRepository departmentRepository;
     private final DepartmentMapper departmentMapper;
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Secured("ROLE_ADMIN")
     @PostMapping
     public DepartmentApi createDepartment(@RequestBody final DepartmentApi department) {
         log.info("Start department creation. Department: {}", department);
@@ -50,7 +50,7 @@ public class DepartmentEndpoint {
                                    .collect(Collectors.toList());
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_TEACHER')")
+    @Secured({"ROLE_STUDENT", "ROLE_TEACHER"})
     @GetMapping("/user")
     public DepartmentApi getDepartment() {
         final var departmentId = UserContextHolder.getUserDb().getDepartmentId();

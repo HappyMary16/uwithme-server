@@ -16,7 +16,7 @@ import com.mborodin.uwm.security.UserContextHolder;
 import com.mborodin.uwm.services.InstituteService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -29,7 +29,7 @@ public class InstituteEndpoint {
     private final InstituteService instituteService;
     private final InstituteMapper instituteMapper;
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Secured("ROLE_ADMIN")
     @PostMapping
     public InstituteApi createInstitute(@RequestBody final InstituteApi institute) {
         log.info("Start institute creation. Institute: {}", institute);
@@ -57,7 +57,7 @@ public class InstituteEndpoint {
                                   .collect(Collectors.toList());
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_TEACHER')")
+    @Secured({"ROLE_STUDENT", "ROLE_TEACHER"})
     @GetMapping("/user")
     public InstituteApi getInstitute() {
         final InstituteDb institute = instituteService.getInstituteForUser();

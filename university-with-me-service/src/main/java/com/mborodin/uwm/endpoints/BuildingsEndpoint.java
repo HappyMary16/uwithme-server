@@ -6,14 +6,14 @@ import com.mborodin.uwm.repositories.BuildingsRepository;
 import com.mborodin.uwm.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
 @RestController
-@PreAuthorize("hasAnyAuthority('ROLE_TEACHER', 'ROLE_ADMIN')")
+@Secured({"ROLE_TEACHER", "ROLE_ADMIN"})
 @RequestMapping("/api/buildings")
 public class BuildingsEndpoint {
 

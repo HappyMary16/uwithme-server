@@ -3,6 +3,9 @@ package com.mborodin.uwm.security;
 import static org.springframework.http.HttpHeaders.ACCEPT_LANGUAGE;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -10,8 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.mborodin.uwm.api.KeycloakUserApi;
-import com.mborodin.uwm.model.persistence.SimpleUserDb;
-import com.mborodin.uwm.repositories.SimpleUserRepository;
+import com.mborodin.uwm.api.enums.Role;
+import com.mborodin.uwm.model.persistence.UserDb;
+import com.mborodin.uwm.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.KeycloakSecurityContext;
@@ -22,7 +26,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @AllArgsConstructor
 public class UserInitialisationFilter extends OncePerRequestFilter {
 
-    private final SimpleUserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(final HttpServletRequest request,
@@ -40,13 +44,22 @@ public class UserInitialisationFilter extends OncePerRequestFilter {
         final AccessToken token = session.getToken();
 
         final String userId = token.getSubject();
-        final SimpleUserDb userDb = userRepository.findById(userId).orElse(null);
+        final UserDb userDb = userRepository.findById(userId).orElse(null);
+
+        final List<Role> roles = token.getRealmAccess()
+                                      .getRoles()
+                                      .stream()
+                                      .map(this::getRoleSuppressExceptions)
+                                      .filter(Objects::nonNull)
+                                      .collect(Collectors.toList());
+
         final KeycloakUserApi keycloakUser = KeycloakUserApi.builder()
                                                             .id(userId)
                                                             .firstName(token.getGivenName())
                                                             .middleName(token.getMiddleName())
                                                             .lastName(token.getFamilyName())
                                                             .email(token.getEmail())
+                                                            .roles(roles)
                                                             .build();
 
         UserContextHolder.setUserContext(UserContextHolder.UserContext.builder()
@@ -56,5 +69,13 @@ public class UserInitialisationFilter extends OncePerRequestFilter {
                                                                       .build());
 
         filterChain.doFilter(request, response);
+    }
+
+    private Role getRoleSuppressExceptions(final String role) {
+        try {
+            return Role.valueOf(role);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
