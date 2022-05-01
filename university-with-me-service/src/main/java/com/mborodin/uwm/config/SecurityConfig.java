@@ -4,7 +4,6 @@ import com.mborodin.uwm.repositories.UserRepository;
 import com.mborodin.uwm.security.UserInitialisationFilter;
 import com.mborodin.uwm.security.UserLogoutFilter;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
@@ -29,7 +28,6 @@ class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
     private final UserRepository userRepository;
 
-    @SneakyThrows
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) {
         KeycloakAuthenticationProvider keycloakAuthenticationProvider = keycloakAuthenticationProvider();

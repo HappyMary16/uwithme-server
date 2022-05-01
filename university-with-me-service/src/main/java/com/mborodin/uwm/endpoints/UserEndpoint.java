@@ -2,8 +2,6 @@ package com.mborodin.uwm.endpoints;
 
 import static com.mborodin.uwm.api.enums.Role.ROLE_STUDENT;
 import static com.mborodin.uwm.api.enums.Role.ROLE_TEACHER;
-import static com.mborodin.uwm.security.UserContextHolder.getGroupId;
-import static com.mborodin.uwm.security.UserContextHolder.hasRole;
 
 import java.util.List;
 
@@ -36,31 +34,13 @@ public class UserEndpoint {
     @Secured({"ROLE_TEACHER", "ROLE_STUDENT"})
     @GetMapping(value = "/teachers")
     public List<UserApi> getRelativeTeachers() {
-        List<UserApi> users;
-
-        if (hasRole(ROLE_STUDENT)) {
-            final Long groupId = UserContextHolder.getGroupId();
-            users = userService.findTeachersByGroupId(groupId);
-        } else {
-            final Long departmentId = UserContextHolder.getUserDb().getDepartmentId();
-            users = userService.findTeachersByDepartmentId(departmentId);
-        }
-
-        return users;
+        return userService.findAllUsersByRole(ROLE_TEACHER);
     }
 
     @Secured({"ROLE_TEACHER", "ROLE_STUDENT"})
     @GetMapping(value = "/students")
     public List<UserApi> getStudents() {
-        List<UserApi> users;
-
-        if (hasRole(ROLE_TEACHER)) {
-            users = userService.findStudentsByTeacherId(UserContextHolder.getId());
-        } else {
-            users = userService.findStudentsByGroupId(getGroupId());
-        }
-
-        return users;
+        return userService.findAllUsersByRole(ROLE_STUDENT);
     }
 
     @Secured("ROLE_ADMIN")
@@ -92,8 +72,7 @@ public class UserEndpoint {
     @Secured("ROLE_ADMIN")
     @GetMapping(value = "/students/without/group")
     public List<UserApi> getStudentsWithoutGroup() {
-        final List<UserApi> users = userService.findUsersWithoutGroup();
-        return users;
+        return userService.findUsersWithoutGroup();
     }
 
     @Secured("ROLE_ADMIN")

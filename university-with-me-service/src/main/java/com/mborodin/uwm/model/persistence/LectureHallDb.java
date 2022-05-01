@@ -23,9 +23,8 @@ public class LectureHallDb {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(cascade = {CascadeType.PERSIST})
-    @JoinColumn(name = "building_id", referencedColumnName = "id")
-    private BuildingDb building;
+    @Column(name = "building_id")
+    private long buildingId;
 
     @Column(name = "place_number")
     private Integer placeNumber;

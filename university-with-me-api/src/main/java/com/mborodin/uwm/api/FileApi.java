@@ -2,12 +2,12 @@ package com.mborodin.uwm.api;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mborodin.uwm.api.enums.FileType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 @Data
 @Builder(toBuilder = true)

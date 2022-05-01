@@ -1,6 +1,7 @@
 package com.mborodin.uwm.repositories;
 
 import java.util.List;
+import java.util.Set;
 
 import com.mborodin.uwm.model.persistence.UserDb;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,17 +18,6 @@ public interface UserRepository extends JpaRepository<UserDb, String> {
 
     @Query("SELECT DISTINCT user " +
             "FROM UserDb user " +
-            "LEFT JOIN ScheduleGroupDb scheduleGroup " +
-            "ON user.groupId = scheduleGroup.groupId " +
-            "LEFT JOIN ScheduleDb schedule " +
-            "ON scheduleGroup.scheduleId = schedule.id " +
-            "LEFT JOIN SubjectDB subject " +
-            "ON schedule.subject.id = subject.id " +
-            "WHERE subject.teacher.id = :teacherId ")
-    List<UserDb> findStudentsByTeacherId(@Param("teacherId") String teacherId);
-
-    @Query("SELECT DISTINCT user " +
-            "FROM UserDb user " +
             "LEFT JOIN SubjectDB subject " +
             "ON user.id = subject.teacher.id " +
             "LEFT JOIN ScheduleDb schedule " +
@@ -37,9 +27,7 @@ public interface UserRepository extends JpaRepository<UserDb, String> {
             "WHERE scheduleGroup.groupId = :groupId ")
     List<UserDb> findTeachersByGroupId(@Param("groupId") Long groupId);
 
-    List<UserDb> findAllByDepartmentId(Long departmentId);
-
-    List<UserDb> findAllByUniversityId(Long universityId);
+    List<UserDb> findAllByUniversityIdAndIdIn(Long universityId, Set<String> ids);
 
     default UserDb getProxyByIdIfExist(final String id) {
         return id != null

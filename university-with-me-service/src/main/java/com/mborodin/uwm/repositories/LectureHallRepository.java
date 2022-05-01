@@ -11,6 +11,8 @@ public interface LectureHallRepository extends CrudRepository<LectureHallDb, Lon
 
     @Query("SELECT lectureHall " +
             "FROM LectureHallDb lectureHall " +
-            "WHERE lectureHall.building.universityId = :universityId")
+            "JOIN BuildingDb building " +
+            "ON building.id = lectureHall.buildingId " +
+            "WHERE building.universityId = :universityId")
     List<LectureHallDb> findAllByUniversityId(@Param("universityId") Long universityId);
 }

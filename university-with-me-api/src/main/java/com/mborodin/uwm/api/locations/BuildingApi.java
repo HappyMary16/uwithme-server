@@ -1,10 +1,11 @@
 package com.mborodin.uwm.api.locations;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 @Data
 @Builder(toBuilder = true)
@@ -14,6 +15,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 public class BuildingApi {
 
     private long id;
+    @JsonAlias("buildingName")
     private String name;
     private String shortName;
     private long universityId;

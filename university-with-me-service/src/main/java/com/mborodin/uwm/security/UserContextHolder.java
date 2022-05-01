@@ -1,11 +1,11 @@
 package com.mborodin.uwm.security;
 
-import com.mborodin.uwm.api.KeycloakUserApi;
 import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.api.exceptions.UserNotFoundException;
 import com.mborodin.uwm.model.persistence.UserDb;
 import lombok.Builder;
 import lombok.Value;
+import org.keycloak.representations.idm.UserRepresentation;
 
 public class UserContextHolder {
 
@@ -24,7 +24,7 @@ public class UserContextHolder {
     }
 
     public static boolean hasRole(final Role role) {
-        return getKeycloakUser().getRoles().contains(role);
+        return getKeycloakUser().getRealmRoles().contains(role.name());
     }
 
     public static Long getGroupId() {
@@ -40,7 +40,7 @@ public class UserContextHolder {
         return threadLocalScope.get().getUserDb();
     }
 
-    public static KeycloakUserApi getKeycloakUser() {
+    public static UserRepresentation getKeycloakUser() {
         return threadLocalScope.get().getKeycloakUser();
     }
 
@@ -56,7 +56,7 @@ public class UserContextHolder {
     @Builder(toBuilder = true)
     public static class UserContext {
 
-        KeycloakUserApi keycloakUser;
+        UserRepresentation keycloakUser;
         UserDb userDb;
         String languages;
     }

@@ -1,11 +1,15 @@
 package com.mborodin.uwm.endpoints;
 
-import java.util.List;
+import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
 
-import com.mborodin.uwm.api.AddLectureHallApi;
-import com.mborodin.uwm.model.persistence.BuildingDb;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import com.mborodin.uwm.api.exceptions.UnknownException;
+import com.mborodin.uwm.api.locations.ClassApi;
+import com.mborodin.uwm.model.mapper.ClassMapper;
 import com.mborodin.uwm.model.persistence.LectureHallDb;
-import com.mborodin.uwm.repositories.BuildingsRepository;
 import com.mborodin.uwm.repositories.LectureHallRepository;
 import com.mborodin.uwm.security.UserContextHolder;
 import lombok.AllArgsConstructor;
@@ -17,34 +21,31 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/lectureHalls")
 public class LectureHallEndpoint {
 
-    private final BuildingsRepository buildingsRepository;
+    private final ClassMapper classMapper;
 
     private final LectureHallRepository lectureHallRepository;
 
     @Secured({"ROLE_TEACHER", "ROLE_ADMIN"})
     @GetMapping
-    public List<LectureHallDb> getLectureHalls() {
+    public List<ClassApi> getLectureHalls() {
         final Long universityId = UserContextHolder.getUniversityId();
-        return lectureHallRepository.findAllByUniversityId(universityId);
+        return lectureHallRepository.findAllByUniversityId(universityId)
+                                    .stream()
+                                    .map(classMapper::toClassApi)
+                                    .collect(Collectors.toList());
     }
 
     @Secured("ROLE_ADMIN")
     @PostMapping
-    public LectureHallDb addLectureHall(@RequestBody final AddLectureHallApi addLectureHallApi) {
-        final Long universityId = UserContextHolder.getUniversityId();
-        final String buildingName = addLectureHallApi.getBuildingName();
-
-        final BuildingDb buildingDb = buildingsRepository.findByUniversityIdAndName(universityId, buildingName)
-                                                         .orElseGet(() -> BuildingDb.builder()
-                                                                                    .universityId(universityId)
-                                                                                    .name(buildingName)
-                                                                                    .build());
+    public ClassApi addLectureHall(@RequestBody final ClassApi classApi) {
         final LectureHallDb lectureHallDb = LectureHallDb.builder()
-                                                         .name(addLectureHallApi.getLectureHallName())
-                                                         .building(buildingDb)
-                                                         .placeNumber(addLectureHallApi.getPlaceNumber())
+                                                         .name(classApi.getName())
+                                                         .buildingId(classApi.getBuildingId())
+                                                         .placeNumber(classApi.getPlaceNumber())
                                                          .build();
 
-        return lectureHallRepository.save(lectureHallDb);
+        return Optional.of(lectureHallRepository.save(lectureHallDb))
+                       .map(classMapper::toClassApi)
+                       .orElseThrow(() -> new UnknownException(getLanguages()));
     }
 }

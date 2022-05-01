@@ -1,16 +1,13 @@
 package com.mborodin.uwm.services;
 
 import static com.mborodin.uwm.api.enums.Role.ROLE_ADMIN;
+import static com.mborodin.uwm.api.enums.Role.ROLE_STUDENT;
 import static com.mborodin.uwm.security.UserContextHolder.*;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.mborodin.uwm.api.KeycloakUserApi;
 import com.mborodin.uwm.api.RegisterApi;
 import com.mborodin.uwm.api.UpdateUserApi;
 import com.mborodin.uwm.api.UserApi;
@@ -20,7 +17,6 @@ import com.mborodin.uwm.api.exceptions.UserNotFoundException;
 import com.mborodin.uwm.api.structure.DepartmentApi;
 import com.mborodin.uwm.api.structure.GroupApi;
 import com.mborodin.uwm.api.structure.InstituteApi;
-import com.mborodin.uwm.clients.KeycloakServiceClient;
 import com.mborodin.uwm.model.persistence.UniversityDb;
 import com.mborodin.uwm.model.persistence.UserDb;
 import com.mborodin.uwm.repositories.UniversityRepository;
@@ -28,6 +24,10 @@ import com.mborodin.uwm.repositories.UserRepository;
 import com.mborodin.uwm.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.keycloak.admin.client.resource.RolesResource;
+import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
@@ -40,7 +40,8 @@ public class UserService {
     private final DepartmentService departmentService;
     private final UniversityRepository universityRepository;
     private final InstituteService instituteService;
-    private final KeycloakServiceClient keycloakServiceClient;
+    private final UsersResource usersResource;
+    private final RolesResource rolesResource;
 
     public String save(final RegisterApi user) {
         final String userId = getId();
@@ -58,7 +59,10 @@ public class UserService {
             toCreate.setUniversityId(universityId);
         }
 
-        keycloakServiceClient.assignRole(userId, user.getRole());
+        final RoleRepresentation roleToAssign = rolesResource.get(user.getRole().name()).toRepresentation();
+        usersResource.get(userId).roles().realmLevel().add(List.of(roleToAssign));
+        getKeycloakUser().getRealmRoles().add(user.getRole().name());
+
         return userRepository.save(toCreate).getId();
     }
 
@@ -66,7 +70,9 @@ public class UserService {
         final var user = userRepository.findById(userId)
                                        .orElseThrow(() -> new UserNotFoundException(getLanguages()));
 
-        keycloakServiceClient.assignRole(userId, role);
+        final RoleRepresentation roleToAssign = rolesResource.get(role.name()).toRepresentation();
+        usersResource.get(userId).roles().realmLevel().add(List.of(roleToAssign));
+
         return userRepository.save(user).getId();
     }
 
@@ -74,12 +80,14 @@ public class UserService {
         final var user = userRepository.findById(userId)
                                        .orElseThrow(() -> new UserNotFoundException(getLanguages()));
 
-        keycloakServiceClient.unAssignRole(userId, role);
+        final RoleRepresentation roleToUnAssign = rolesResource.get(role.name()).toRepresentation();
+        usersResource.get(userId).roles().realmLevel().remove(List.of(roleToUnAssign));
+
         return userRepository.save(user).getId();
     }
 
     public UserApi getUserApi() {
-        final KeycloakUserApi keycloakUser = getKeycloakUser();
+        final UserRepresentation keycloakUser = getKeycloakUser();
         final UserDb userDb = userRepository.findById(keycloakUser.getId())
                                             .orElseThrow(() -> new UserNotFoundException(getLanguages(),
                                                                                          keycloakUser.getEmail()));
@@ -87,38 +95,32 @@ public class UserService {
         return mapToUserApi(userDb, keycloakUser);
     }
 
-    public List<UserApi> findTeachersByUniversityId() {
-        final Long universityId = UserContextHolder.getUniversityId();
-        final List<UserApi> teachers = userRepository.findAllByUniversityId(universityId)
-                                                     .stream()
-                                                     .map(this::mapToUserApi)
-                                                     .collect(Collectors.toList());
-
-        log.debug("Teachers by university id: {}. Result: {}", universityId, teachers);
-
-        return teachers;
+    public Set<Role> getUserRoles(final String userId) {
+        return usersResource.get(userId)
+                            .roles()
+                            .realmLevel()
+                            .listEffective()
+                            .stream()
+                            .map(RoleRepresentation::getName)
+                            .map(this::valueOfRoleSuppressExceptions)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toSet());
     }
 
     public List<UserApi> findAllUsersByRole(final Role role) {
         final Long universityId = UserContextHolder.getUniversityId();
-        final var keycloakUsers = keycloakServiceClient.getUsersByRole(role, Integer.MAX_VALUE)
-                                                       .stream()
-                                                       .collect(Collectors.toMap(KeycloakUserApi::getId,
-                                                                                 Function.identity()));
 
-        final List<UserApi> users;
+        final var keycloakUsers = rolesResource.get(role.name())
+                                               .getRoleUserMembers(0, Integer.MAX_VALUE)
+                                               .stream()
+                                               .collect(Collectors.toMap(UserRepresentation::getId,
+                                                                         Function.identity()));
 
-        if (Objects.equals(role, ROLE_ADMIN)) {
-            users = userRepository.findAllByUniversityId(universityId)
-                                  .stream()
-                                  .map(user -> mapToUserApi(user, keycloakUsers.get(user.getId())))
-                                  .collect(Collectors.toList());
-        } else {
-            users = userRepository.findAllByUniversityId(universityId)
-                                  .stream()
-                                  .map(user -> mapToUserApi(user, keycloakUsers.get(user.getId())))
-                                  .collect(Collectors.toList());
-        }
+        final List<UserApi> users = userRepository.findAllByUniversityIdAndIdIn(universityId, keycloakUsers.keySet())
+                                                  .stream()
+                                                  .map(user -> mapToUserApi(user, keycloakUsers.get(user.getId())))
+                                                  .collect(Collectors.toList());
+
         log.debug("Users by university id: {} and role: {}. Result: {}", universityId, role, users);
 
         return users;
@@ -154,25 +156,23 @@ public class UserService {
 
     public List<UserApi> findUsersWithoutGroup() {
         final Long universityId = UserContextHolder.getUniversityId();
-        //TODO get only students
-        return userRepository.findAllByGroupIdIsNullAndUniversityId(universityId)
-                             .stream()
-                             .map(this::mapToUserApi)
-                             .collect(Collectors.toList());
-    }
 
-    public List<UserApi> findStudentsByTeacherId(final String teacherId) {
-        return userRepository.findStudentsByTeacherId(teacherId)
-                             .stream()
-                             .map(this::mapToUserApi)
-                             .collect(Collectors.toList());
-    }
+        final var keycloakUsersByIds = rolesResource.get(ROLE_STUDENT.name())
+                                                    .getRoleUserMembers(0, Integer.MAX_VALUE)
+                                                    .stream()
+                                                    .collect(Collectors.toMap(UserRepresentation::getId,
+                                                                              Function.identity()));
 
-    public List<UserApi> findTeachersByDepartmentId(final Long departmentId) {
-        return userRepository.findAllByDepartmentId(departmentId)
-                             .stream()
-                             .map(this::mapToUserApi)
-                             .collect(Collectors.toList());
+        final var usersByIds = userRepository.findAllByGroupIdIsNullAndUniversityId(universityId)
+                                             .stream()
+                                             .collect(Collectors.toMap(UserDb::getId,
+                                                                       Function.identity()));
+
+        return keycloakUsersByIds.keySet()
+                                 .stream()
+                                 .filter(usersByIds.keySet()::contains)
+                                 .map(userId -> mapToUserApi(usersByIds.get(userId), keycloakUsersByIds.get(userId)))
+                                 .collect(Collectors.toList());
     }
 
     public List<UserApi> findTeachersByGroupId(final Long groupId) {
@@ -200,12 +200,16 @@ public class UserService {
 
     public void deleteUser(final String userId) {
         if (hasRole(ROLE_ADMIN)
-                && userRepository.findAllByUniversityId(getUniversityId()).size() == 1) {
+                && findAllUsersByRole(ROLE_ADMIN).size() == 1) {
             throw new LastAdminCannotBeDeleted(getLanguages());
         }
 
         Arrays.stream(Role.values())
-              .forEach(role -> keycloakServiceClient.unAssignRole(userId, role));
+              .forEach(role -> {
+                  final RoleRepresentation roleToUnAssign = rolesResource.get(role.name()).toRepresentation();
+                  usersResource.get(userId).roles().realmLevel().remove(List.of(roleToUnAssign));
+              });
+
         userRepository.deleteById(userId);
     }
 
@@ -228,11 +232,11 @@ public class UserService {
     }
 
     private UserApi mapToUserApi(final UserDb userDb) {
-        final KeycloakUserApi keycloakUser = keycloakServiceClient.getUser(userDb.getId());
+        final UserRepresentation keycloakUser = usersResource.get(userDb.getId()).toRepresentation();
         return mapToUserApi(userDb, keycloakUser);
     }
 
-    private UserApi mapToUserApi(final UserDb userDb, final KeycloakUserApi keycloakUser) {
+    private UserApi mapToUserApi(final UserDb userDb, final UserRepresentation keycloakUser) {
         final Optional<GroupApi> studyGroup = Optional.ofNullable(userDb.getGroupId())
                                                       .map(groupService::getById);
 
@@ -253,12 +257,20 @@ public class UserService {
                       .departmentName(department.map(DepartmentApi::getName).orElse(null))
                       .instituteName(institute.map(InstituteApi::getName).orElse(null))
                       .firstName(keycloakUser.getFirstName())
-                      .middleName(keycloakUser.getMiddleName())
                       .surname(keycloakUser.getLastName())
                       .email(keycloakUser.getEmail())
                       .institute(institute.orElse(null))
                       .department(department.orElse(null))
                       .group(studyGroup.orElse(null))
+                      .roles(getUserRoles(userDb.getId()))
                       .build();
+    }
+
+    private Role valueOfRoleSuppressExceptions(final String role) {
+        try {
+            return Role.valueOf(role);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

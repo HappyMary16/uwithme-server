@@ -2,8 +2,6 @@ package com.mborodin.uwm.api;
 
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Value;
@@ -13,9 +11,6 @@ import lombok.Value;
 @Getter
 public class AccessToFileApi {
 
-    @NotNull
     List<Long> fileIds;
-
-    @NotNull
     List<Long> groupIds;
 }
