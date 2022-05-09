@@ -21,8 +21,8 @@ jobs:
       - name: Archive artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: EducationApp
-          path: ./university-with-me-service/target/EducationApp.jar
+          name: UwithmeServiceApp
+          path: ./uwithme-service/target/UwithmeServiceApp.jar
           retention-days: 1
   image-build:
     needs: build-archive
@@ -33,8 +33,8 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-          name: EducationApp
-          path: ./university-with-me-service/target/EducationApp.jar
+          name: UwithmeServiceApp
+          path: ./uwithme-service/target/UwithmeServiceApp.jar
       - name: Build and Publish latest Docker image
         uses: VaultVulp/gp-docker-action@1.1.8
         with:
@@ -49,8 +49,8 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-          name: EducationApp
-          path: ./EducationApp
+          name: UwithmeServiceApp
+          path: ./UwithmeServiceApp
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:

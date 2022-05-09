@@ -4,18 +4,18 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mborodin.uwm</groupId>
-    <artifactId>EducationAppServer</artifactId>
+    <artifactId>uwithme-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <modules>
-        <module>university-with-me-service</module>
-        <module>university-with-me-perf-tests</module>
-        <module>university-with-me-clients</module>
-        <module>university-with-me-api</module>
-        <module>university-with-me-func-tests</module>
+        <module>uwithme-service</module>
+        <module>uwithme-perf-tests</module>
+        <module>uwithme-clients</module>
+        <module>uwithme-api</module>
+        <module>uwithme-func-tests</module>
     </modules>
 
-    <name>EducationApp</name>
+    <name>University with me</name>
     <description>Project for file management in university</description>
 
     <packaging>pom</packaging>
@@ -75,7 +75,7 @@
             <id>github</id>
             <name>university-with-me</name>
             <uniqueVersion>true</uniqueVersion>
-            <url>https://maven.pkg.github.com/HappyMary16/education-app-server</url>
+            <url>https://maven.pkg.github.com/HappyMary16/uwithme-server</url>
         </repository>
     </distributionManagement>
 </project>

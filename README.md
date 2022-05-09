@@ -1,4 +1,4 @@
-# Education App
+# University With Me
 
 This application created for management of university.
 
@@ -21,4 +21,5 @@ Link: https://u-with-me.education
 mvn spring-boot:run
 ```
 ##### or you can use IDE:
-Run the ```main``` method in the ```EducationApp``` class
+
+Run the ```main``` method in the ```UwithmeServiceApp``` class
