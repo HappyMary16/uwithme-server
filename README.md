@@ -12,7 +12,10 @@ Link: https://u-with-me.education
 ## For usage the application you need
 * [Java 11](https://adoptopenjdk.net/index.html?variant=openjdk11&jvmVariant=hotspot)
 * [Maven 3](https://maven.apache.org/index.html)
-* [MySql 5.7](https://www.mysql.com/)
+* [PostgreSql 14.2](https://www.postgresql.org/)
+* [Keycloak 18.0.0](https://www.keycloak.org/)
+
+You can use doker compose file located in [uwithme-docker-files](https://github.com/HappyMary16/uwithme-docker-files) to download and start Postgres and Keycloak containers.
 
 ## Running the application
 
