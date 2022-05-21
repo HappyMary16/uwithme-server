@@ -3,16 +3,16 @@
 [![Build Status](https://github.com/HappyMary16/uwithme-server/actions/workflows/main.yml/badge.svg)](https://github.com/HappyMary16/uwithme-server/actions/workflows/main.yml)
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL_v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 
-This application created for management of university.
+This application is created to manage a university.
 
 Link: https://u-with-me.education
 
-#### Main functions:
+#### Main features:
 * schedule management
 * files management
 * university structure management
 
-## For usage the application you need
+## To build the application you need
 * [Java 11](https://adoptopenjdk.net/index.html?variant=openjdk11&jvmVariant=hotspot)
 * [Maven 3](https://maven.apache.org/index.html)
 * [Docker](https://www.docker.com/)
