@@ -14,10 +14,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: Grant execute permission for mvnw
-        run: chmod +x mvnw
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4.3
+        with:
+          maven-version: 3.8.2
       - name: Package with Mavwn
-        run: ./mvnw package -DskipTests
+        run: mvn package -DskipTests
       - name: Archive artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -56,7 +58,7 @@ jobs:
         with:
           key: ${{ secrets.SSH_KEY }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
-      - name: Grant execute permission for deploy script
-        run: chmod +x ./deploy.sh
       - name: Deploy
-        run: ./deploy.sh
+        run: scp ./uwithme-server/UwithmeServiceApp.jar root@109.87.198.211:/home/misha/uwithme-service/UwithmeServiceApp.jar
+      - name: Restart
+        run: ssh root@109.87.198.211 service uwithme-service restart
