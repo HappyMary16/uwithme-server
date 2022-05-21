@@ -1,5 +1,8 @@
 # University With Me
 
+[![Build Status](https://github.com/HappyMary16/uwithme-server/actions/workflows/main.yml/badge.svg)](https://github.com/HappyMary16/uwithme-server/actions/workflows/main.yml)
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL_v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+
 This application created for management of university.
 
 Link: https://u-with-me.education
