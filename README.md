@@ -24,7 +24,7 @@ You can run this application by
 1. Downloading [Docker files](https://github.com/HappyMary16/uwithme-docker-files)
 2. Starting them with 
 ```
-shell docker-compose up
+docker-compose up
 ```
 5. Starting the project as a Spring Boot application
     - You can run the application with Maven:
