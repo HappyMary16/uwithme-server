@@ -4,13 +4,16 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet id="006.04" author="mborodin">
-        <addColumn tableName="users">
-            <column name="university_id" type="INTEGER">
-                <constraints foreignKeyName="fk_university_user"
-                             referencedTableName="universities"
-                             referencedColumnNames="id"
-                             nullable="false"/>
-            </column>
-        </addColumn>
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyTableName="users"
+                                            foreignKeyName="fk_university_user"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseTableName="users"
+                                 baseColumnNames="university_id"
+                                 constraintName="fk_university_user"
+                                 referencedTableName="universities"
+                                 referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>
