@@ -4,6 +4,9 @@ import static org.springframework.http.HttpHeaders.ACCEPT_LANGUAGE;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -48,7 +51,11 @@ public class UserInitialisationFilter extends OncePerRequestFilter {
         userRepresentation.setFirstName(token.getGivenName());
         userRepresentation.setLastName(token.getFamilyName());
         userRepresentation.setEmail(token.getEmail());
-        userRepresentation.setRealmRoles(new ArrayList<>(token.getRealmAccess().getRoles()));
+        userRepresentation.setRealmRoles(Optional.ofNullable(token)
+                                                 .map(AccessToken::getRealmAccess)
+                                                 .map(AccessToken.Access::getRoles)
+                                                 .map(ArrayList::new)
+                                                 .orElseGet(ArrayList::new));
 
         UserContextHolder.setUserContext(UserContextHolder.UserContext.builder()
                                                                       .keycloakUser(userRepresentation)
