@@ -66,4 +66,10 @@ public class InstituteEndpoint {
                        .map(instituteMapper::toInstituteApi)
                        .orElseThrow(() -> new EntityNotFoundException(getLanguages()));
     }
+
+    @Secured({"ROLE_ADMIN"})
+    @DeleteMapping("/{instituteId}")
+    public void deleteInstitute(@PathVariable("instituteId") final long instituteId) {
+        instituteService.deleteById(instituteId);
+    }
 }

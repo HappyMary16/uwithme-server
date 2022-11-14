@@ -12,12 +12,14 @@ import com.mborodin.uwm.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class InstituteService {
 
+    private final DepartmentService departmentService;
     private final DepartmentRepository departmentRepository;
     private final InstituteRepository instituteRepository;
     private final InstituteMapper instituteMapper;
@@ -36,5 +38,11 @@ public class InstituteService {
         return instituteRepository.findById(instituteId)
                                   .map(instituteMapper::toInstituteApi)
                                   .orElse(null);
+    }
+
+    @Transactional
+    public void deleteById(final long instituteId) {
+        departmentService.deleteByInstituteId(instituteId);
+        instituteRepository.deleteById(instituteId);
     }
 }

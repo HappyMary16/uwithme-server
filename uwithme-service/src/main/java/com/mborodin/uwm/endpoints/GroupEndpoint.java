@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -73,5 +74,12 @@ public class GroupEndpoint {
                        .flatMap(studyGroupDataRepository::findById)
                        .map(group -> new ResponseEntity<>(group, OK))
                        .orElse(new ResponseEntity<>(NOT_FOUND));
+    }
+
+    @Transactional
+    @Secured({"ROLE_ADMIN"})
+    @DeleteMapping("/{groupId}")
+    public void deleteGroup(@PathVariable("groupId") final long groupId) {
+        studyGroupDataRepository.deleteById(groupId);
     }
 }

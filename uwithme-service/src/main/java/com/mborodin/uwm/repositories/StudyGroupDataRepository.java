@@ -24,9 +24,5 @@ public interface StudyGroupDataRepository extends JpaRepository<StudyGroupDataDb
             "ON schedule.subject.teacher.id = :teacherId")
     List<StudyGroupDataDb> findAllByTeacher(String teacherId);
 
-    default StudyGroupDataDb getProxyByIdIfExist(final Long id) {
-        return id != null
-                ? getOne(id)
-                : null;
-    }
+    void deleteAllByDepartmentId(Long departmentId);
 }

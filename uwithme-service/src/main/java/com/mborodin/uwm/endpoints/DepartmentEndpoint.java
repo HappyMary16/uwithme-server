@@ -2,6 +2,7 @@ package com.mborodin.uwm.endpoints;
 
 import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
 
+import java.net.DatagramSocket;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -12,9 +13,11 @@ import com.mborodin.uwm.api.structure.DepartmentApi;
 import com.mborodin.uwm.model.mapper.DepartmentMapper;
 import com.mborodin.uwm.repositories.DepartmentRepository;
 import com.mborodin.uwm.security.UserContextHolder;
+import com.mborodin.uwm.services.DepartmentService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/departments")
 public class DepartmentEndpoint {
 
+    private final DepartmentService departmentService;
     private final DepartmentRepository departmentRepository;
     private final DepartmentMapper departmentMapper;
 
@@ -48,6 +52,12 @@ public class DepartmentEndpoint {
                                    .stream()
                                    .map(departmentMapper::toDepartmentApi)
                                    .collect(Collectors.toList());
+    }
+
+    @Secured({"ROLE_ADMIN"})
+    @DeleteMapping("/{departmentId}")
+    public void deleteDepartment(@PathVariable("departmentId") final long departmentId) {
+        departmentService.deleteDepartment(departmentId);
     }
 
     @Secured({"ROLE_STUDENT", "ROLE_TEACHER"})

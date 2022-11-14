@@ -14,11 +14,5 @@ public interface DepartmentRepository extends JpaRepository<DepartmentDb, Long> 
 
     List<DepartmentDb> findAllByInstituteId(Long instituteId);
 
-    Optional<DepartmentDb> findByInstituteIdAndName(Long instituteId, String name);
-
-    default DepartmentDb getProxyByIdIfExist(final Long id) {
-        return id != null
-                ? getOne(id)
-                : null;
-    }
+    void deleteAllByInstituteId(Long instituteId);
 }
