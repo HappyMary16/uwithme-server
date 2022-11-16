@@ -16,7 +16,6 @@ public class GroupService {
     private final GroupMapper groupMapper;
 
     public GroupApi getById(final long departmentId) {
-        log.debug("getGroupById {}",departmentId);
         return studyGroupDataRepository.findById(departmentId)
                                        .map(groupMapper::toGroupApi)
                                        .orElse(null);
