@@ -43,6 +43,18 @@ public class GroupEndpoint {
         return createdGroup;
     }
 
+    @Transactional
+    @Secured("ROLE_ADMIN")
+    @PostMapping(value = "/{groupId}/{visible}")
+    public ResponseEntity<?> postStudyGroupByChangeVisible(@PathVariable("groupId") final Long groupId,
+                                                     @PathVariable("visible") final boolean visible) {
+        /*UPDATE StudyGroupDataDb
+        * SET visible = visible
+        * WHERE ID = groupId*/
+        studyGroupDataRepository.getById(groupId).setVisible(visible);
+        return new ResponseEntity<>(studyGroupDataRepository.findById(groupId), OK);
+    }
+
     @GetMapping(value = "/universityId/{universityId}")
     public ResponseEntity<?> getStudyGroupsByUniversityId(@PathVariable("universityId") final Long universityId) {
         return new ResponseEntity<>(studyGroupDataRepository.findAllByUniversityId(universityId), OK);
