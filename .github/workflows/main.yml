@@ -10,6 +10,7 @@ jobs:
       - name: Set up JRE 11
         uses: actions/setup-java@v3
         with:
+          distribution: temurin
           java-version: 11
           java-package: jre
       - name: Set up Maven
