@@ -4,33 +4,12 @@ on:
   pull_request:
 
 jobs:
-  build-archive:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 11
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
-      - name: Set up Maven
-        uses: stCarolas/setup-maven@v4.5
-        with:
-          maven-version: 3.8.2
-      - name: Package with Mavwn
-        run: mvn package -DskipTests
-      - name: Archive artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: UwithmeServiceApp
-          path: ./uwithme-service/target/UwithmeServiceApp.jar
-          retention-days: 1
-
   run-tests:
     runs-on: ubuntu-latest
     needs: build-archive
     steps:
       - name: Set up JRE 11
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
           java-version: 11
           java-package: jre
@@ -50,22 +29,20 @@ jobs:
         working-directory: ./uwithme-docker-files
         run: docker compose up -d
 
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: UwithmeServiceApp
-          path: ./uwithme-service/UwithmeServiceApp.jar
-      - name: Start the service
-        working-directory: ./uwithme-service
-        run: java -jar UwithmeServiceApp.jar &
-      - name: Wait for the service
-        timeout-minutes: 1
-        run: while ! echo exit | nc localhost 8081; do sleep 10; done
-
       - name: Download tests
         uses: actions/checkout@v3
         with:
           path: ./uwithme-repo
+      - name: Package with Mavwn
+        working-directory: ./uwithme-repo
+        run: mvn package -DskipTests
+      - name: Start the service
+        working-directory: ./uwithme-repo
+        run: java -jar /uwithme-service/target//UwithmeServiceApp.jar &
+      - name: Wait for the service
+        timeout-minutes: 1
+        run: while ! echo exit | nc localhost 8081; do sleep 10; done
+
       - name: Run tests
         working-directory: ./uwithme-repo
         timeout-minutes: 5
