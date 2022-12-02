@@ -24,7 +24,8 @@ jobs:
           name: UwithmeServiceApp
           path: ./uwithme-service/target/UwithmeServiceApp.jar
           retention-days: 1
-  build-containers:
+
+  run-tests:
     runs-on: ubuntu-latest
     steps:
       - name: Set up JRE 11
@@ -38,15 +39,14 @@ jobs:
           maven-version: 3.8.2
 
       - name: Download docker containers
-        working-directory: ./uwithme-docker-files
         uses: actions/checkout@v3
         with:
           repository: HappyMary16/uwithme-docker-files
+          path: ./uwithme-docker-files
       - name: Run docker-compose
-        working-directory: ./uwithme-docker-files
         uses: sudo-bot/action-docker-compose@latest
         with:
-          cli-args: "up -d"
+          cli-args: "up -f ./uwithme-docker-files/docker-compose.yml -d"
 
       - name: Download artifact
         uses: actions/download-artifact@v2
@@ -61,8 +61,9 @@ jobs:
         run: while ! echo exit | nc localhost 8081; do sleep 10; done
 
       - name: Download tests
-        working-directory: ./uwithme-repo
         uses: actions/checkout@v2
+        with:
+          path: ./uwithme-repo
       - name: Run tests
         working-directory: ./uwithme-repo
         timeout-minutes: 5
