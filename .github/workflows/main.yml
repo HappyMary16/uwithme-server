@@ -38,6 +38,8 @@ jobs:
         uses: stCarolas/setup-maven@v4.3
         with:
           maven-version: 3.8.2
+      - name: Set up Docker
+        uses: docker-practice/actions-setup-docker@master
 
       - name: Download docker containers
         uses: actions/checkout@v3
@@ -45,9 +47,8 @@ jobs:
           repository: HappyMary16/uwithme-docker-files
           path: ./uwithme-docker-files
       - name: Run docker-compose
-        uses: sudo-bot/action-docker-compose@latest
-        with:
-          cli-args: "up -f ./uwithme-docker-files/docker-compose.yml -d"
+        working-directory: ./uwithme-docker-files
+        run: docker compose up -d
 
       - name: Download artifact
         uses: actions/download-artifact@v2
