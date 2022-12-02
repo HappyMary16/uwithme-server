@@ -17,7 +17,7 @@ jobs:
         with:
           maven-version: 3.8.2
       - name: Set up Docker
-        uses: docker-practice/actions-setup-docker@master
+        uses: withlogicco/setup-compose-cli@v1
 
       - name: Download docker containers
         uses: actions/checkout@v3
@@ -45,4 +45,4 @@ jobs:
       - name: Run tests
         working-directory: ./uwithme-repo
         timeout-minutes: 5
-        run: mvn -pl uwithme-func-tests test
+        run: mvn -pl uwithme-func-tests test --no-transfer-progress
