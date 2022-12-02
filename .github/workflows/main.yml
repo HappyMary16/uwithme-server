@@ -1,7 +1,7 @@
 name: Main
 
 on:
-  pull-request:
+  pull_request:
 
 jobs:
   build-archive:
