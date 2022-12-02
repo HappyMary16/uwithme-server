@@ -7,7 +7,7 @@ jobs:
   build-archive:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
@@ -19,7 +19,7 @@ jobs:
       - name: Package with Mavwn
         run: mvn package -DskipTests
       - name: Archive artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: UwithmeServiceApp
           path: ./uwithme-service/target/UwithmeServiceApp.jar
@@ -51,19 +51,19 @@ jobs:
         run: docker compose up -d
 
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: UwithmeServiceApp
           path: ./uwithme-service/UwithmeServiceApp.jar
       - name: Start the service
         working-directory: ./uwithme-service
-        run: java -jar UwithmeServiceApp.jar &
+        run: java -jar ./uwithme-service/UwithmeServiceApp.jar &
       - name: Wait for the service
         timeout-minutes: 1
         run: while ! echo exit | nc localhost 8081; do sleep 10; done
 
       - name: Download tests
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: ./uwithme-repo
       - name: Run tests
