@@ -12,7 +12,6 @@ jobs:
         with:
           distribution: temurin
           java-version: 11
-          java-package: jre
       - name: Set up Maven
         uses: stCarolas/setup-maven@v4.5
         with:
