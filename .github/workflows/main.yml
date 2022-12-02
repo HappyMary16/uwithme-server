@@ -1,13 +1,11 @@
 name: Main
 
 on:
-  push:
-    branches: [ master ]
+  pull-request:
 
 jobs:
   build-archive:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11
@@ -26,39 +24,44 @@ jobs:
           name: UwithmeServiceApp
           path: ./uwithme-service/target/UwithmeServiceApp.jar
           retention-days: 1
-  image-build:
-    needs: build-archive
-    runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
-    steps:
-      - uses: actions/checkout@v2
-      - name: Download artifact
-        uses: actions/download-artifact@v2
+  build-containers:
+    - name: Set up JRE 11
+        uses: actions/setup-java@v1
         with:
-          name: UwithmeServiceApp
-          path: ./uwithme-service/target/UwithmeServiceApp.jar
-      - name: Build and Publish latest Docker image
-        uses: VaultVulp/gp-docker-action@1.1.8
+          java-version: 11
+          java-package: jre
+    - name: Set up Maven
+        uses: stCarolas/setup-maven@v4.3
         with:
-          github-token: ${{ secrets.ACTIONS_TOKEN }}
-          image-name: university-with-me
-  deploy:
-    needs: build-archive
-    runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
-    steps:
-      - uses: actions/checkout@v2
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: UwithmeServiceApp
-          path: ./UwithmeServiceApp
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_KEY }}
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
-      - name: Deploy
-        run: scp ./uwithme-server/UwithmeServiceApp.jar root@109.87.198.211:/home/misha/uwithme-service/UwithmeServiceApp.jar
-      - name: Restart
-        run: ssh root@109.87.198.211 service uwithme-service restart
+          maven-version: 3.8.2
+
+    - name: Download docker containers
+      working-directory: ./uwithme-docker-files
+      uses: actions/checkout@v3
+      with:
+        repository: HappyMary16/uwithme-docker-files
+    - name: Run docker-compose
+      working-directory: ./uwithme-docker-files
+      uses: sudo-bot/action-docker-compose@latest
+      with:
+        cli-args: "up -d"
+
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: UwithmeServiceApp
+        path: ./uwithme-service/UwithmeServiceApp.jar
+    - name: Start the service
+      working-directory: ./uwithme-service
+      run: java -jar UwithmeServiceApp.jar &
+    - name: Wait for the service
+      timeout-minutes: 1
+      run: while ! echo exit | nc localhost 8081; do sleep 10; done
+
+    - name: Download tests
+      working-directory: ./uwithme-repo
+      uses: actions/checkout@v2
+    - name: Run tests
+      working-directory: ./uwithme-repo
+      timeout-minutes: 5
+      run: mvn -pl uwithme-func-tests test
