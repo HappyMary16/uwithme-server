@@ -13,7 +13,7 @@ jobs:
         with:
           java-version: 11
       - name: Set up Maven
-        uses: stCarolas/setup-maven@v4.3
+        uses: stCarolas/setup-maven@v4.5
         with:
           maven-version: 3.8.2
       - name: Package with Mavwn
@@ -35,7 +35,7 @@ jobs:
           java-version: 11
           java-package: jre
       - name: Set up Maven
-        uses: stCarolas/setup-maven@v4.3
+        uses: stCarolas/setup-maven@v4.5
         with:
           maven-version: 3.8.2
       - name: Set up Docker
@@ -57,7 +57,7 @@ jobs:
           path: ./uwithme-service/UwithmeServiceApp.jar
       - name: Start the service
         working-directory: ./uwithme-service
-        run: java -jar ./uwithme-service/UwithmeServiceApp.jar &
+        run: java -jar UwithmeServiceApp.jar &
       - name: Wait for the service
         timeout-minutes: 1
         run: while ! echo exit | nc localhost 8081; do sleep 10; done
