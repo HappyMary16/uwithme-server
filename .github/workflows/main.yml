@@ -25,43 +25,45 @@ jobs:
           path: ./uwithme-service/target/UwithmeServiceApp.jar
           retention-days: 1
   build-containers:
-    - name: Set up JRE 11
-      uses: actions/setup-java@v1
-      with:
-        java-version: 11
-        java-package: jre
-    - name: Set up Maven
-      uses: stCarolas/setup-maven@v4.3
-      with:
-        maven-version: 3.8.2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up JRE 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+          java-package: jre
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4.3
+        with:
+          maven-version: 3.8.2
 
-    - name: Download docker containers
-      working-directory: ./uwithme-docker-files
-      uses: actions/checkout@v3
-      with:
-        repository: HappyMary16/uwithme-docker-files
-    - name: Run docker-compose
-      working-directory: ./uwithme-docker-files
-      uses: sudo-bot/action-docker-compose@latest
-      with:
-        cli-args: "up -d"
+      - name: Download docker containers
+        working-directory: ./uwithme-docker-files
+        uses: actions/checkout@v3
+        with:
+          repository: HappyMary16/uwithme-docker-files
+      - name: Run docker-compose
+        working-directory: ./uwithme-docker-files
+        uses: sudo-bot/action-docker-compose@latest
+        with:
+          cli-args: "up -d"
 
-    - name: Download artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: UwithmeServiceApp
-        path: ./uwithme-service/UwithmeServiceApp.jar
-    - name: Start the service
-      working-directory: ./uwithme-service
-      run: java -jar UwithmeServiceApp.jar &
-    - name: Wait for the service
-      timeout-minutes: 1
-      run: while ! echo exit | nc localhost 8081; do sleep 10; done
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: UwithmeServiceApp
+          path: ./uwithme-service/UwithmeServiceApp.jar
+      - name: Start the service
+        working-directory: ./uwithme-service
+        run: java -jar UwithmeServiceApp.jar &
+      - name: Wait for the service
+        timeout-minutes: 1
+        run: while ! echo exit | nc localhost 8081; do sleep 10; done
 
-    - name: Download tests
-      working-directory: ./uwithme-repo
-      uses: actions/checkout@v2
-    - name: Run tests
-      working-directory: ./uwithme-repo
-      timeout-minutes: 5
-      run: mvn -pl uwithme-func-tests test
+      - name: Download tests
+        working-directory: ./uwithme-repo
+        uses: actions/checkout@v2
+      - name: Run tests
+        working-directory: ./uwithme-repo
+        timeout-minutes: 5
+        run: mvn -pl uwithme-func-tests test
