@@ -37,7 +37,7 @@ jobs:
         run: mvn package -DskipTests --no-transfer-progress
       - name: Start the service
         working-directory: ./uwithme-repo
-        run: java -jar /uwithme-service/target/UwithmeServiceApp.jar &
+        run: java -jar ./uwithme-service/target/UwithmeServiceApp.jar &
       - name: Wait for the service
         timeout-minutes: 1
         run: while ! echo exit | nc localhost 8081; do sleep 10; done
