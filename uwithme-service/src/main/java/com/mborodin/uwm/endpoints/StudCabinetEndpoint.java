@@ -9,7 +9,7 @@ import javax.ws.rs.QueryParam;
 
 import com.mborodin.uwm.api.exceptions.IncorrectAuthDataException;
 import com.mborodin.uwm.api.studcab.*;
-import com.mborodin.uwm.clients.StudCabinetClient;
+import com.mborodin.uwm.client.client.StudCabinetClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;

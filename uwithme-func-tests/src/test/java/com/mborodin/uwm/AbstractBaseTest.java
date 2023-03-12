@@ -1,35 +1,41 @@
 package com.mborodin.uwm;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.mborodin.uwm.api.RegisterApi;
 import com.mborodin.uwm.api.enums.Role;
-import com.mborodin.uwm.clients.AuthServiceClient;
-import com.mborodin.uwm.config.ClientConfig;
-import com.mborodin.uwm.config.OAuth2TestClientConfig;
+import com.mborodin.uwm.api.structure.GroupApi;
+import com.mborodin.uwm.client.client.UwmClient;
+import com.mborodin.uwm.client.config.AuthClientConfiguration;
+import com.mborodin.uwm.config.KeycloakConfig;
+import com.mborodin.uwm.tests.GroupTests;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@Test
-@TestPropertySource("classpath:application.properties")
-@ContextConfiguration(classes = {OAuth2TestClientConfig.class,
-        ClientFactory.class,
-        ClientConfig.class})
-public abstract class AbstractBaseTest extends AbstractTestNGSpringContextTests {
+@SpringBootTest
+@ActiveProfiles("test")
+@EnableConfigurationProperties
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {TestApplication.class})
+public class AbstractBaseTest {
 
-    @Inject
-    @Named("authServiceClientAdmin")
-    private AuthServiceClient authServiceClientAdmin;
+    @Autowired
+    protected UwmClient uwmClient;
 
-    @BeforeClass
+    @BeforeEach
     public void setupUsers() {
-        authServiceClientAdmin.register(RegisterApi.builder()
-                                                   .role(Role.ROLE_ADMIN)
-                                                   .universityName("TEST")
-                                                   .build());
+        uwmClient.register(RegisterApi.builder()
+                                      .role(Role.ROLE_ADMIN)
+                                      .universityName("TEST")
+                                      .build());
     }
 }
