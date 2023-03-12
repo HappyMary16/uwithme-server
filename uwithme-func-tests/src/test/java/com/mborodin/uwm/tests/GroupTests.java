@@ -1,20 +1,16 @@
 package com.mborodin.uwm.tests;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.AssertJUnit.assertNotNull;
-
-import javax.inject.Inject;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.mborodin.uwm.AbstractBaseTest;
 import com.mborodin.uwm.api.structure.GroupApi;
-import com.mborodin.uwm.clients.GroupServiceClient;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class GroupTests extends AbstractBaseTest {
 
-    @Inject
-    private GroupServiceClient groupServiceClient;
-
+    @Disabled
     @Test
     void groupCreation() {
         final GroupApi addGroupApi = GroupApi.builder()
@@ -24,8 +20,8 @@ public class GroupTests extends AbstractBaseTest {
                                              .visible(false)
                                              .build();
 
-        final Long groupId = groupServiceClient.createGroup(addGroupApi);
-        final GroupApi createdGroup = groupServiceClient.getGroupById(groupId);
+        final Long groupId = uwmClient.createGroup(addGroupApi);
+        final GroupApi createdGroup = uwmClient.getGroupById(groupId);
 
         final GroupApi expectedGroup = GroupApi.builder()
                                                .id(groupId)

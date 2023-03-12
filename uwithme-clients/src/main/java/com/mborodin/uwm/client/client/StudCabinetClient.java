@@ -1,4 +1,4 @@
-package com.mborodin.uwm.clients;
+package com.mborodin.uwm.client.client;
 
 import java.util.List;
 import java.util.Map;
