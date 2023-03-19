@@ -2,8 +2,6 @@ package com.mborodin.uwm.repositories;
 
 import java.util.List;
 
-import com.mborodin.uwm.model.persistence.DepartmentDb;
-import com.mborodin.uwm.model.persistence.TenantDb;
 import com.mborodin.uwm.model.persistence.TenantDepartmentDb;
 import org.springframework.data.repository.CrudRepository;
 

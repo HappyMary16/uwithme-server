@@ -2,7 +2,6 @@ package com.mborodin.uwm.model.mapper;
 
 import com.mborodin.uwm.api.structure.DepartmentApi;
 import com.mborodin.uwm.config.MapperConfiguration;
-import com.mborodin.uwm.model.persistence.DepartmentDb;
 import com.mborodin.uwm.model.persistence.TenantDepartmentDb;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

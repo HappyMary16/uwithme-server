@@ -17,19 +17,14 @@ public class StudyGroupDb {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
     private String name;
 
-    @Column(name = "department_id")
-    private Long departmentId;
+    private String departmentId;
 
-    @Column(name = "course")
     private Integer course;
 
-    @Column(name = "teacher_id")
     private Long teacherId;
 
     @Column(name = "is_showing_in_registration")

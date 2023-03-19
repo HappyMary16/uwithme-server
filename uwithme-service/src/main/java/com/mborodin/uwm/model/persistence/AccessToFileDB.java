@@ -23,15 +23,10 @@ public class AccessToFileDB {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
     @Column(name = "group_id")
     private Long studyGroupId;
-
-    @Column(name = "file_id")
     private Long fileId;
-
-    @Column(name = "date_add_access")
     private Date dateAddAccess;
 }

@@ -23,15 +23,8 @@ public class UserDb implements Serializable {
     private static final long serialVersionUID = 3366295050169335755L;
 
     @Id
-    @Column(name = "id")
     private String id;
-
-    @Column(name = "university_id")
     private Long universityId;
-
-    @Column(name = "department_id")
     private String departmentId;
-
-    @Column(name = "group_id")
     private Long groupId;
 }
