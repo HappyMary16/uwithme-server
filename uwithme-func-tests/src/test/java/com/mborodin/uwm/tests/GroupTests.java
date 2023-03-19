@@ -27,7 +27,7 @@ public class GroupTests extends AbstractBaseTest {
     @AfterEach
     public void cleanUp() {
         uwmClient.getInstitutesFromUsersTenant()
-                 .forEach(institute -> uwmClient.deleteInstitute(institute.getId().toString()));
+                 .forEach(institute -> uwmClient.deleteInstitute(institute.getId()));
     }
 
     @Test
@@ -44,7 +44,7 @@ public class GroupTests extends AbstractBaseTest {
                                                                                  .instituteId(institute.getId())
                                                                                  .build());
 
-        final List<GroupApi> groups = infoClient.getGroupsAvailableForRegistration(department.getId().toString());
+        final List<GroupApi> groups = infoClient.getGroupsAvailableForRegistration(department.getId());
 
         assertTrue(groups.isEmpty());
     }
@@ -78,8 +78,7 @@ public class GroupTests extends AbstractBaseTest {
         assertEquals(expected, created);
         assertEquals(expected, groupClient.getGroupById(created.getId()));
 
-        final List<GroupApi> byDepartmentId = infoClient.getGroupsAvailableForRegistration(department.getId()
-                                                                                                     .toString());
+        final List<GroupApi> byDepartmentId = infoClient.getGroupsAvailableForRegistration(department.getId());
         assertEquals(1, byDepartmentId.size());
         assertEquals(expected, byDepartmentId.get(0));
 
@@ -88,7 +87,7 @@ public class GroupTests extends AbstractBaseTest {
         assertEquals(expected, byTenantId.get(0));
 
         groupClient.deleteGroup(created.getId());
-        assertTrue(infoClient.getGroupsAvailableForRegistration(department.getId().toString()).isEmpty());
+        assertTrue(infoClient.getGroupsAvailableForRegistration(department.getId()).isEmpty());
         assertTrue(groupClient.getGroupsByTenantId(tenant.getId()).isEmpty());
     }
 }

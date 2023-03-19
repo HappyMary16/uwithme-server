@@ -17,15 +17,8 @@ public class LectureHallDb {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
-
-    @Column(name = "name")
     private String name;
-
-    @Column(name = "building_id")
     private long buildingId;
-
-    @Column(name = "place_number")
     private Integer placeNumber;
 }

@@ -19,7 +19,6 @@ public class ScheduleGroupDb {
     @Id
     @Column(name = "schedule_id")
     private Long scheduleId;
-
     @Id
     @Column(name = "group_id")
     private Long groupId;

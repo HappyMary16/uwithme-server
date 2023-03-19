@@ -3,7 +3,6 @@ package com.mborodin.uwm.model.persistence;
 import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,18 +10,15 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(toBuilder = true)
-@Table(name = "institutes")
-public class InstituteDb {
+@Table(name = "tenants")
+public class TenantDb {
+
+    public TenantDb(final String name) {
+        this.name = name;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private long id;
-
-    @Column(name = "name")
+    private Long id;
     private String name;
-
-    @Column(name = "university_id")
-    private long universityId;
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <include file="011.01_rename_table_universities_to_tenants.xml" relativeToChangelogFile="true"/>
+    <include file="011.02_tenant_departments_create_table.xml" relativeToChangelogFile="true"/>
+    <include file="011.03_move_institutes_to_tenant_departments.xml" relativeToChangelogFile="true"/>
+    <include file="011.04_add_new_id_to_department.xml" relativeToChangelogFile="true"/>
+    <include file="011.05_remove_foreign_key_study_groups.xml" relativeToChangelogFile="true"/>
+    <include file="011.06_remove_foreign_key__users.xml" relativeToChangelogFile="true"/>
+    <include file="011.07_move_departments_to_tenant_departments.xml" relativeToChangelogFile="true"/>
+    <include file="011.08_study_groups_add_foreign_key.xml" relativeToChangelogFile="true"/>
+    <include file="011.09_add_foreign_key__users.xml" relativeToChangelogFile="true"/>
+ </databaseChangeLog>

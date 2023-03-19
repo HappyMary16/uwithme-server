@@ -3,6 +3,9 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <include file="999.01_add_university.xml" relativeToChangelogFile="true"/>
-    <include file="999.02_add_admin.xml" relativeToChangelogFile="true"/>
+    <changeSet author="mborodin" id="011.07">
+        <sql> INSERT INTO tenant_departments(department_id, name, tenant_id, main_department_id)
+              SELECT new_id, name, university_id, institute_id
+              FROM departments </sql>
+    </changeSet>
 </databaseChangeLog>

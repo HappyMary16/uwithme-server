@@ -23,6 +23,6 @@ public class GroupApi {
     private Long teacherId;
     @JsonAlias("isShowingInRegistration")
     private boolean visible;
-    private long departmentId;
+    private String departmentId;
     private long universityId;
 }

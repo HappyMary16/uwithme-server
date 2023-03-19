@@ -12,7 +12,7 @@ public interface StudyGroupDataRepository extends JpaRepository<StudyGroupDataDb
 
     List<StudyGroupDataDb> findAllByUniversityId(Long universityId);
 
-    List<StudyGroupDataDb> findAllByVisibleAndDepartmentId(boolean isVisible, long departmentId);
+    List<StudyGroupDataDb> findAllByVisibleAndDepartmentId(boolean isVisible, String departmentId);
 
     @Query("SELECT DISTINCT studyGroup " +
             "FROM StudyGroupDataDb studyGroup " +
@@ -24,5 +24,5 @@ public interface StudyGroupDataRepository extends JpaRepository<StudyGroupDataDb
             "ON schedule.subject.teacher.id = :teacherId")
     List<StudyGroupDataDb> findAllByTeacher(String teacherId);
 
-    void deleteAllByDepartmentId(Long departmentId);
+    void deleteAllByDepartmentId(String departmentId);
 }

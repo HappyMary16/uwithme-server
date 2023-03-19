@@ -3,13 +3,9 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet id="010.01" author="mborodin">
-        <preConditions onFail="MARK_RAN">
-            <tableIsEmpty tableName="users"/>
-        </preConditions>
-        <insert tableName="users">
-            <column  name="id" value="e47e65d0-b278-4018-9666-1872c238a1cs"/>
-            <column  name="university_id" value="1"/>
-        </insert>
+    <changeSet author="mborodin" id="011.03">
+        <sql> INSERT INTO tenant_departments(department_id, name, tenant_id)
+                SELECT id, name, university_id
+                FROM institutes </sql>
     </changeSet>
 </databaseChangeLog>

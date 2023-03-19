@@ -49,7 +49,7 @@ public class InstituteTests extends AbstractBaseTest {
         assertEquals(1, byUsersTenantId.size());
         assertEquals(created.getId(), byUsersTenantId.get(0).getId());
 
-        uwmClient.deleteInstitute(created.getId().toString());
+        uwmClient.deleteInstitute(created.getId());
         assertTrue(infoClient.getInstitutes(tenant.getId()).isEmpty());
         assertTrue(uwmClient.getInstitutesFromUsersTenant().isEmpty());
     }

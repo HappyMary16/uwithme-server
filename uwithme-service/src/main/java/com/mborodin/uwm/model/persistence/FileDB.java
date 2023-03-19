@@ -25,22 +25,11 @@ public class FileDB {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
-
-    @Column(name = "name")
     private String name;
-
-    @Column(name = "path")
     private String path;
-
-    @Column(name = "subject_id")
     private Long subjectId;
-
     @Column(name = "type_id")
     private Integer fileTypeId;
-
-    @CreationTimestamp
-    @Column(name = "create_date")
     private Date createDate;
 }

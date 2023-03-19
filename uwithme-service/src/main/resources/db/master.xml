@@ -12,6 +12,7 @@
     <include file="changelog/007_admin_role/007.00_master.xml" relativeToChangelogFile="true"/>
     <include file="changelog/008_lesson_hall/008.00_master.xml" relativeToChangelogFile="true"/>
     <include file="changelog/010_add_university_id_to_all_entities/010.00_master.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/011_update_tenant_departments_structure/011.00_master.xml" relativeToChangelogFile="true"/>
 
-    <include file="changelog/999_add_university_and_admin/999.00_master.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/099_add_tenant_and_admin/099.00_master.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
