@@ -2,7 +2,7 @@ package com.mborodin.uwm.model.mapper;
 
 import com.mborodin.uwm.api.structure.UniversityApi;
 import com.mborodin.uwm.config.MapperConfiguration;
-import com.mborodin.uwm.model.persistence.UniversityDb;
+import com.mborodin.uwm.model.persistence.TenantDb;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -10,5 +10,5 @@ import org.mapstruct.Mapping;
 public interface UniversityMapper {
 
     @Mapping(target = "shortName", ignore = true)
-    UniversityApi toUniversityApi(UniversityDb university);
+    UniversityApi toUniversityApi(TenantDb university);
 }

@@ -2,9 +2,17 @@ package com.mborodin.uwm.services;
 
 import static com.mborodin.uwm.api.enums.Role.ROLE_ADMIN;
 import static com.mborodin.uwm.api.enums.Role.ROLE_STUDENT;
-import static com.mborodin.uwm.security.UserContextHolder.*;
+import static com.mborodin.uwm.security.UserContextHolder.getId;
+import static com.mborodin.uwm.security.UserContextHolder.getKeycloakUser;
+import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
+import static com.mborodin.uwm.security.UserContextHolder.getUserDb;
+import static com.mborodin.uwm.security.UserContextHolder.hasRole;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -17,7 +25,7 @@ import com.mborodin.uwm.api.exceptions.UserNotFoundException;
 import com.mborodin.uwm.api.structure.DepartmentApi;
 import com.mborodin.uwm.api.structure.GroupApi;
 import com.mborodin.uwm.api.structure.InstituteApi;
-import com.mborodin.uwm.model.persistence.UniversityDb;
+import com.mborodin.uwm.model.persistence.TenantDb;
 import com.mborodin.uwm.model.persistence.UserDb;
 import com.mborodin.uwm.repositories.UniversityRepository;
 import com.mborodin.uwm.repositories.UserRepository;
@@ -53,7 +61,7 @@ public class UserService {
                                       .build();
 
         if (Objects.equals(user.getRole(), ROLE_ADMIN)) {
-            final UniversityDb universityToCreate = new UniversityDb(user.getUniversityName());
+            final TenantDb universityToCreate = new TenantDb(user.getUniversityName());
             final Long universityId = universityRepository.save(universityToCreate).getId();
 
             toCreate.setUniversityId(universityId);
@@ -240,8 +248,9 @@ public class UserService {
         final Optional<GroupApi> studyGroup = Optional.ofNullable(userDb.getGroupId())
                                                       .map(groupService::getById);
 
-        final Long departmentId = studyGroup.map(GroupApi::getId)
-                                            .orElse(userDb.getDepartmentId());
+        final String departmentId = studyGroup.map(GroupApi::getId)
+                                              .map(String::valueOf)
+                                              .orElse(userDb.getDepartmentId());
 
         final Optional<DepartmentApi> department = Optional.ofNullable(departmentId)
                                                            .map(departmentService::getById);

@@ -14,10 +14,10 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DepartmentApi {
 
-    private long id;
+    private String id;
     @JsonAlias("departmentName")
     private String name;
     private String shortName;
-    private long instituteId;
+    private String instituteId;
     private long universityId;
 }

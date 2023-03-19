@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet author="mborodin" id="011.02">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="tenant_departments"/>
+            </not>
+        </preConditions>
+        <createTable tableName="tenant_departments">
+            <column name="department_id" type="VARCHAR">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="main_department_id" type="VARCHAR">
+                <constraints foreignKeyName="fk_main_department_id"
+                             referencedTableName="tenant_departments"
+                             referencedColumnNames="department_id"/>
+            </column>
+            <column name="tenant_id" type="INTEGER">
+                <constraints nullable="false"
+                             foreignKeyName="fk_tenant_departments_tenants"
+                             referencedTableName="tenants"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

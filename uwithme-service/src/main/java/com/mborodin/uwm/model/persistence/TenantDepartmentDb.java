@@ -1,9 +1,9 @@
 package com.mborodin.uwm.model.persistence;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -12,26 +12,24 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * TODO: add description.
+ *
+ * @author mariia.borodin (mborodin)
+ * @since 1.1
+ */
 @Data
 @Entity
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
-public class UserDb implements Serializable {
-
-    private static final long serialVersionUID = 3366295050169335755L;
+@Table(name = "tenant_departments")
+public class TenantDepartmentDb {
 
     @Id
-    @Column(name = "id")
-    private String id;
-
-    @Column(name = "university_id")
-    private Long universityId;
-
-    @Column(name = "department_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String departmentId;
-
-    @Column(name = "group_id")
-    private Long groupId;
+    private String name;
+    private String mainDepartmentId;
+    private long tenantId;
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="011.06" author="mborodin">
+        <dropForeignKeyConstraint baseTableName="users" constraintName="fk_teacher_department"/>
+        <modifyDataType tableName="users"
+                        columnName="department_id"
+                        newDataType="VARCHAR"/>
+        <update tableName="users">
+            <column  name="department_id"
+                     valueComputed="(SELECT departments.new_id FROM departments WHERE users.department_id = departments.id::varchar)"/>
+        </update>
+    </changeSet>
+</databaseChangeLog>

@@ -7,6 +7,6 @@ public class UpdateUserApi {
 
     Long groupId;
     Long instituteId;
-    Long departmentId;
+    String departmentId;
     Long universityId;
 }

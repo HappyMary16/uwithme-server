@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "universities")
-public class UniversityDb {
+@Table(name = "tenants")
+public class TenantDb {
 
-    public UniversityDb(final String name) {
+    public TenantDb(final String name) {
         this.name = name;
     }
 
