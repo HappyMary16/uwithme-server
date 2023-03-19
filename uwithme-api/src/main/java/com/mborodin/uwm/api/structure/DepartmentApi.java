@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DepartmentApi {
 
-    private long id;
+    private Long id;
     @JsonAlias("departmentName")
     private String name;
     private String shortName;
