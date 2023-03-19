@@ -4,8 +4,10 @@ import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
+import java.util.List;
 import java.util.Optional;
 
+import com.mborodin.uwm.api.exceptions.EntityNotFoundException;
 import com.mborodin.uwm.api.exceptions.UnknownException;
 import com.mborodin.uwm.api.structure.GroupApi;
 import com.mborodin.uwm.model.mapper.GroupMapper;
@@ -17,7 +19,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @AllArgsConstructor
@@ -46,46 +54,45 @@ public class GroupEndpoint {
     @Transactional
     @Secured("ROLE_ADMIN")
     @PostMapping(value = "/{groupId}/{visible}")
-    public ResponseEntity<?> postStudyGroupByChangeVisible(@PathVariable("groupId") final Long groupId,
-                                                     @PathVariable("visible") final boolean visible) {
+    public StudyGroupDataDb postStudyGroupByChangeVisible(@PathVariable("groupId") final Long groupId,
+                                                          @PathVariable("visible") final boolean visible) {
         /*UPDATE StudyGroupDataDb
-        * SET visible = visible
-        * WHERE ID = groupId*/
+         * SET visible = visible
+         * WHERE ID = groupId*/
         studyGroupDataRepository.getById(groupId).setVisible(visible);
-        return new ResponseEntity<>(studyGroupDataRepository.findById(groupId), OK);
+        return studyGroupDataRepository.findById(groupId)
+                                       .orElseThrow(() -> new EntityNotFoundException(getLanguages()));
     }
 
     @GetMapping(value = "/universityId/{universityId}")
-    public ResponseEntity<?> getStudyGroupsByUniversityId(@PathVariable("universityId") final Long universityId) {
-        return new ResponseEntity<>(studyGroupDataRepository.findAllByUniversityId(universityId), OK);
+    public List<StudyGroupDataDb> getStudyGroupsByUniversityId(@PathVariable("universityId") final Long universityId) {
+        return studyGroupDataRepository.findAllByUniversityId(universityId);
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_TEACHER", "ROLE_SERVICE"})
     @GetMapping(value = "/{groupId}")
-    public ResponseEntity<?> getStudyGroupById(@PathVariable("groupId") final Long groupId) {
+    public StudyGroupDataDb getStudyGroupById(@PathVariable("groupId") final Long groupId) {
         return studyGroupDataRepository.findById(groupId)
-                                       .map(group -> new ResponseEntity<>(group, OK))
-                                       .orElse(new ResponseEntity<>(NOT_FOUND));
+                                       .orElseThrow(() -> new EntityNotFoundException(getLanguages()));
     }
 
     @Secured("ROLE_TEACHER")
     @GetMapping
-    public ResponseEntity<?> getGroups() {
+    public List<StudyGroupDataDb> getGroups() {
         final String userId = UserContextHolder.getId();
 
         //get groups by curator
-        return new ResponseEntity<>(studyGroupDataRepository.findAllByTeacher(userId), OK);
+        return studyGroupDataRepository.findAllByTeacher(userId);
     }
 
     @Secured("ROLE_STUDENT")
     @GetMapping("/user")
-    public ResponseEntity<StudyGroupDataDb> getGroup() {
+    public StudyGroupDataDb getGroup() {
         final Long groupId = UserContextHolder.getGroupId();
 
         return Optional.ofNullable(groupId)
                        .flatMap(studyGroupDataRepository::findById)
-                       .map(group -> new ResponseEntity<>(group, OK))
-                       .orElse(new ResponseEntity<>(NOT_FOUND));
+                       .orElseThrow(() -> new EntityNotFoundException(getLanguages()));
     }
 
     @Transactional
