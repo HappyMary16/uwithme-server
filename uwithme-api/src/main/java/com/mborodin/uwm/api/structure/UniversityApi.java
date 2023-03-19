@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UniversityApi {
 
-    private long id;
+    private Long id;
     private String name;
     private String shortName;
 }

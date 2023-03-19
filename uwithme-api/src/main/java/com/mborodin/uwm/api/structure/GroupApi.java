@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GroupApi {
 
-    private long id;
+    private Long id;
     @JsonAlias("groupName")
     private String name;
     private int educationStartYear;

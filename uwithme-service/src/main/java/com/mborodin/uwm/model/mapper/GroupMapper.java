@@ -10,7 +10,6 @@ import org.mapstruct.Mapping;
 public interface GroupMapper {
 
     @Mapping(target = "educationStartYear", ignore = true)
-    @Mapping(target = "universityId", ignore = true)
     GroupApi toGroupApi(StudyGroupDataDb institute);
 
     StudyGroupDataDb toStudyGroupDataDb(GroupApi institute);
