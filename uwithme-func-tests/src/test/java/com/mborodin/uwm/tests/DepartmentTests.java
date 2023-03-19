@@ -23,7 +23,7 @@ public class DepartmentTests extends AbstractBaseTest {
     @AfterEach
     public void cleanUp() {
         uwmClient.getInstitutesFromUsersTenant()
-                 .forEach(institute -> uwmClient.deleteInstitute(institute.getId().toString()));
+                 .forEach(institute -> uwmClient.deleteInstitute(institute.getId()));
     }
 
     @Test
@@ -33,7 +33,7 @@ public class DepartmentTests extends AbstractBaseTest {
                                                                              .name("TEST")
                                                                              .universityId(tenant.getId())
                                                                              .build());
-        final List<DepartmentApi> department = infoClient.getDepartments(institute.getId().toString());
+        final List<DepartmentApi> department = infoClient.getDepartments(institute.getId());
 
         assertTrue(department.isEmpty());
     }
@@ -58,7 +58,7 @@ public class DepartmentTests extends AbstractBaseTest {
         assertNotNull(created.getId());
         assertEquals(expected, created);
 
-        final List<DepartmentApi> byInstituteId = infoClient.getDepartments(institute.getId().toString());
+        final List<DepartmentApi> byInstituteId = infoClient.getDepartments(institute.getId());
         assertEquals(1, byInstituteId.size());
         assertEquals(created.getId(), byInstituteId.get(0).getId());
 
@@ -66,8 +66,8 @@ public class DepartmentTests extends AbstractBaseTest {
         assertEquals(1, byUsersTenantId.size());
         assertEquals(created.getId(), byUsersTenantId.get(0).getId());
 
-        uwmClient.deleteDepartment(created.getId().toString());
-        assertTrue(infoClient.getDepartments(institute.getId().toString()).isEmpty());
+        uwmClient.deleteDepartment(created.getId());
+        assertTrue(infoClient.getDepartments(institute.getId()).isEmpty());
         assertTrue(uwmClient.getDepartmentsFromUsersTenant().isEmpty());
     }
 }

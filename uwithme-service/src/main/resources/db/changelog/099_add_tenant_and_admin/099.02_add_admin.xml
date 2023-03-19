@@ -3,12 +3,16 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet id="010.01" author="mborodin">
+    <changeSet id="099.02" author="mborodin">
         <preConditions onFail="MARK_RAN">
-            <tableIsEmpty tableName="universities"/>
+            <tableExists tableName="users"/>
+            <tableIsEmpty tableName="users"/>
+            <columnExists tableName="users" columnName="id"/>
+            <columnExists tableName="users" columnName="university_id"/>
         </preConditions>
-        <insert tableName="universities">
-            <column  name="name" value="НТУ 'ХПІ'"/>
+        <insert tableName="users">
+            <column  name="id" value="e47e65d0-b278-4018-9666-1872c238a1cs"/>
+            <column  name="university_id" value="1"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

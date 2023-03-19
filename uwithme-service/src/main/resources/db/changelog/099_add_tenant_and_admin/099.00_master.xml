@@ -3,6 +3,6 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <include file="999.01_add_university.xml" relativeToChangelogFile="true"/>
-    <include file="999.02_add_admin.xml" relativeToChangelogFile="true"/>
+    <include file="099.01_add_tenant.xml" relativeToChangelogFile="true"/>
+    <include file="099.02_add_admin.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
