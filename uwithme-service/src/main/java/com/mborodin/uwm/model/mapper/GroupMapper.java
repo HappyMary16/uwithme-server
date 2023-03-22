@@ -9,7 +9,6 @@ import org.mapstruct.Mapping;
 @Mapper(config = MapperConfiguration.class)
 public interface GroupMapper {
 
-    @Mapping(target = "educationStartYear", ignore = true)
     GroupApi toGroupApi(StudyGroupDataDb institute);
 
     StudyGroupDataDb toStudyGroupDataDb(GroupApi institute);

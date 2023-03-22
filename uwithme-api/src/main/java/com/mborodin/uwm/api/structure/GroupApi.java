@@ -14,10 +14,11 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GroupApi {
 
+    @JsonAlias("groupId")
     private Long id;
     @JsonAlias("groupName")
     private String name;
-    private int educationStartYear;
+    private Integer startYear;
     @Deprecated
     private int course;
     private Long teacherId;

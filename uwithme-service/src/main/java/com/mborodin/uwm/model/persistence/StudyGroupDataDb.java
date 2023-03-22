@@ -1,5 +1,8 @@
 package com.mborodin.uwm.model.persistence;
 
+import java.time.Instant;
+import java.time.Year;
+
 import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
@@ -22,6 +25,7 @@ public class StudyGroupDataDb {
     private String name;
 
     private Integer course;
+    private Integer startYear;
 
     private Long teacherId;
 

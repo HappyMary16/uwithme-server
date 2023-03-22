@@ -90,4 +90,41 @@ public class GroupTests extends AbstractBaseTest {
         assertTrue(infoClient.getGroupsAvailableForRegistration(department.getId()).isEmpty());
         assertTrue(groupClient.getGroupsByTenantId(tenant.getId()).isEmpty());
     }
+
+    @Test
+    void updateGroup() {
+        final UniversityApi tenant = tenantClient.getUniversity();
+        final InstituteApi institute = uwmClient.createInstitute(InstituteApi.builder()
+                                                                             .name("TEST")
+                                                                             .universityId(tenant.getId())
+                                                                             .build());
+
+        final DepartmentApi department = uwmClient.createDepartment(DepartmentApi.builder()
+                                                                                 .name("TEST")
+                                                                                 .universityId(tenant.getId())
+                                                                                 .instituteId(institute.getId())
+                                                                                 .build());
+
+        final GroupApi group = GroupApi.builder()
+                                       .universityId(tenant.getId())
+                                       .departmentId(department.getId())
+                                       .name("TEST")
+                                       .startYear(2023)
+                                       .visible(true)
+                                       .build();
+        final GroupApi created = groupClient.createGroup(group);
+        final GroupApi expected = group.toBuilder()
+                                       .id(created.getId())
+                                       .build();
+        assertNotNull(created.getId());
+        assertEquals(expected, created);
+        assertEquals(expected, groupClient.getGroupById(created.getId()));
+
+        final GroupApi toUpdate = created.toBuilder()
+                                         .name("UPDATED")
+                                         .build();
+        final GroupApi updated = groupClient.createGroup(toUpdate);
+        assertEquals(toUpdate, updated);
+        assertEquals(toUpdate, groupClient.getGroupById(created.getId()));
+    }
 }

@@ -246,7 +246,7 @@ public class UserService {
 
     private UserApi mapToUserApi(final UserDb userDb, final UserRepresentation keycloakUser) {
         final Optional<GroupApi> studyGroup = Optional.ofNullable(userDb.getGroupId())
-                                                      .map(groupService::getById);
+                                                      .flatMap(groupService::getById);
 
         final String departmentId = studyGroup.map(GroupApi::getId)
                                               .map(String::valueOf)
