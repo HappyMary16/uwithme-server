@@ -14,6 +14,8 @@ import com.mborodin.uwm.model.mapper.GroupMapper;
 import com.mborodin.uwm.model.persistence.StudyGroupDataDb;
 import com.mborodin.uwm.repositories.StudyGroupDataRepository;
 import com.mborodin.uwm.security.UserContextHolder;
+import com.mborodin.uwm.services.GroupService;
+import liquibase.pro.packaged.S;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,35 +36,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/groups")
 public class GroupEndpoint {
 
+    private final GroupService groupService;
     private final StudyGroupDataRepository studyGroupDataRepository;
-    private final GroupMapper groupMapper;
 
     @Secured("ROLE_ADMIN")
     @PostMapping
     public GroupApi addGroup(@RequestBody final GroupApi group) {
-        log.info("Start group creation. Group: {}", group);
+        log.info("Start a group creation. Group: {}", group);
 
-        final GroupApi createdGroup = Optional.of(group)
-                                              .map(groupMapper::toStudyGroupDataDb)
-                                              .map(studyGroupDataRepository::save)
-                                              .map(groupMapper::toGroupApi)
-                                              .orElseThrow(() -> new UnknownException(getLanguages()));
-
-        log.info("Finish group creation. Group: {}", createdGroup);
-        return createdGroup;
-    }
-
-    @Transactional
-    @Secured("ROLE_ADMIN")
-    @PostMapping(value = "/{groupId}/{visible}")
-    public StudyGroupDataDb postStudyGroupByChangeVisible(@PathVariable("groupId") final Long groupId,
-                                                          @PathVariable("visible") final boolean visible) {
-        /*UPDATE StudyGroupDataDb
-         * SET visible = visible
-         * WHERE ID = groupId*/
-        studyGroupDataRepository.getById(groupId).setVisible(visible);
-        return studyGroupDataRepository.findById(groupId)
-                                       .orElseThrow(() -> new EntityNotFoundException(getLanguages()));
+        return groupService.saveGroup(group);
     }
 
     @GetMapping(value = "/universityId/{universityId}")
