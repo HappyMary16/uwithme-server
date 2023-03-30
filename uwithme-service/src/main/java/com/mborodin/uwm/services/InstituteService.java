@@ -39,7 +39,6 @@ public class InstituteService {
 
     @Transactional
     public void deleteById(final String instituteId) {
-        departmentService.deleteByInstituteId(instituteId);
-        tenantDepartmentRepository.deleteById(instituteId);
+        departmentService.deleteDepartment(instituteId);
     }
 }

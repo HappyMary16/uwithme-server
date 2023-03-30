@@ -18,7 +18,7 @@ public class RegisterApi {
 
     private Long universityId;
 
-    private Long instituteId;
+    private String instituteId;
 
     private String universityName;
 }

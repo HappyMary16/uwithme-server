@@ -14,6 +14,8 @@ public interface UserRepository extends JpaRepository<UserDb, String> {
 
     List<UserDb> findAllByGroupIdIsNullAndUniversityId(Long universityId);
 
+    List<UserDb> findAllByDepartmentId(String departmentId);
+
     List<UserDb> findAllByGroupId(Long groupId);
 
     @Query("SELECT DISTINCT user " +

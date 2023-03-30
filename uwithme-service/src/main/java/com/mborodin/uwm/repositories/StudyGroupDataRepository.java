@@ -1,5 +1,6 @@
 package com.mborodin.uwm.repositories;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.mborodin.uwm.model.persistence.StudyGroupDataDb;
@@ -24,5 +25,6 @@ public interface StudyGroupDataRepository extends JpaRepository<StudyGroupDataDb
             "ON schedule.subject.teacher.id = :teacherId")
     List<StudyGroupDataDb> findAllByTeacher(String teacherId);
 
+    Collection<StudyGroupDataDb> findAllByDepartmentId(String departmentId);
     void deleteAllByDepartmentId(String departmentId);
 }

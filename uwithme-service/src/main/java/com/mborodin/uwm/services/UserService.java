@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -50,6 +49,11 @@ public class UserService {
     private final InstituteService instituteService;
     private final UsersResource usersResource;
     private final RolesResource rolesResource;
+    private final KeycloakUserService keycloakUserService;
+    public boolean userExists() {
+        final String userId = getId();
+        return userRepository.existsById(userId);
+    }
 
     public String save(final RegisterApi user) {
         final String userId = getId();
@@ -70,6 +74,19 @@ public class UserService {
         final RoleRepresentation roleToAssign = rolesResource.get(user.getRole().name()).toRepresentation();
         usersResource.get(userId).roles().realmLevel().add(List.of(roleToAssign));
         getKeycloakUser().getRealmRoles().add(user.getRole().name());
+
+        return userRepository.save(toCreate).getId();
+    }
+
+    public String updateUser(final RegisterApi user) {
+        final String userId = getId();
+
+        final UserDb toCreate = UserDb.builder()
+                                      .id(userId)
+                                      .universityId(user.getUniversityId())
+                                      .departmentId(user.getDepartmentId())
+                                      .groupId(user.getGroupId())
+                                      .build();
 
         return userRepository.save(toCreate).getId();
     }
@@ -101,18 +118,6 @@ public class UserService {
                                                                                          keycloakUser.getEmail()));
 
         return mapToUserApi(userDb, keycloakUser);
-    }
-
-    public Set<Role> getUserRoles(final String userId) {
-        return usersResource.get(userId)
-                            .roles()
-                            .realmLevel()
-                            .listEffective()
-                            .stream()
-                            .map(RoleRepresentation::getName)
-                            .map(this::valueOfRoleSuppressExceptions)
-                            .filter(Objects::nonNull)
-                            .collect(Collectors.toSet());
     }
 
     public List<UserApi> findAllUsersByRole(final Role role) {
@@ -240,7 +245,7 @@ public class UserService {
     }
 
     private UserApi mapToUserApi(final UserDb userDb) {
-        final UserRepresentation keycloakUser = usersResource.get(userDb.getId()).toRepresentation();
+        final UserRepresentation keycloakUser = keycloakUserService.getUser(userDb.getId());
         return mapToUserApi(userDb, keycloakUser);
     }
 
@@ -248,7 +253,7 @@ public class UserService {
         final Optional<GroupApi> studyGroup = Optional.ofNullable(userDb.getGroupId())
                                                       .flatMap(groupService::getById);
 
-        final String departmentId = studyGroup.map(GroupApi::getId)
+        final String departmentId = studyGroup.map(GroupApi::getDepartmentId)
                                               .map(String::valueOf)
                                               .orElse(userDb.getDepartmentId());
 
@@ -261,25 +266,13 @@ public class UserService {
         return UserApi.builder()
                       .id(userDb.getId())
                       .universityId(userDb.getUniversityId())
-                      .studyGroupName(studyGroup.map(GroupApi::getName).orElse(null))
-                      .studyGroupId(studyGroup.map(GroupApi::getId).orElse(null))
-                      .departmentName(department.map(DepartmentApi::getName).orElse(null))
-                      .instituteName(institute.map(InstituteApi::getName).orElse(null))
                       .firstName(keycloakUser.getFirstName())
                       .surname(keycloakUser.getLastName())
                       .email(keycloakUser.getEmail())
                       .institute(institute.orElse(null))
                       .department(department.orElse(null))
                       .group(studyGroup.orElse(null))
-                      .roles(getUserRoles(userDb.getId()))
+                      .roles(keycloakUserService.getUserRoles(userDb.getId()))
                       .build();
-    }
-
-    private Role valueOfRoleSuppressExceptions(final String role) {
-        try {
-            return Role.valueOf(role);
-        } catch (Exception e) {
-            return null;
-        }
     }
 }
