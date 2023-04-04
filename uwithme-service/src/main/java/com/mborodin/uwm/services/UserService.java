@@ -16,8 +16,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.mborodin.uwm.api.RegisterApi;
-import com.mborodin.uwm.api.UpdateUserApi;
 import com.mborodin.uwm.api.UserApi;
+import com.mborodin.uwm.api.UwmUserApi;
 import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.api.exceptions.LastAdminCannotBeDeleted;
 import com.mborodin.uwm.api.exceptions.UserNotFoundException;
@@ -226,14 +226,14 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
-    public UserApi updateUser(final UpdateUserApi updateUserApi) {
-        log.info("Update user {} {} to {}", getKeycloakUser(), getUserDb(), updateUserApi);
+    public UserApi updateUser(final UwmUserApi uwmUserApi) {
+        log.info("Update user {} {} to {}", getKeycloakUser(), getUserDb(), uwmUserApi);
 
-        final UserDb toUpdate = userRepository.findById(getId())
+        final UserDb toUpdate = userRepository.findById(uwmUserApi.getUserId())
                                               .map(userDb -> userDb.toBuilder()
-                                                                   .departmentId(updateUserApi.getDepartmentId())
-                                                                   .groupId(updateUserApi.getGroupId())
-                                                                   .universityId(updateUserApi.getUniversityId())
+                                                                   .departmentId(uwmUserApi.getDepartmentId())
+                                                                   .groupId(uwmUserApi.getGroupId())
+                                                                   .universityId(uwmUserApi.getUniversityId())
                                                                    .build())
                                               .orElseThrow(() -> new UserNotFoundException(getId()));
 

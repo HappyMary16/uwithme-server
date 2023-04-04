@@ -72,7 +72,10 @@ public class DepartmentEndpoint {
 
     @GetMapping
     public List<DepartmentApi> getDepartmentsByUniversityId(@QueryParam("universityId") final Long universityId) {
-        return tenantDepartmentRepository.findAllByTenantIdAndMainDepartmentIdIsNull(universityId)
+        final var universityIdToGetDepartments = Optional.ofNullable(universityId)
+                                                         .orElse(UserContextHolder.getUniversityId());
+
+        return tenantDepartmentRepository.findAllByTenantIdAndMainDepartmentIdIsNull(universityIdToGetDepartments)
                                          .stream()
                                          .map(departmentMapper::toDepartmentApi)
                                          .collect(Collectors.toList());
