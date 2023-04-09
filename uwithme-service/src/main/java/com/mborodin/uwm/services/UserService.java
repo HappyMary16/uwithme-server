@@ -202,7 +202,6 @@ public class UserService {
      * @return user info without info in keycloak service
      */
     public UserApi findUserById(final String userId) {
-        //TODO: doesn't work
         return userRepository.findById(userId)
                              .map(this::mapToUserApi)
                              .stream()

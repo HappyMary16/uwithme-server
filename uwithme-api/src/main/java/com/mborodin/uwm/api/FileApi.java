@@ -1,6 +1,6 @@
 package com.mborodin.uwm.api;
 
-import java.util.Date;
+import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mborodin.uwm.api.enums.FileType;
@@ -23,5 +23,5 @@ public class FileApi {
     private FileType fileType;
     private long subjectId;
     private long teacherId;
-    private Date startAccessTime;
+    private Instant startAccessTime;
 }

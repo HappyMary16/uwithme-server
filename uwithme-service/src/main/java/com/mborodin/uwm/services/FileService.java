@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -96,10 +96,13 @@ public class FileService {
             final Path targetLocation = directory.resolve(fileName);
             Files.copy(file.getFile().getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            fileRepository.save(new FileDB(directory.toString(),
-                                           fileName,
-                                           subjectDb.getId(),
-                                           file.getFileTypeId()));
+            fileRepository.save(FileDB.builder()
+                                      .name(fileName)
+                                      .createDate(Instant.now())
+                                      .subjectId(subjectDb.getId())
+                                      .fileTypeId(file.getFileTypeId())
+                                      .path(directory.toString())
+                                      .build());
             return fileName;
         } catch (IOException e) {
             throw new CouldNotStoreFileException(getLanguages(), file.getFile().getName());
@@ -131,9 +134,11 @@ public class FileService {
                 .getFileIds()
                 .forEach(fileId -> accessToFileApi
                         .getGroupIds()
-                        .forEach(groupId -> accessToFileRepository.save(new AccessToFileDB(groupId,
-                                                                                           fileId,
-                                                                                           new Date()))));
+                        .forEach(groupId -> accessToFileRepository.save(AccessToFileDB.builder()
+                                                                                      .studyGroupId(groupId)
+                                                                                      .fileId(fileId)
+                                                                                      .dateAddAccess(Instant.now())
+                                                                                      .build())));
     }
 
     public List<FileApi> findAllFiles() {
