@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface AccessToFileRepository extends CrudRepository<AccessToFileDB, Long> {
 
     List<AccessToFileDB> findAllByStudyGroupId(final Long studyGroupId);
+
+    void deleteAllByFileId(final Long fileId);
 }

@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public enum SupportedLanguage {
 
-    UA(List.of("ua", "uk-UA")),
+    UA(List.of("uk", "uk-UA")),
     EN(List.of("en", "en-US"));
 
     private final List<String> representations;

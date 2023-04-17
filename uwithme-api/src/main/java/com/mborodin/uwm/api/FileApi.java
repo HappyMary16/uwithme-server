@@ -22,6 +22,6 @@ public class FileApi {
     private Integer type;
     private FileType fileType;
     private long subjectId;
-    private long teacherId;
+    private String teacherId;
     private Instant startAccessTime;
 }

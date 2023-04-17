@@ -1,16 +1,21 @@
 package com.mborodin.uwm.endpoints;
 
+import static com.mborodin.uwm.security.UserContextHolder.getId;
+import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.mborodin.uwm.api.AccessToFileApi;
 import com.mborodin.uwm.api.FileApi;
 import com.mborodin.uwm.api.SaveFileApi;
 import com.mborodin.uwm.api.UploadFileResponseApi;
+import com.mborodin.uwm.api.exceptions.UnknownException;
 import com.mborodin.uwm.model.persistence.FileDB;
 import com.mborodin.uwm.repositories.FileRepository;
 import com.mborodin.uwm.services.FileService;
@@ -19,6 +24,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -73,6 +79,18 @@ public class FileEndpoint {
         return ResponseEntity.ok()
                              .contentType(MediaType.parseMediaType(contentType))
                              .body(resource);
+    }
+
+    @Secured("ROLE_TEACHER")
+    @DeleteMapping("/{fileId}")
+    public void deleteFile(@PathVariable final Long fileId) {
+        final FileApi file = fileService.findFileById(fileId);
+
+        if (!Objects.equals(file.getTeacherId(), getId())) {
+            throw new UnknownException(getLanguages());
+        }
+
+        fileService.deleteFile(file);
     }
 
     @Secured("ROLE_SERVICE")

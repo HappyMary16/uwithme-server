@@ -27,6 +27,7 @@ import com.mborodin.uwm.api.exceptions.filestorage.CouldNotStoreFileException;
 import com.mborodin.uwm.model.persistence.AccessToFileDB;
 import com.mborodin.uwm.model.persistence.FileDB;
 import com.mborodin.uwm.model.persistence.SubjectDB;
+import com.mborodin.uwm.model.persistence.UserDb;
 import com.mborodin.uwm.repositories.AccessToFileRepository;
 import com.mborodin.uwm.repositories.FileRepository;
 import com.mborodin.uwm.security.UserContextHolder;
@@ -184,15 +185,41 @@ public class FileService {
     }
 
     public FileApi findFileById(final Long fileId) {
-        return fileRepository.findById(fileId)
-                             .map(fileDb -> FileApi.builder()
-                                                   .fileId(fileDb.getId())
-                                                   .fileName(fileDb.getName())
-                                                   .type(fileDb.getFileTypeId())
-                                                   .fileType(FileType.getById(fileDb.getFileTypeId()))
-                                                   .subjectId(fileDb.getSubjectId())
-                                                   .build())
-                             .orElse(null);
+        final var fileOptional = fileRepository.findById(fileId);
+
+        if (fileOptional.isEmpty()) {
+            log.warn("File with id {} does not exist.", fileId);
+            return null;
+        }
+
+        final var file = fileOptional.get();
+        final var subject = subjectService.findById(file.getSubjectId());
+
+        return FileApi.builder()
+                      .fileId(file.getId())
+                      .fileName(file.getName())
+                      .type(file.getFileTypeId())
+                      .fileType(FileType.getById(file.getFileTypeId()))
+                      .subjectId(file.getSubjectId())
+                      .teacherId(subject.map(SubjectDB::getTeacher)
+                                        .map(UserDb::getId)
+                                        .orElse(null))
+                      .build();
+    }
+
+    public void deleteFile(final FileApi file) {
+        final Path directory = fileStorageLocation.resolve(String.valueOf(file.getSubjectId()))
+                                                  .resolve(String.valueOf(file.getFileType().getId()));
+        final Path filePath = directory.resolve(file.getFileName());
+
+        try {
+            Files.delete(filePath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        accessToFileRepository.deleteAllByFileId(file.getFileId());
+        fileRepository.deleteById(file.getFileId());
     }
 
     private void createDirectorySuppressException(final Path path) {

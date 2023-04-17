@@ -205,7 +205,6 @@ public class UserService {
         return userRepository.findById(userId)
                              .map(this::mapToUserApi)
                              .stream()
-                             .peek(user -> log.info("User with id {}: {}", userId, user))
                              .findFirst()
                              .orElseThrow(() -> new UserNotFoundException(getLanguages()));
     }
