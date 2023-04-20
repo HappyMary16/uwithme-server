@@ -31,6 +31,7 @@ import com.mborodin.uwm.repositories.UserRepository;
 import com.mborodin.uwm.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.keycloak.admin.client.resource.RoleResource;
 import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -50,6 +51,7 @@ public class UserService {
     private final UsersResource usersResource;
     private final RolesResource rolesResource;
     private final KeycloakUserService keycloakUserService;
+
     public boolean userExists() {
         final String userId = getId();
         return userRepository.existsById(userId);
@@ -71,6 +73,7 @@ public class UserService {
             toCreate.setUniversityId(universityId);
         }
 
+        unAssignAllRoles(userId);
         final RoleRepresentation roleToAssign = rolesResource.get(user.getRole().name()).toRepresentation();
         usersResource.get(userId).roles().realmLevel().add(List.of(roleToAssign));
         getKeycloakUser().getRealmRoles().add(user.getRole().name());
@@ -146,27 +149,6 @@ public class UserService {
                              .collect(Collectors.toList());
     }
 
-    public UserApi removeStudentFromGroup(final String studentId) {
-        final UserDb student = userRepository.findById(studentId)
-                                             .orElseThrow(() -> new UserNotFoundException(getLanguages()))
-                                             .toBuilder()
-                                             .groupId(null)
-                                             .build();
-        final UserDb updatedUser = userRepository.save(student);
-        return mapToUserApi(updatedUser);
-    }
-
-    public void addStudentToGroup(final List<String> studentIds, final Long groupId) {
-        final List<UserDb> students = studentIds
-                .stream()
-                .map(id -> userRepository.findById(id).orElse(null))
-                .filter(Objects::nonNull)
-                .peek(s -> s.setGroupId(groupId))
-                .collect(Collectors.toList());
-
-        userRepository.saveAll(students);
-    }
-
     public List<UserApi> findUsersWithoutGroup() {
         final Long universityId = UserContextHolder.getUniversityId();
 
@@ -215,12 +197,7 @@ public class UserService {
             throw new LastAdminCannotBeDeleted(getLanguages());
         }
 
-        Arrays.stream(Role.values())
-              .forEach(role -> {
-                  final RoleRepresentation roleToUnAssign = rolesResource.get(role.name()).toRepresentation();
-                  usersResource.get(userId).roles().realmLevel().remove(List.of(roleToUnAssign));
-              });
-
+        unAssignAllRoles(userId);
         userRepository.deleteById(userId);
     }
 
@@ -272,5 +249,15 @@ public class UserService {
                       .group(studyGroup.orElse(null))
                       .roles(keycloakUserService.getUserRoles(userDb.getId()))
                       .build();
+    }
+
+    private void unAssignAllRoles(final String userId) {
+        final var rolesToAnAssign = Arrays.stream(Role.values())
+                                          .map(Role::name)
+                                          .map(rolesResource::get)
+                                          .map(RoleResource::toRepresentation)
+                                          .collect(Collectors.toList());
+
+        usersResource.get(userId).roles().realmLevel().remove(rolesToAnAssign);
     }
 }

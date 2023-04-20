@@ -2,15 +2,16 @@ package com.mborodin.uwm.endpoints;
 
 import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.QueryParam;
 
 import com.mborodin.uwm.api.exceptions.EntityNotFoundException;
 import com.mborodin.uwm.api.structure.GroupApi;
-import com.mborodin.uwm.model.persistence.StudyGroupDataDb;
+import com.mborodin.uwm.model.mapper.GroupMapper;
 import com.mborodin.uwm.repositories.StudyGroupDataRepository;
 import com.mborodin.uwm.security.UserContextHolder;
 import com.mborodin.uwm.services.GroupService;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GroupEndpoint {
 
     private final GroupService groupService;
+    private final GroupMapper groupMapper;
     private final StudyGroupDataRepository studyGroupDataRepository;
 
     @Secured("ROLE_ADMIN")
@@ -44,37 +46,36 @@ public class GroupEndpoint {
     }
 
     @GetMapping
-    public List<StudyGroupDataDb> getStudyGroupsByUniversityId(@QueryParam("departmentId") String departmentId) {
+    public Collection<GroupApi> getStudyGroupsByUniversityId(@QueryParam("departmentId") String departmentId) {
         if (Objects.nonNull(departmentId)) {
-            return studyGroupDataRepository.findAllByVisibleAndDepartmentId(true, departmentId);
+            return studyGroupDataRepository.findAllByDepartmentId(departmentId)
+                                           .stream()
+                                           .map(groupMapper::toGroupApi)
+                                           .collect(Collectors.toList());
         }
 
         final Long universityId = UserContextHolder.getUniversityId();
-        return studyGroupDataRepository.findAllByUniversityId(universityId);
+        return studyGroupDataRepository.findAllByUniversityId(universityId)
+                                       .stream()
+                                       .map(groupMapper::toGroupApi)
+                                       .collect(Collectors.toList());
     }
 
     @GetMapping(value = "/{groupId}")
-    public StudyGroupDataDb getStudyGroupById(@PathVariable("groupId") final Long groupId) {
+    public GroupApi getStudyGroupById(@PathVariable("groupId") final Long groupId) {
         return studyGroupDataRepository.findById(groupId)
+                                       .map(groupMapper::toGroupApi)
                                        .orElseThrow(() -> new EntityNotFoundException(getLanguages()));
     }
 
-//    @Secured("ROLE_TEACHER")
-//    @GetMapping
-//    public List<StudyGroupDataDb> getGroups() {
-//        final String userId = UserContextHolder.getId();
-//
-//        //get groups by curator
-//        return studyGroupDataRepository.findAllByTeacher(userId);
-//    }
-
     @Secured("ROLE_STUDENT")
     @GetMapping("/user")
-    public StudyGroupDataDb getGroup() {
+    public GroupApi getGroup() {
         final Long groupId = UserContextHolder.getGroupId();
 
         return Optional.ofNullable(groupId)
                        .flatMap(studyGroupDataRepository::findById)
+                       .map(groupMapper::toGroupApi)
                        .orElseThrow(() -> new EntityNotFoundException(getLanguages()));
     }
 
