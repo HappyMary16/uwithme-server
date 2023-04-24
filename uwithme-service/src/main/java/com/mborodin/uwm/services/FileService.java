@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import com.mborodin.uwm.api.AccessToFileApi;
 import com.mborodin.uwm.api.FileApi;
 import com.mborodin.uwm.api.SaveFileApi;
@@ -207,6 +209,7 @@ public class FileService {
                       .build();
     }
 
+    @Transactional
     public void deleteFile(final FileApi file) {
         final Path directory = fileStorageLocation.resolve(String.valueOf(file.getSubjectId()))
                                                   .resolve(String.valueOf(file.getFileType().getId()));
@@ -215,7 +218,7 @@ public class FileService {
         try {
             Files.delete(filePath);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.warn("Could not delete file. File name: {}, id: {}", file.getFileName(), file.getFileId(), e);
         }
 
         accessToFileRepository.deleteAllByFileId(file.getFileId());
