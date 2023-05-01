@@ -9,7 +9,6 @@ import java.util.List;
 import com.mborodin.uwm.AbstractBaseTest;
 import com.mborodin.uwm.api.structure.DepartmentApi;
 import com.mborodin.uwm.api.structure.GroupApi;
-import com.mborodin.uwm.api.structure.InstituteApi;
 import com.mborodin.uwm.api.structure.UniversityApi;
 import com.mborodin.uwm.client.client.core.GroupClient;
 import com.mborodin.uwm.client.client.core.InfoClient;
@@ -26,17 +25,17 @@ public class GroupTests extends AbstractBaseTest {
 
     @AfterEach
     public void cleanUp() {
-        uwmClient.getInstitutesFromUsersTenant()
-                 .forEach(institute -> uwmClient.deleteInstitute(institute.getId()));
+        uwmClient.getDepartmentsFromUsersTenant()
+                 .forEach(department -> uwmClient.deleteDepartment(department.getId()));
     }
 
     @Test
     void getGroupsByDepartmentId() {
         final UniversityApi tenant = tenantClient.getUniversity();
-        final InstituteApi institute = uwmClient.createInstitute(InstituteApi.builder()
-                                                                             .name("TEST")
-                                                                             .universityId(tenant.getId())
-                                                                             .build());
+        final DepartmentApi institute = uwmClient.createDepartment(DepartmentApi.builder()
+                                                                                .name("TEST")
+                                                                                .universityId(tenant.getId())
+                                                                                .build());
 
         final DepartmentApi department = uwmClient.createDepartment(DepartmentApi.builder()
                                                                                  .name("TEST")
@@ -52,10 +51,10 @@ public class GroupTests extends AbstractBaseTest {
     @Test
     void createGroup() {
         final UniversityApi tenant = tenantClient.getUniversity();
-        final InstituteApi institute = uwmClient.createInstitute(InstituteApi.builder()
-                                                                             .name("TEST")
-                                                                             .universityId(tenant.getId())
-                                                                             .build());
+        final DepartmentApi institute = uwmClient.createDepartment(DepartmentApi.builder()
+                                                                                .name("TEST")
+                                                                                .universityId(tenant.getId())
+                                                                                .build());
 
         final DepartmentApi department = uwmClient.createDepartment(DepartmentApi.builder()
                                                                                  .name("TEST")
@@ -82,22 +81,22 @@ public class GroupTests extends AbstractBaseTest {
         assertEquals(1, byDepartmentId.size());
         assertEquals(expected, byDepartmentId.get(0));
 
-        final List<GroupApi> byTenantId = groupClient.getGroupsByTenantId(tenant.getId());
+        final List<GroupApi> byTenantId = groupClient.getGroupsByUsersTenant();
         assertEquals(1, byTenantId.size());
         assertEquals(expected, byTenantId.get(0));
 
         groupClient.deleteGroup(created.getId());
         assertTrue(infoClient.getGroupsAvailableForRegistration(department.getId()).isEmpty());
-        assertTrue(groupClient.getGroupsByTenantId(tenant.getId()).isEmpty());
+        assertTrue(groupClient.getGroupsByUsersTenant().isEmpty());
     }
 
     @Test
     void updateGroup() {
         final UniversityApi tenant = tenantClient.getUniversity();
-        final InstituteApi institute = uwmClient.createInstitute(InstituteApi.builder()
-                                                                             .name("TEST")
-                                                                             .universityId(tenant.getId())
-                                                                             .build());
+        final DepartmentApi institute = uwmClient.createDepartment(DepartmentApi.builder()
+                                                                                .name("TEST")
+                                                                                .universityId(tenant.getId())
+                                                                                .build());
 
         final DepartmentApi department = uwmClient.createDepartment(DepartmentApi.builder()
                                                                                  .name("TEST")

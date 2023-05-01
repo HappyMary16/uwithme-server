@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.api.structure.DepartmentApi;
 import com.mborodin.uwm.api.structure.GroupApi;
-import com.mborodin.uwm.api.structure.InstituteApi;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,7 +36,7 @@ public class UserApi {
     private String departmentName;
     private Set<Role> roles;
     private GroupApi group;
-    private InstituteApi institute;
+    private DepartmentApi institute;
     private DepartmentApi department;
     private Long universityId;
     @Deprecated

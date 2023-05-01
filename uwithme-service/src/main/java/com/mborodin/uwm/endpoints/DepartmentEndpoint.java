@@ -46,7 +46,6 @@ public class DepartmentEndpoint {
         return departmentMapper.toDepartmentApi(department);
     }
 
-    @Secured("ROLE_ADMIN")
     @GetMapping("/{departmentId}/sub-departments")
     public List<DepartmentApi> getSubDepartments(@PathVariable("departmentId") final String departmentId) {
         return tenantDepartmentRepository.findAllByMainDepartmentId(departmentId)

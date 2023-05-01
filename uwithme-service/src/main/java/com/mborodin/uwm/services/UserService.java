@@ -23,7 +23,6 @@ import com.mborodin.uwm.api.exceptions.LastAdminCannotBeDeleted;
 import com.mborodin.uwm.api.exceptions.UserNotFoundException;
 import com.mborodin.uwm.api.structure.DepartmentApi;
 import com.mborodin.uwm.api.structure.GroupApi;
-import com.mborodin.uwm.api.structure.InstituteApi;
 import com.mborodin.uwm.model.persistence.TenantDb;
 import com.mborodin.uwm.model.persistence.UserDb;
 import com.mborodin.uwm.repositories.UniversityRepository;
@@ -47,7 +46,6 @@ public class UserService {
     private final GroupService groupService;
     private final DepartmentService departmentService;
     private final UniversityRepository universityRepository;
-    private final InstituteService instituteService;
     private final UsersResource usersResource;
     private final RolesResource rolesResource;
     private final KeycloakUserService keycloakUserService;
@@ -235,8 +233,8 @@ public class UserService {
         final Optional<DepartmentApi> department = Optional.ofNullable(departmentId)
                                                            .map(departmentService::getById);
 
-        final Optional<InstituteApi> institute = department.map(DepartmentApi::getInstituteId)
-                                                           .map(instituteService::getById);
+        final Optional<DepartmentApi> institute = department.map(DepartmentApi::getInstituteId)
+                                                            .map(departmentService::getById);
 
         return UserApi.builder()
                       .id(userDb.getId())
