@@ -5,7 +5,7 @@
     <parent>
         <artifactId>uwithme-parent</artifactId>
         <groupId>com.mborodin.uwm</groupId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
