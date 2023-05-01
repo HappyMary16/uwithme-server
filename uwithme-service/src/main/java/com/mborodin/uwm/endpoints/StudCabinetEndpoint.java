@@ -8,7 +8,12 @@ import java.util.Map;
 import javax.ws.rs.QueryParam;
 
 import com.mborodin.uwm.api.exceptions.IncorrectAuthDataException;
-import com.mborodin.uwm.api.studcab.*;
+import com.mborodin.uwm.api.studcab.PlanSubject;
+import com.mborodin.uwm.api.studcab.StudentDebt;
+import com.mborodin.uwm.api.studcab.StudentInfo;
+import com.mborodin.uwm.api.studcab.StudentScore;
+import com.mborodin.uwm.api.studcab.Subject;
+import com.mborodin.uwm.api.studcab.SubjectScore;
 import com.mborodin.uwm.client.client.StudCabinetClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
@@ -28,13 +33,16 @@ public class StudCabinetEndpoint {
     @GetMapping("/students")
     public StudentInfo getStudentInfo(@QueryParam("email") final String email,
                                       @QueryParam("password") final String password) {
-        final List<StudentInfo> studentInfos = studCabinetClient.getStudentInfo(email, password);
+        try {
+            final List<StudentInfo> studentInfos = studCabinetClient.getStudentInfo(email, password);
 
-        if (studentInfos.isEmpty()) {
-            throw new IncorrectAuthDataException(getLanguages());
+            if (studentInfos.isEmpty()) {
+                throw new IncorrectAuthDataException(getLanguages());
+            }
+            return studentInfos.get(0);
+        } catch (final Throwable ignore) {
+            return new StudentInfo();
         }
-
-        return studentInfos.get(0);
     }
 
     @Secured("ROLE_STUDENT")

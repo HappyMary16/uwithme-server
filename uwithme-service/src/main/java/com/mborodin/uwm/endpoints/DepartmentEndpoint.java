@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.QueryParam;
+
 import com.mborodin.uwm.api.exceptions.EntityNotFoundException;
 import com.mborodin.uwm.api.exceptions.UnknownException;
 import com.mborodin.uwm.api.structure.DepartmentApi;
@@ -35,6 +37,24 @@ public class DepartmentEndpoint {
     private final TenantDepartmentRepository tenantDepartmentRepository;
 
     @Secured("ROLE_ADMIN")
+    @GetMapping("/{departmentId}")
+    public DepartmentApi getDepartment(@PathVariable("departmentId") final String departmentId) {
+        final var department =
+                tenantDepartmentRepository.findById(departmentId)
+                                          .orElseThrow(() -> new EntityNotFoundException(getLanguages()));
+
+        return departmentMapper.toDepartmentApi(department);
+    }
+
+    @GetMapping("/{departmentId}/sub-departments")
+    public List<DepartmentApi> getSubDepartments(@PathVariable("departmentId") final String departmentId) {
+        return tenantDepartmentRepository.findAllByMainDepartmentId(departmentId)
+                                         .stream()
+                                         .map(departmentMapper::toDepartmentApi)
+                                         .collect(Collectors.toList());
+    }
+
+    @Secured("ROLE_ADMIN")
     @PostMapping
     public DepartmentApi createDepartment(@RequestBody final DepartmentApi department) {
         log.info("Start department creation. Department: {}", department);
@@ -50,9 +70,11 @@ public class DepartmentEndpoint {
     }
 
     @GetMapping
-    public List<DepartmentApi> getDepartmentsByUsersUniversityId() {
-        final Long universityId = UserContextHolder.getUniversityId();
-        return tenantDepartmentRepository.findAllByTenantIdAndMainDepartmentIdIsNotNull(universityId)
+    public List<DepartmentApi> getDepartmentsByUniversityId(@QueryParam("universityId") final Long universityId) {
+        final var universityIdToGetDepartments = Optional.ofNullable(universityId)
+                                                         .orElseGet(UserContextHolder::getUniversityId);
+
+        return tenantDepartmentRepository.findAllByTenantIdAndMainDepartmentIdIsNull(universityIdToGetDepartments)
                                          .stream()
                                          .map(departmentMapper::toDepartmentApi)
                                          .collect(Collectors.toList());

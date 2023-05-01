@@ -8,7 +8,6 @@ import java.util.List;
 
 import com.mborodin.uwm.AbstractBaseTest;
 import com.mborodin.uwm.api.structure.DepartmentApi;
-import com.mborodin.uwm.api.structure.InstituteApi;
 import com.mborodin.uwm.api.structure.UniversityApi;
 import com.mborodin.uwm.client.client.core.InfoClient;
 import org.junit.jupiter.api.AfterEach;
@@ -22,17 +21,17 @@ public class DepartmentTests extends AbstractBaseTest {
 
     @AfterEach
     public void cleanUp() {
-        uwmClient.getInstitutesFromUsersTenant()
-                 .forEach(institute -> uwmClient.deleteInstitute(institute.getId()));
+        uwmClient.getDepartmentsFromUsersTenant()
+                 .forEach(institute -> uwmClient.deleteDepartment(institute.getId()));
     }
 
     @Test
     void getDepartmentsByInstituteId() {
         final UniversityApi tenant = tenantClient.getUniversity();
-        final InstituteApi institute = uwmClient.createInstitute(InstituteApi.builder()
-                                                                             .name("TEST")
-                                                                             .universityId(tenant.getId())
-                                                                             .build());
+        final DepartmentApi institute = uwmClient.createDepartment(DepartmentApi.builder()
+                                                                                .name("TEST")
+                                                                                .universityId(tenant.getId())
+                                                                                .build());
         final List<DepartmentApi> department = infoClient.getDepartments(institute.getId());
 
         assertTrue(department.isEmpty());
@@ -41,13 +40,13 @@ public class DepartmentTests extends AbstractBaseTest {
     @Test
     void createDepartment() {
         final UniversityApi tenant = tenantClient.getUniversity();
-        final InstituteApi institute = uwmClient.createInstitute(InstituteApi.builder()
-                                                                             .name("TEST")
-                                                                             .universityId(tenant.getId())
-                                                                             .build());
+        final DepartmentApi institute = uwmClient.createDepartment(DepartmentApi.builder()
+                                                                                .name("TEST")
+                                                                                .universityId(tenant.getId())
+                                                                                .build());
 
         final DepartmentApi department = DepartmentApi.builder()
-                                                      .name("TEST")
+                                                      .name("SUB TEST")
                                                       .universityId(tenant.getId())
                                                       .instituteId(institute.getId())
                                                       .build();
@@ -62,12 +61,12 @@ public class DepartmentTests extends AbstractBaseTest {
         assertEquals(1, byInstituteId.size());
         assertEquals(created.getId(), byInstituteId.get(0).getId());
 
-        final List<DepartmentApi> byUsersTenantId = uwmClient.getDepartmentsFromUsersTenant();
+        final List<DepartmentApi> byUsersTenantId = uwmClient.getSubDepartments(institute.getId());
         assertEquals(1, byUsersTenantId.size());
         assertEquals(created.getId(), byUsersTenantId.get(0).getId());
 
         uwmClient.deleteDepartment(created.getId());
         assertTrue(infoClient.getDepartments(institute.getId()).isEmpty());
-        assertTrue(uwmClient.getDepartmentsFromUsersTenant().isEmpty());
+        assertTrue(uwmClient.getSubDepartments(institute.getId()).isEmpty());
     }
 }

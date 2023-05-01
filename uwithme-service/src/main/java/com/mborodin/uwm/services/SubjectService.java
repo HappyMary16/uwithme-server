@@ -5,6 +5,7 @@ import static com.mborodin.uwm.api.enums.Role.ROLE_TEACHER;
 import static com.mborodin.uwm.security.UserContextHolder.hasRole;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.mborodin.uwm.model.persistence.AccessToFileDB;
@@ -26,6 +27,10 @@ public class SubjectService {
     private final UserRepository userRepository;
     private final AccessToFileRepository accessToFileRepository;
     private final FileRepository fileRepository;
+
+    public Optional<SubjectDB> findById(final long id) {
+        return subjectRepository.findById(id);
+    }
 
     public List<SubjectDB> findUsersSubjects() {
         if (hasRole(ROLE_STUDENT)) {

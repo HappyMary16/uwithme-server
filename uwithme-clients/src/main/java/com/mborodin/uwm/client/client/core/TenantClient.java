@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
         configuration = {AuthClientConfiguration.class})
 public interface TenantClient {
 
-    @GetMapping("api/universities")
+    @GetMapping("/api/universities")
     UniversityApi getUniversity();
 }

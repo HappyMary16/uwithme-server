@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.mborodin.uwm.api.structure.DepartmentApi;
-import com.mborodin.uwm.api.structure.InstituteApi;
 import com.mborodin.uwm.model.mapper.DepartmentMapper;
-import com.mborodin.uwm.model.mapper.InstituteMapper;
 import com.mborodin.uwm.model.persistence.StudyGroupDataDb;
 import com.mborodin.uwm.model.persistence.TenantDb;
 import com.mborodin.uwm.repositories.StudyGroupDataRepository;
@@ -27,7 +25,6 @@ public class InfoEndpoint {
     private final UniversityRepository universityRepository;
     private final TenantDepartmentRepository tenantDepartmentRepository;
 
-    private final InstituteMapper instituteMapper;
     private final DepartmentMapper departmentMapper;
 
     @GetMapping(value = "/universities")
@@ -36,10 +33,10 @@ public class InfoEndpoint {
     }
 
     @GetMapping(value = "/institutes/{universityId}")
-    public List<InstituteApi> getInstitutes(@PathVariable("universityId") final Long universityId) {
+    public List<DepartmentApi> getInstitutes(@PathVariable("universityId") final Long universityId) {
         return tenantDepartmentRepository.findAllByTenantIdAndMainDepartmentIdIsNull(universityId)
                                          .stream()
-                                         .map(instituteMapper::toInstituteApi)
+                                         .map(departmentMapper::toDepartmentApi)
                                          .collect(Collectors.toList());
     }
 

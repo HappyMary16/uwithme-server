@@ -12,10 +12,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import javax.transaction.Transactional;
 
 import com.mborodin.uwm.api.AccessToFileApi;
 import com.mborodin.uwm.api.FileApi;
@@ -27,6 +29,7 @@ import com.mborodin.uwm.api.exceptions.filestorage.CouldNotStoreFileException;
 import com.mborodin.uwm.model.persistence.AccessToFileDB;
 import com.mborodin.uwm.model.persistence.FileDB;
 import com.mborodin.uwm.model.persistence.SubjectDB;
+import com.mborodin.uwm.model.persistence.UserDb;
 import com.mborodin.uwm.repositories.AccessToFileRepository;
 import com.mborodin.uwm.repositories.FileRepository;
 import com.mborodin.uwm.security.UserContextHolder;
@@ -96,10 +99,13 @@ public class FileService {
             final Path targetLocation = directory.resolve(fileName);
             Files.copy(file.getFile().getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            fileRepository.save(new FileDB(directory.toString(),
-                                           fileName,
-                                           subjectDb.getId(),
-                                           file.getFileTypeId()));
+            fileRepository.save(FileDB.builder()
+                                      .name(fileName)
+                                      .createDate(Instant.now())
+                                      .subjectId(subjectDb.getId())
+                                      .fileTypeId(file.getFileTypeId())
+                                      .path(directory.toString())
+                                      .build());
             return fileName;
         } catch (IOException e) {
             throw new CouldNotStoreFileException(getLanguages(), file.getFile().getName());
@@ -131,9 +137,11 @@ public class FileService {
                 .getFileIds()
                 .forEach(fileId -> accessToFileApi
                         .getGroupIds()
-                        .forEach(groupId -> accessToFileRepository.save(new AccessToFileDB(groupId,
-                                                                                           fileId,
-                                                                                           new Date()))));
+                        .forEach(groupId -> accessToFileRepository.save(AccessToFileDB.builder()
+                                                                                      .studyGroupId(groupId)
+                                                                                      .fileId(fileId)
+                                                                                      .dateAddAccess(Instant.now())
+                                                                                      .build())));
     }
 
     public List<FileApi> findAllFiles() {
@@ -179,15 +187,42 @@ public class FileService {
     }
 
     public FileApi findFileById(final Long fileId) {
-        return fileRepository.findById(fileId)
-                             .map(fileDb -> FileApi.builder()
-                                                   .fileId(fileDb.getId())
-                                                   .fileName(fileDb.getName())
-                                                   .type(fileDb.getFileTypeId())
-                                                   .fileType(FileType.getById(fileDb.getFileTypeId()))
-                                                   .subjectId(fileDb.getSubjectId())
-                                                   .build())
-                             .orElse(null);
+        final var fileOptional = fileRepository.findById(fileId);
+
+        if (fileOptional.isEmpty()) {
+            log.warn("File with id {} does not exist.", fileId);
+            return null;
+        }
+
+        final var file = fileOptional.get();
+        final var subject = subjectService.findById(file.getSubjectId());
+
+        return FileApi.builder()
+                      .fileId(file.getId())
+                      .fileName(file.getName())
+                      .type(file.getFileTypeId())
+                      .fileType(FileType.getById(file.getFileTypeId()))
+                      .subjectId(file.getSubjectId())
+                      .teacherId(subject.map(SubjectDB::getTeacher)
+                                        .map(UserDb::getId)
+                                        .orElse(null))
+                      .build();
+    }
+
+    @Transactional
+    public void deleteFile(final FileApi file) {
+        final Path directory = fileStorageLocation.resolve(String.valueOf(file.getSubjectId()))
+                                                  .resolve(String.valueOf(file.getFileType().getId()));
+        final Path filePath = directory.resolve(file.getFileName());
+
+        try {
+            Files.delete(filePath);
+        } catch (IOException e) {
+            log.warn("Could not delete file. File name: {}, id: {}", file.getFileName(), file.getFileId(), e);
+        }
+
+        accessToFileRepository.deleteAllByFileId(file.getFileId());
+        fileRepository.deleteById(file.getFileId());
     }
 
     private void createDirectorySuppressException(final Path path) {

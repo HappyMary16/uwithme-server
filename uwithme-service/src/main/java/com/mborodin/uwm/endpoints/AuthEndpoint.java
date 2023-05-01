@@ -13,7 +13,11 @@ import com.mborodin.uwm.services.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @AllArgsConstructor
@@ -30,9 +34,14 @@ public class AuthEndpoint {
 
     @PostMapping("/signUp")
     public UserApi register(@RequestBody final RegisterApi registerApi) {
-        validateRegistrationApiValid(registerApi);
+        if (userService.userExists()) {
+            validateDepartments(registerApi);
+            userService.updateUser(registerApi);
+        } else {
+            validateRegistrationApiValid(registerApi);
+            userService.save(registerApi);
+        }
 
-        userService.save(registerApi);
         return userService.getUserApi();
     }
 
@@ -47,14 +56,18 @@ public class AuthEndpoint {
         }
 
         if (!Objects.equals(role, ROLE_ADMIN)) {
-            boolean result = registerApi.getUniversityId() != null;
-            result &= registerApi.getInstituteId() != null;
-            result &= registerApi.getDepartmentId() != null;
-
-            if (result) {
-                return;
-            }
-            throw new EmptyFieldsException(getLanguages());
+            validateDepartments(registerApi);
         }
+    }
+
+    private void validateDepartments(final RegisterApi registerApi) {
+        boolean result = registerApi.getUniversityId() != null;
+        result &= registerApi.getInstituteId() != null;
+        result &= registerApi.getDepartmentId() != null;
+
+        if (result) {
+            return;
+        }
+        throw new EmptyFieldsException(getLanguages());
     }
 }

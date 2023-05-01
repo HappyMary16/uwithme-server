@@ -1,27 +1,26 @@
 package com.mborodin.uwm.model.persistence;
 
-import java.util.Date;
+import java.time.Instant;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
+@Builder(toBuilder = true)
 @Data
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "files")
 public class FileDB {
-
-    public FileDB(final String path, final String name, final Long subjectId, final Integer fileTypeId) {
-        this.path = path;
-        this.name = name;
-        this.subjectId = subjectId;
-        this.fileTypeId = fileTypeId;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,5 +30,5 @@ public class FileDB {
     private Long subjectId;
     @Column(name = "type_id")
     private Integer fileTypeId;
-    private Date createDate;
+    private Instant createDate;
 }

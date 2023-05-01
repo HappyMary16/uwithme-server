@@ -5,27 +5,29 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder(toBuilder = true)
 public class LessonApi {
 
-    private final Long id;
+    private Long id;
 
-    private final String subjectName;
+    private String subjectName;
 
-    private final String teacherName;
+    private String teacherName;
 
-    private final String lectureHall;
+    private String lectureHall;
 
-    private final String building;
+    private String building;
 
-    private final List<String> groups;
+    private List<String> groups;
 
-    private final Long weekDay;
+    private Long weekDay;
 
-    private final Long lessonTime;
+    private Long lessonTime;
 
-    private final Long weekNumber;
+    private Long weekNumber;
 }

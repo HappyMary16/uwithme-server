@@ -5,7 +5,13 @@ import static com.mborodin.uwm.api.enums.Role.ROLE_TEACHER;
 import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
 import static com.mborodin.uwm.security.UserContextHolder.hasRole;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -14,14 +20,24 @@ import javax.ws.rs.NotFoundException;
 import com.mborodin.uwm.api.CreateLessonApi;
 import com.mborodin.uwm.api.DeleteLessonApi;
 import com.mborodin.uwm.api.LessonApi;
-import com.mborodin.uwm.api.UserApi;
 import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.api.exceptions.UserNotFoundException;
-import com.mborodin.uwm.model.persistence.*;
-import com.mborodin.uwm.repositories.*;
+import com.mborodin.uwm.model.persistence.BuildingDb;
+import com.mborodin.uwm.model.persistence.LectureHallDb;
+import com.mborodin.uwm.model.persistence.ScheduleDb;
+import com.mborodin.uwm.model.persistence.StudyGroupDb;
+import com.mborodin.uwm.model.persistence.SubjectDB;
+import com.mborodin.uwm.model.persistence.UserDb;
+import com.mborodin.uwm.repositories.BuildingsRepository;
+import com.mborodin.uwm.repositories.LectureHallRepository;
+import com.mborodin.uwm.repositories.ScheduleRepository;
+import com.mborodin.uwm.repositories.StudyGroupRepository;
+import com.mborodin.uwm.repositories.SubjectRepository;
+import com.mborodin.uwm.repositories.UserRepository;
 import com.mborodin.uwm.security.UserContextHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,9 +51,7 @@ public class ScheduleService {
     private final StudyGroupRepository studyGroupRepository;
     private final BuildingsRepository buildingsRepository;
     private final LectureHallRepository lectureHallRepository;
-//    private final KeycloakServiceClient keycloakServiceClient;
-
-    private final UserService userService;
+    private final KeycloakUserService keycloakUserService;
 
     public void createLesson(final CreateLessonApi createLessonApi) {
         final List<ScheduleDb> lessonsToCreate = buildLessons(createLessonApi);
@@ -63,7 +77,7 @@ public class ScheduleService {
     public List<LessonApi> findLessonsById(final String userId) {
         final UserDb user = userRepository.findById(userId)
                                           .orElseThrow(() -> new UserNotFoundException(getLanguages()));
-        final Set<Role> roles = userService.getUserRoles(userId);
+        final Set<Role> roles = keycloakUserService.getUserRoles(userId);
 
         if (roles.contains(ROLE_STUDENT)) {
             return findLessonsByGroupId(user.getGroupId());
@@ -95,9 +109,9 @@ public class ScheduleService {
                                                       .collect(Collectors.toList());
             schedule.setGroups(groups);
 
-            final UserApi teacher = Optional.ofNullable(getTeacherFromSchedule(schedule))
-                                            .map(userService::findUserById)
-                                            .orElse(null);
+            final UserRepresentation teacher = Optional.ofNullable(getTeacherFromSchedule(schedule))
+                                                       .map(keycloakUserService::getUser)
+                                                       .orElse(null);
 
             return mapScheduleDbToLesson(scheduleRepository.save(schedule),
                                          Objects.isNull(teacher)
@@ -106,7 +120,17 @@ public class ScheduleService {
         }
     }
 
-    private LessonApi mapScheduleDbToLesson(final ScheduleDb scheduleDb, final Map<String, UserApi> teachers) {
+    public void deleteLessonsByGroupId(final Long groupId) {
+        final var lessonIds = scheduleRepository.findAllByStudyGroupId(groupId)
+                                                .stream()
+                                                .map(ScheduleDb::getId)
+                                                .collect(Collectors.toList());
+
+        lessonIds.forEach(lessonId -> scheduleRepository.deleteAllByGroupIdAndLessonId(groupId, lessonId));
+    }
+
+
+    private LessonApi mapScheduleDbToLesson(final ScheduleDb scheduleDb, final Map<String, UserRepresentation> teachers) {
         final String buildingName = buildingsRepository.findById(scheduleDb.getAuditory().getBuildingId())
                                                        .map(BuildingDb::getName)
                                                        .orElse(null);
@@ -123,11 +147,11 @@ public class ScheduleService {
         if (Objects.nonNull(subject)) {
             final String teacherId = subject.getTeacher().getId();
 
-            final UserApi teacher = Optional.ofNullable(teachers.get(teacherId))
-                                            .orElseGet(() -> userService.findUserById(teacherId));
+            final UserRepresentation teacher = Optional.ofNullable(teachers.get(teacherId))
+                                            .orElseGet(() -> keycloakUserService.getUser(teacherId));
 
             lesson.subjectName(subject.getName())
-                  .teacherName(teacher.getSurname());
+                  .teacherName(teacher.getLastName());
         } else {
             lesson.subjectName(scheduleDb.getSubjectName())
                   .teacherName(scheduleDb.getTeacherName());
@@ -214,12 +238,12 @@ public class ScheduleService {
     }
 
     private List<LessonApi> mapScheduleToLessons(final List<ScheduleDb> schedule) {
-        final Map<String, UserApi> teachers = new HashMap<>();
+        final Map<String, UserRepresentation> teachers = new HashMap<>();
 
         return schedule.stream()
                        .peek(s -> Optional.ofNullable(getTeacherFromSchedule(s))
                                           .filter(Predicate.not(teachers::containsKey))
-                                          .map(userService::findUserById)
+                                          .map(keycloakUserService::getUser)
                                           .ifPresent(teacher -> teachers.put(teacher.getId(), teacher)))
                        .map(s -> mapScheduleDbToLesson(s, teachers))
                        .collect(Collectors.toList());

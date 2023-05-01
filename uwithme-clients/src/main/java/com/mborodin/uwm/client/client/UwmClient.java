@@ -5,8 +5,6 @@ import java.util.List;
 import com.mborodin.uwm.api.RegisterApi;
 import com.mborodin.uwm.api.UserApi;
 import com.mborodin.uwm.api.structure.DepartmentApi;
-import com.mborodin.uwm.api.structure.GroupApi;
-import com.mborodin.uwm.api.structure.InstituteApi;
 import com.mborodin.uwm.client.config.AuthClientConfiguration;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,17 +29,15 @@ public interface UwmClient {
     @DeleteMapping("/api/users")
     void deleteAccount();
 
-    @PostMapping("/api/institutes")
-    InstituteApi createInstitute(InstituteApi institute);
-    @GetMapping("api/institutes")
-    List<InstituteApi> getInstitutesFromUsersTenant();
-    @DeleteMapping("api/institutes/{instituteId}")
-    void deleteInstitute(@PathVariable String instituteId);
-
     @PostMapping("/api/departments")
     DepartmentApi createDepartment(DepartmentApi institute);
-    @GetMapping("api/departments")
+
+    @GetMapping("/api/departments")
     List<DepartmentApi> getDepartmentsFromUsersTenant();
-    @DeleteMapping("api/departments/{departmentId}")
+
+    @GetMapping("/api/departments/{departmentId}/sub-departments")
+    List<DepartmentApi> getSubDepartments(@PathVariable final String departmentId);
+
+    @DeleteMapping("/api/departments/{departmentId}")
     void deleteDepartment(@PathVariable String departmentId);
 }
