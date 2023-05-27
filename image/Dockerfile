@@ -1,8 +1,10 @@
 FROM openjdk:11.0-jre
 
 COPY ./uwithme-service/target/UwithmeServiceApp.jar /usr/app/UwithmeServiceApp.jar
-COPY ./image/application.properties /usr/app/application.properties
+
+COPY ./image/application.properties.tmpl /usr/app/application.properties.tmpl
+COPY ./image/substitute.sh /opt/uwm/substitute.sh
 
 WORKDIR /usr/app
 
-CMD java -jar /usr/app/UwithmeServiceApp.jar
+CMD /opt/uwm/substitute.sh && java -jar /usr/app/UwithmeServiceApp.jar
