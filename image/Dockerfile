@@ -1,4 +1,7 @@
-FROM openjdk:11.0-jre
+FROM bitnami/java:11-debian-11
+
+RUN apt-get update
+RUN apt-get install -y gettext-base
 
 COPY ./uwithme-service/target/UwithmeServiceApp.jar /usr/app/UwithmeServiceApp.jar
 
