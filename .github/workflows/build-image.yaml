@@ -34,3 +34,4 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           image-name: uwithme-service
           image-tag: latest
+          custom-args: --platform=linux/arm64,linux/amd64
