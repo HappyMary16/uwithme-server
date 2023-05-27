@@ -35,7 +35,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: ./uwithme-repo
-      - name: Package with Mavwn
+      - name: Package with Maven
         working-directory: ./uwithme-repo
         run: mvn install -DskipTests --no-transfer-progress
       - name: Start the service
