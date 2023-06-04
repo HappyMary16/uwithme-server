@@ -1,6 +1,7 @@
-FROM bellsoft/liberica-openjre-alpine:11
+FROM eclipse-temurin:11-jre
 
-RUN apk add --no-cache gettext
+RUN apt-get update
+RUN apt-get install gettext-base
 
 COPY ./uwithme-service/target/UwithmeServiceApp.jar /usr/app/UwithmeServiceApp.jar
 
