@@ -1,4 +1,4 @@
-FROM bellsoft/liberica-openjre-alpine:17
+FROM bellsoft/liberica-openjre-alpine:11
 
 RUN apk add --no-cache gettext
 
