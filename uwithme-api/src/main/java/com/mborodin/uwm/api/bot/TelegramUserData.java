@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class TelegramUserData {
 
     private String id;
+    private String uwmUserId;
     @JsonAlias("first_name")
     private String firstName;
     @JsonAlias("last_name")
