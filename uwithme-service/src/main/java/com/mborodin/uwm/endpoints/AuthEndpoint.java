@@ -11,6 +11,7 @@ import com.mborodin.uwm.api.bot.TelegramUserData;
 import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.api.exceptions.EmptyFieldsException;
 import com.mborodin.uwm.client.client.UwmBotClient;
+import com.mborodin.uwm.security.UserContextHolder;
 import com.mborodin.uwm.services.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,7 @@ public class AuthEndpoint {
 
     @PostMapping("/bot")
     public void register(@RequestBody final TelegramUserData userData) {
+        userData.setUwmUserId(UserContextHolder.getId());
         uwmBotClient.authInTelegramBot(userData);
     }
 
