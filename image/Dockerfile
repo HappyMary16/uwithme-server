@@ -1,7 +1,7 @@
-FROM bitnami/java:11-debian-11
+FROM eclipse-temurin:11-jre
 
 RUN apt-get update
-RUN apt-get install -y gettext-base
+RUN apt-get install gettext-base
 
 COPY ./uwithme-service/target/UwithmeServiceApp.jar /usr/app/UwithmeServiceApp.jar
 
