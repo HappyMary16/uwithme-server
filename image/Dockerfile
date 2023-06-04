@@ -1,7 +1,6 @@
-FROM bitnami/java:11-debian-11
+FROM eclipse-temurin:17-jre-alpine
 
-RUN apt-get update
-RUN apt-get install -y gettext-base
+RUN apk add --no-cache gettext
 
 COPY ./uwithme-service/target/UwithmeServiceApp.jar /usr/app/UwithmeServiceApp.jar
 
