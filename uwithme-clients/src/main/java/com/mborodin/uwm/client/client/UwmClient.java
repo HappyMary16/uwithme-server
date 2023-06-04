@@ -12,12 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-/**
- * TODO: add description.
- *
- * @author mariia.borodin (mborodin)
- * @since 1.1
- */
 @FeignClient(name = "uwm-service",
         url = "#{'${uwm.api.host:localhost}:${uwm.api.port}'}",
         configuration = {AuthClientConfiguration.class})

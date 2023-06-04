@@ -38,7 +38,7 @@
         <postgresql.version>42.3.4</postgresql.version>
         <javax.version>8.0.1</javax.version>
         <spring-security-oauth2-client.version>5.5.2</spring-security-oauth2-client.version>
-        <keycloak.version>18.0.0</keycloak.version>
+        <keycloak.version>20.0.5</keycloak.version>
         <spring.cloud-version>2020.0.5</spring.cloud-version>
         <mapstract.version>1.4.2.Final</mapstract.version>
     </properties>
