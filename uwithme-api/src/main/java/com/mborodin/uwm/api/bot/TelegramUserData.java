@@ -14,8 +14,7 @@ public class TelegramUserData {
 
     private String id;
     private String uwmUserId;
-    @JsonAlias("user_name")
-    private String userName;
+    private String username;
     @JsonAlias("first_name")
     private String firstName;
     @JsonAlias("last_name")
