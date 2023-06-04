@@ -7,8 +7,10 @@ import java.util.Objects;
 
 import com.mborodin.uwm.api.RegisterApi;
 import com.mborodin.uwm.api.UserApi;
+import com.mborodin.uwm.api.bot.TelegramUserData;
 import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.api.exceptions.EmptyFieldsException;
+import com.mborodin.uwm.client.client.UwmBotClient;
 import com.mborodin.uwm.services.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthEndpoint {
 
     private final UserService userService;
+    private final UwmBotClient uwmBotClient;
 
     @GetMapping("/signIn")
     public UserApi authenticateUser() {
@@ -43,6 +46,11 @@ public class AuthEndpoint {
         }
 
         return userService.getUserApi();
+    }
+
+    @PostMapping("/bot")
+    public void register(@RequestBody final TelegramUserData userData) {
+        uwmBotClient.authInTelegramBot(userData);
     }
 
     private void validateRegistrationApiValid(final RegisterApi registerApi) {
