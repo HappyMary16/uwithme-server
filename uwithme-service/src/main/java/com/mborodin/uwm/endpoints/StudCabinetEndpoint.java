@@ -3,22 +3,21 @@ package com.mborodin.uwm.endpoints;
 import static com.mborodin.uwm.security.UserContextHolder.getLanguages;
 
 import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.QueryParam;
 
 import com.mborodin.uwm.api.exceptions.IncorrectAuthDataException;
-import com.mborodin.uwm.api.studcab.PlanSubject;
+import com.mborodin.uwm.api.exceptions.UnknownException;
+import com.mborodin.uwm.api.studcab.Credentials;
 import com.mborodin.uwm.api.studcab.StudentDebt;
 import com.mborodin.uwm.api.studcab.StudentInfo;
 import com.mborodin.uwm.api.studcab.StudentScore;
-import com.mborodin.uwm.api.studcab.Subject;
 import com.mborodin.uwm.api.studcab.SubjectScore;
+import com.mborodin.uwm.api.studcab.Syllabus;
 import com.mborodin.uwm.client.client.StudCabinetClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,55 +29,43 @@ public class StudCabinetEndpoint {
     private final StudCabinetClient studCabinetClient;
 
     @Secured("ROLE_STUDENT")
-    @GetMapping("/students")
-    public StudentInfo getStudentInfo(@QueryParam("email") final String email,
-                                      @QueryParam("password") final String password) {
+    @PostMapping("/students")
+    public StudentInfo getStudentInfo(@RequestBody final Credentials credentials) {
         try {
-            final List<StudentInfo> studentInfos = studCabinetClient.getStudentInfo(email, password);
-
-            if (studentInfos.isEmpty()) {
+            final StudentInfo studentInfo = studCabinetClient.getStudentInfo(credentials);
+            if (studentInfo == null) {
                 throw new IncorrectAuthDataException(getLanguages());
             }
-            return studentInfos.get(0);
+            return studentInfo;
         } catch (final Throwable ignore) {
-            return new StudentInfo();
+            throw new UnknownException(getLanguages());
         }
     }
 
     @Secured("ROLE_STUDENT")
-    @GetMapping("/subjects/scores/{semesterId}")
+    @PostMapping("/scores/{semesterId}")
     public List<SubjectScore> getSubjectScores(@PathVariable final int semesterId,
-                                               @QueryParam("email") final String email,
-                                               @QueryParam("password") final String password) {
-        return studCabinetClient.getSubjectScores(email, password, semesterId);
+                                               @RequestBody final Credentials credentials) {
+        return studCabinetClient.getSubjectScores(credentials, semesterId);
     }
 
     @Secured("ROLE_STUDENT")
-    @GetMapping("/subjects/{semesterId}")
-    public List<PlanSubject> getPlanSubjects(@PathVariable final int semesterId,
-                                             @QueryParam("email") final String email,
-                                             @QueryParam("password") final String password) {
-        return studCabinetClient.getPlanSubjects(email, password, semesterId);
-    }
-
-    @Secured("ROLE_STUDENT")
-    @GetMapping("/students/rating/{semesterId}")
+    @PostMapping("/rating/{semesterId}")
     public List<StudentScore> getStudentsRating(@PathVariable final int semesterId,
-                                                @QueryParam("email") final String email,
-                                                @QueryParam("password") final String password) {
-        return studCabinetClient.getStudentScores(email, password, semesterId);
+                                                @RequestBody final Credentials credentials) {
+        return studCabinetClient.getStudentScores(credentials, semesterId);
     }
 
     @Secured("ROLE_STUDENT")
-    @GetMapping("/students/debts")
-    public List<StudentDebt> getStudentDebts(@QueryParam("email") final String email,
-                                             @QueryParam("password") final String password) {
-        return studCabinetClient.getStudentDebts(email, password);
+    @PostMapping("/debts")
+    public List<StudentDebt> getStudentDebts(@RequestBody final Credentials credentials) {
+        return studCabinetClient.getStudentDebts(credentials);
     }
 
     @Secured("ROLE_STUDENT")
-    @GetMapping("/schedule/{groupId}")
-    public Map<String, Map<String, Subject>> getStudentDebts(@PathVariable final String groupId) {
-        return studCabinetClient.getSchedule(groupId);
+    @PostMapping("/syllabus/{semesterId}")
+    public List<Syllabus> getSyllabus(@PathVariable final int semesterId,
+                                               @RequestBody final Credentials credentials) {
+        return studCabinetClient.getSyllabus(credentials, semesterId);
     }
 }

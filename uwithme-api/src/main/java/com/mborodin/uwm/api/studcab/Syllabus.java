@@ -11,10 +11,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlanSubject {
+public class Syllabus {
 
-    @JsonAlias("audit")
-    private String lectureHall;
+    private String audit;
     @JsonAlias("control")
     private String control;
     private String credit;
@@ -30,5 +29,6 @@ public class PlanSubject {
     private int semester;
     @JsonAlias("subj_id")
     private String subjectId;
+    @JsonAlias("subj_name")
     private String subject;
 }
