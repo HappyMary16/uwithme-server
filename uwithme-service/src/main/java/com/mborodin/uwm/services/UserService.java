@@ -49,6 +49,7 @@ public class UserService {
     private final UsersResource usersResource;
     private final RolesResource rolesResource;
     private final KeycloakUserService keycloakUserService;
+    private final FileService fileService;
 
     public boolean userExists() {
         final String userId = getId();
@@ -197,6 +198,8 @@ public class UserService {
 
         unAssignAllRoles(userId);
         userRepository.deleteById(userId);
+        keycloakUserService.deleteUser(userId);
+        fileService.deleteAvatar();
     }
 
     public UserApi updateUser(final UwmUserApi uwmUserApi) {
