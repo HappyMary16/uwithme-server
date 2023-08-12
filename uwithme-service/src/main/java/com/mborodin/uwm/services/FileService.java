@@ -127,6 +127,15 @@ public class FileService {
         return loadFileByPath(filePath);
     }
 
+    public void deleteAvatar() {
+        final Path targetLocation = userAvatarStorageLocation.resolve(getId() + ".jpg");
+        try {
+            Files.delete(targetLocation);
+        } catch (IOException e) {
+            log.warn("Could not delete an avatar of user {}", getId());
+        }
+    }
+
     public Resource loadFile(final FileDB file) {
         final Path filePath = fileStorageLocation.resolve(file.getPath()).resolve(file.getName()).normalize();
         return loadFileByPath(filePath);

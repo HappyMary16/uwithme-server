@@ -41,6 +41,10 @@ public class KeycloakUserService {
                             .collect(Collectors.toSet());
     }
 
+    public void deleteUser(final String userId) {
+        usersResource.delete(userId);
+    }
+
     private Role valueOfRoleSuppressExceptions(final String role) {
         try {
             return Role.valueOf(role);
