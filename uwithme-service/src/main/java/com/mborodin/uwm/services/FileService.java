@@ -21,7 +21,6 @@ import javax.transaction.Transactional;
 
 import com.mborodin.uwm.api.AccessToFileApi;
 import com.mborodin.uwm.api.FileApi;
-import com.mborodin.uwm.api.SaveFileApi;
 import com.mborodin.uwm.api.enums.FileType;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotLoadFileException;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotStoreAvatarException;
@@ -81,7 +80,8 @@ public class FileService {
     @Transactional
     @EventListener(ApplicationReadyEvent.class)
     public void moveFilesToBaseFileFolder() {
-        for (final FileDB file : fileRepository.findAllByPathIsNull()) {
+        for (final FileDB file : fileRepository.findAllByPathIsNotNull()) {
+            log.info("Move and rename file {}", file);
             final Path filePath = fileStorageLocation.resolve(file.getPath()).resolve(file.getName()).normalize();
 
             final String extension = file.getName().substring(file.getName().lastIndexOf("."));
@@ -103,6 +103,7 @@ public class FileService {
     @EventListener(ApplicationReadyEvent.class)
     public void updateFilesOwners() {
         for (final FileDB file : fileRepository.findAllByOwnerIsNull()) {
+            log.info("Update owner for file {}", file);
             fileRepository.save(file.toBuilder()
                                     .owner(subjectService.findById(file.getSubjectId())
                                                          .map(SubjectDB::getTeacher)
@@ -112,32 +113,25 @@ public class FileService {
         }
     }
 
-    public String saveFile(final SaveFileApi file) {
-        final String username = getId();
-        final String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()));
-
-        final SubjectDB subject = subjectService.findUsersSubjects()
-                                                .stream()
-                                                .filter(s -> s.getName().equals(file.getSubjectName()))
-                                                .findFirst()
-                                                .orElseGet(() -> subjectService.save(username, file.getSubjectName()));
+    public String saveFile(final MultipartFile file, final Long subjectId, final Integer fileType) {
+        final String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 
         final var fileEntity = fileRepository.save(FileDB.builder()
                                                          .name(fileName)
                                                          .createDate(Instant.now())
-                                                         .subjectId(subject.getId())
-                                                         .fileTypeId(file.getFileTypeId())
+                                                         .subjectId(subjectId)
+                                                         .fileTypeId(fileType)
                                                          .owner(UserContextHolder.getId())
                                                          .build());
 
         try {
             final String extension = fileName.substring(fileName.lastIndexOf("."));
             final Path targetLocation = fileStorageLocation.resolve(fileEntity.getId() + extension);
-            Files.copy(file.getFile().getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             return fileName;
         } catch (IOException e) {
             fileRepository.delete(fileEntity);
-            throw new CouldNotStoreFileException(getLanguages(), file.getFile().getName());
+            throw new CouldNotStoreFileException(getLanguages(), file.getName());
         }
     }
 

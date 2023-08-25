@@ -11,7 +11,7 @@ public interface FileRepository extends CrudRepository<FileDB, Long> {
 
     List<FileDB> findAllByOwner(final String owner);
 
-    List<FileDB> findAllByPathIsNull();
+    List<FileDB> findAllByPathIsNotNull();
 
     List<FileDB> findAllByOwnerIsNull();
 }

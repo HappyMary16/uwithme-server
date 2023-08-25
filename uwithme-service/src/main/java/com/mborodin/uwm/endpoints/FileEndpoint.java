@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import com.mborodin.uwm.api.AccessToFileApi;
 import com.mborodin.uwm.api.FileApi;
-import com.mborodin.uwm.api.SaveFileApi;
 import com.mborodin.uwm.api.UploadFileResponseApi;
 import com.mborodin.uwm.api.exceptions.UnknownException;
 import com.mborodin.uwm.model.persistence.FileDB;
@@ -44,23 +43,17 @@ public class FileEndpoint {
     private final FileRepository fileRepository;
 
     @Secured("ROLE_TEACHER")
-    @PostMapping("/{subjectName}/{fileType:[1-2]}")
+    @PostMapping("/{subjectId}/{fileType:[1-2]}")
     public List<UploadFileResponseApi> uploadMultipleFiles(@RequestParam("files") final MultipartFile[] files,
-                                                           @PathVariable("subjectName") final String subjectName,
+                                                           @PathVariable("subjectId") final Long subjectId,
                                                            @PathVariable("fileType") final Integer fileType) {
-        final List<UploadFileResponseApi> uploadedFiles = Arrays
-                .stream(files)
-                .map(file -> {
-                    final SaveFileApi saveFileApi = new SaveFileApi(subjectName, fileType, file);
-                    final String fileName = fileService.saveFile(saveFileApi);
 
-                    return new UploadFileResponseApi(fileName,
-                                                     saveFileApi.getFile().getContentType(),
-                                                     saveFileApi.getFile().getSize());
-                })
-                .collect(Collectors.toList());
-
-        return uploadedFiles;
+        return Arrays.stream(files)
+                     .map(file -> {
+                         final String fileName = fileService.saveFile(file, subjectId, fileType);
+                         return new UploadFileResponseApi(fileName, file.getContentType(), file.getSize());
+                     })
+                     .collect(Collectors.toList());
     }
 
     @GetMapping("/{fileId}")
