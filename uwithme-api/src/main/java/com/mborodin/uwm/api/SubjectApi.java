@@ -1,7 +1,9 @@
 package com.mborodin.uwm.api;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * TODO: add description.
@@ -9,8 +11,10 @@ import lombok.Getter;
  * @author mariia.borodin (mborodin)
  * @since 1.1
  */
-@Getter
+@Data
+@Builder(toBuilder = true)
 @AllArgsConstructor
+@NoArgsConstructor
 public class SubjectApi {
 
     private Long subjectId;

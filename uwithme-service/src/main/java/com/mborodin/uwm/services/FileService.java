@@ -21,7 +21,6 @@ import javax.transaction.Transactional;
 
 import com.mborodin.uwm.api.AccessToFileApi;
 import com.mborodin.uwm.api.FileApi;
-import com.mborodin.uwm.api.SaveFileApi;
 import com.mborodin.uwm.api.enums.FileType;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotLoadFileException;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotStoreAvatarException;
@@ -35,6 +34,8 @@ import com.mborodin.uwm.repositories.FileRepository;
 import com.mborodin.uwm.security.UserContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
@@ -64,51 +65,73 @@ public class FileService {
                                          .toAbsolutePath()
                                          .resolve(avatarsUploadDirectory);
 
-        createDirectorySuppressException(fileStorageLocation);
-        createDirectorySuppressException(userAvatarStorageLocation);
+        try {
+            Files.createDirectories(fileStorageLocation);
+            Files.createDirectories(userAvatarStorageLocation);
+        } catch (IOException ex) {
+            log.error("Could not create the directories for files.", ex);
+        }
 
         this.fileRepository = fileRepository;
         this.accessToFileRepository = accessToFileRepository;
         this.subjectService = subjectService;
     }
 
-    public String saveFile(final SaveFileApi file) {
-        final String username = getId();
-        final String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()));
+    @Transactional
+    @EventListener(ApplicationReadyEvent.class)
+    public void moveFilesToBaseFileFolder() {
+        for (final FileDB file : fileRepository.findAllByPathIsNotNull()) {
+            log.info("Move and rename file {}", file);
+            final Path filePath = fileStorageLocation.resolve(file.getPath()).resolve(file.getName()).normalize();
 
-        final SubjectDB subjectDb = subjectService.findUsersSubjects()
-                                                  .stream()
-                                                  .filter(subject -> subject.getName().equals(file.getSubjectName()))
-                                                  .findFirst()
-                                                  .orElseGet(
-                                                          () -> subjectService.save(username, file.getSubjectName()));
+            final String extension = file.getName().substring(file.getName().lastIndexOf("."));
+            final Path targetLocation = fileStorageLocation.resolve(file.getId() + extension);
+
+            try {
+                Files.move(filePath, targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new CouldNotStoreFileException(getLanguages(), file.getName());
+            }
+
+            fileRepository.save(file.toBuilder()
+                                    .path(null)
+                                    .build());
+        }
+    }
+
+    @Transactional
+    @EventListener(ApplicationReadyEvent.class)
+    public void updateFilesOwners() {
+        for (final FileDB file : fileRepository.findAllByOwnerIsNull()) {
+            log.info("Update owner for file {}", file);
+            fileRepository.save(file.toBuilder()
+                                    .owner(subjectService.findById(file.getSubjectId())
+                                                         .map(SubjectDB::getTeacher)
+                                                         .map(UserDb::getId)
+                                                         .orElse(null))
+                                    .build());
+        }
+    }
+
+    public String saveFile(final MultipartFile file, final Long subjectId, final Integer fileType) {
+        final String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+
+        final var fileEntity = fileRepository.save(FileDB.builder()
+                                                         .name(fileName)
+                                                         .createDate(Instant.now())
+                                                         .subjectId(subjectId)
+                                                         .fileTypeId(fileType)
+                                                         .owner(UserContextHolder.getId())
+                                                         .build());
 
         try {
-            final Path directory = fileStorageLocation.resolve(subjectDb.getId().toString())
-                                                      .resolve(file.getFileTypeId().toString());
-
-            if (directory.toString().contains("..")) {
-                log.error("Directory contains invalid symbols. Directory: {}", directory);
-                throw new CouldNotStoreFileException(getLanguages(), file.getFile().getName());
-            }
-
-            if (Files.notExists(directory)) {
-                Files.createDirectories(directory);
-            }
-
-            final Path targetLocation = directory.resolve(fileName);
-            Files.copy(file.getFile().getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
-            fileRepository.save(FileDB.builder()
-                                      .name(fileName)
-                                      .createDate(Instant.now())
-                                      .subjectId(subjectDb.getId())
-                                      .fileTypeId(file.getFileTypeId())
-                                      .path(directory.toString())
-                                      .build());
+            final String extension = fileName.substring(fileName.lastIndexOf("."));
+            final Path targetLocation = fileStorageLocation.resolve(fileEntity.getId() + extension);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             return fileName;
         } catch (IOException e) {
-            throw new CouldNotStoreFileException(getLanguages(), file.getFile().getName());
+            fileRepository.delete(fileEntity);
+            throw new CouldNotStoreFileException(getLanguages(), file.getName());
         }
     }
 
@@ -137,7 +160,8 @@ public class FileService {
     }
 
     public Resource loadFile(final FileDB file) {
-        final Path filePath = fileStorageLocation.resolve(file.getPath()).resolve(file.getName()).normalize();
+        final String extension = file.getName().substring(file.getName().lastIndexOf("."));
+        final Path filePath = fileStorageLocation.resolve(file.getId() + extension).normalize();
         return loadFileByPath(filePath);
     }
 
@@ -158,11 +182,8 @@ public class FileService {
             final Long studyGroupId = UserContextHolder.getGroupId();
             return findFilesByGroupId(studyGroupId);
         } else if (hasRole(ROLE_TEACHER)) {
-            return subjectService.findUsersSubjects()
+            return fileRepository.findAllByOwner(UserContextHolder.getId())
                                  .stream()
-                                 .map(SubjectDB::getId)
-                                 .map(fileRepository::findAllBySubjectId)
-                                 .flatMap(List::stream)
                                  .map(fileDB -> FileApi.builder()
                                                        .fileId(fileDB.getId())
                                                        .fileName(fileDB.getName())
@@ -170,6 +191,7 @@ public class FileService {
                                                        .fileType(FileType.getById(fileDB.getFileTypeId()))
                                                        .subjectId(fileDB.getSubjectId())
                                                        .startAccessTime(fileDB.getCreateDate())
+                                                       .teacherId(fileDB.getOwner())
                                                        .build())
                                  .collect(Collectors.toList());
         }
@@ -189,6 +211,7 @@ public class FileService {
                                                                    .fileType(FileType.getById(fileDb.getFileTypeId()))
                                                                    .subjectId(fileDb.getSubjectId())
                                                                    .startAccessTime(accessToFileDB.getDateAddAccess())
+                                                                   .teacherId(fileDb.getOwner())
                                                                    .build())
                                              .orElse(null))
                                      .filter(Objects::nonNull)
@@ -204,7 +227,6 @@ public class FileService {
         }
 
         final var file = fileOptional.get();
-        final var subject = subjectService.findById(file.getSubjectId());
 
         return FileApi.builder()
                       .fileId(file.getId())
@@ -212,17 +234,14 @@ public class FileService {
                       .type(file.getFileTypeId())
                       .fileType(FileType.getById(file.getFileTypeId()))
                       .subjectId(file.getSubjectId())
-                      .teacherId(subject.map(SubjectDB::getTeacher)
-                                        .map(UserDb::getId)
-                                        .orElse(null))
+                      .teacherId(file.getOwner())
                       .build();
     }
 
     @Transactional
     public void deleteFile(final FileApi file) {
-        final Path directory = fileStorageLocation.resolve(String.valueOf(file.getSubjectId()))
-                                                  .resolve(String.valueOf(file.getFileType().getId()));
-        final Path filePath = directory.resolve(file.getFileName());
+        final String extension = file.getFileName().substring(file.getFileName().lastIndexOf("."));
+        final Path filePath = fileStorageLocation.resolve(file.getFileId() + extension).normalize();
 
         try {
             Files.delete(filePath);
@@ -232,15 +251,6 @@ public class FileService {
 
         accessToFileRepository.deleteAllByFileId(file.getFileId());
         fileRepository.deleteById(file.getFileId());
-    }
-
-    private void createDirectorySuppressException(final Path path) {
-        try {
-            Files.createDirectories(path);
-        } catch (Exception ex) {
-            log.error("Could not create the directory with path {}", path);
-            ex.printStackTrace();
-        }
     }
 
     private Resource loadFileByPath(final Path path) {
