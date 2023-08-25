@@ -31,4 +31,5 @@ public class FileDB {
     @Column(name = "type_id")
     private Integer fileTypeId;
     private Instant createDate;
+    private String owner;
 }

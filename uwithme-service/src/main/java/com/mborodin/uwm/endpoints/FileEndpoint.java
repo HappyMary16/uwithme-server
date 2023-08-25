@@ -78,6 +78,7 @@ public class FileEndpoint {
 
         return ResponseEntity.ok()
                              .contentType(MediaType.parseMediaType(contentType))
+                             .header("Content-Disposition", "attachment; filename=\"" + fileDB.getName() + "\"")
                              .body(resource);
     }
 
@@ -130,7 +131,7 @@ public class FileEndpoint {
 
         if (resource == null) {
             return ResponseEntity.notFound()
-                    .build();
+                                 .build();
         } else {
             String contentType;
             try {
