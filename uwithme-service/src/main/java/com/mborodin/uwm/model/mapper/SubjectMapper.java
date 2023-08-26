@@ -12,6 +12,5 @@ public interface SubjectMapper {
 
     @Mapping(target = "subjectId", source = "id")
     @Mapping(target = "subjectName", source = "name")
-    @Mapping(target = "teacherId", source = "teacher.id")
     SubjectApi toApi(SubjectDB subject);
 }

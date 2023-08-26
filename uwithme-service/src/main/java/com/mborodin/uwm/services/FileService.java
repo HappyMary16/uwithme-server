@@ -21,14 +21,13 @@ import javax.transaction.Transactional;
 
 import com.mborodin.uwm.api.AccessToFileApi;
 import com.mborodin.uwm.api.FileApi;
+import com.mborodin.uwm.api.SubjectApi;
 import com.mborodin.uwm.api.enums.FileType;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotLoadFileException;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotStoreAvatarException;
 import com.mborodin.uwm.api.exceptions.filestorage.CouldNotStoreFileException;
 import com.mborodin.uwm.model.persistence.AccessToFileDB;
 import com.mborodin.uwm.model.persistence.FileDB;
-import com.mborodin.uwm.model.persistence.SubjectDB;
-import com.mborodin.uwm.model.persistence.UserDb;
 import com.mborodin.uwm.repositories.AccessToFileRepository;
 import com.mborodin.uwm.repositories.FileRepository;
 import com.mborodin.uwm.security.UserContextHolder;
@@ -106,8 +105,7 @@ public class FileService {
             log.info("Update owner for file {}", file);
             fileRepository.save(file.toBuilder()
                                     .owner(subjectService.findById(file.getSubjectId())
-                                                         .map(SubjectDB::getTeacher)
-                                                         .map(UserDb::getId)
+                                                         .map(SubjectApi::getTeacherId)
                                                          .orElse(null))
                                     .build());
         }

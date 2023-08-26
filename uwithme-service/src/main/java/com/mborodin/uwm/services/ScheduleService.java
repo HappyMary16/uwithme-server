@@ -130,7 +130,8 @@ public class ScheduleService {
     }
 
 
-    private LessonApi mapScheduleDbToLesson(final ScheduleDb scheduleDb, final Map<String, UserRepresentation> teachers) {
+    private LessonApi mapScheduleDbToLesson(final ScheduleDb scheduleDb,
+                                            final Map<String, UserRepresentation> teachers) {
         final String buildingName = buildingsRepository.findById(scheduleDb.getAuditory().getBuildingId())
                                                        .map(BuildingDb::getName)
                                                        .orElse(null);
@@ -145,10 +146,10 @@ public class ScheduleService {
 
         final SubjectDB subject = scheduleDb.getSubject();
         if (Objects.nonNull(subject)) {
-            final String teacherId = subject.getTeacher().getId();
+            final String teacherId = subject.getTeacherId();
 
             final UserRepresentation teacher = Optional.ofNullable(teachers.get(teacherId))
-                                            .orElseGet(() -> keycloakUserService.getUser(teacherId));
+                                                       .orElseGet(() -> keycloakUserService.getUser(teacherId));
 
             lesson.subjectName(subject.getName())
                   .teacherName(teacher.getLastName());
@@ -183,8 +184,7 @@ public class ScheduleService {
 
         } else if (createLessonApi.getSubjectId() == null) {
             final SubjectDB newSubject = new SubjectDB(createLessonApi.getSubjectName(),
-                                                       userRepository
-                                                               .getProxyByIdIfExist(createLessonApi.getTeacherId()));
+                                                       createLessonApi.getTeacherId());
             scheduleDb.subject(newSubject);
 
         } else {
@@ -193,10 +193,8 @@ public class ScheduleService {
                                                              createLessonApi.getTeacherId());
             subjectDb.ifPresentOrElse(scheduleDb::subject,
                                       () -> {
-                                          final SubjectDB newSubject =
-                                                  new SubjectDB(createLessonApi.getSubjectName(),
-                                                                userRepository.getProxyByIdIfExist(
-                                                                        createLessonApi.getTeacherId()));
+                                          final SubjectDB newSubject = new SubjectDB(createLessonApi.getSubjectName(),
+                                                                                     createLessonApi.getTeacherId());
                                           scheduleDb.subject(newSubject);
                                       });
         }
@@ -252,8 +250,7 @@ public class ScheduleService {
     private String getTeacherFromSchedule(final ScheduleDb schedule) {
         return Optional.ofNullable(schedule)
                        .map(ScheduleDb::getSubject)
-                       .map(SubjectDB::getTeacher)
-                       .map(UserDb::getId)
+                       .map(SubjectDB::getTeacherId)
                        .orElse(null);
     }
 }
