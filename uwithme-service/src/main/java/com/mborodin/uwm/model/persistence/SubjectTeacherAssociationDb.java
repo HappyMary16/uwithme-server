@@ -2,7 +2,6 @@ package com.mborodin.uwm.model.persistence;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
@@ -18,23 +17,21 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@IdClass(ScheduleGroupDb.ScheduleGroupPK.class)
-@Table(name = "schedule_group")
-public class ScheduleGroupDb {
+@IdClass(SubjectTeacherAssociationDb.SubjectTeacherAssociationPK.class)
+@Table(name = "subject_teacher")
+public class SubjectTeacherAssociationDb {
 
     @Id
-    @Column(name = "schedule_id")
-    private Long scheduleId;
+    private Long subjectId;
     @Id
-    @Column(name = "group_id")
-    private Long groupId;
+    private String teacherId;
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ScheduleGroupPK implements Serializable {
+    public static class SubjectTeacherAssociationPK implements Serializable {
 
-        protected Integer scheduleId;
-        protected Integer groupId;
+        protected Long subjectId;
+        protected String teacherId;
     }
 }

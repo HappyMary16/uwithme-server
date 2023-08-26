@@ -21,7 +21,7 @@ public interface UserRepository extends JpaRepository<UserDb, String> {
     @Query("SELECT DISTINCT user " +
             "FROM UserDb user " +
             "LEFT JOIN SubjectDB subject " +
-            "ON user.id = subject.teacher.id " +
+            "ON user.id = subject.teacherId " +
             "LEFT JOIN ScheduleDb schedule " +
             "ON subject.id = schedule.subject.id " +
             "LEFT JOIN ScheduleGroupDb scheduleGroup " +
@@ -30,10 +30,4 @@ public interface UserRepository extends JpaRepository<UserDb, String> {
     List<UserDb> findTeachersByGroupId(@Param("groupId") Long groupId);
 
     List<UserDb> findAllByUniversityIdAndIdIn(Long universityId, Set<String> ids);
-
-    default UserDb getProxyByIdIfExist(final String id) {
-        return id != null
-                ? getOne(id)
-                : null;
-    }
 }

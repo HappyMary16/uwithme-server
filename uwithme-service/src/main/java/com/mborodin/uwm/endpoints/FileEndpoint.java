@@ -18,6 +18,7 @@ import com.mborodin.uwm.api.exceptions.UnknownException;
 import com.mborodin.uwm.model.persistence.FileDB;
 import com.mborodin.uwm.repositories.FileRepository;
 import com.mborodin.uwm.services.FileService;
+import com.mborodin.uwm.services.SubjectService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -39,6 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileEndpoint {
 
     private final FileService fileService;
+    private final SubjectService subjectService;
 
     private final FileRepository fileRepository;
 
@@ -47,6 +49,7 @@ public class FileEndpoint {
     public List<UploadFileResponseApi> uploadMultipleFiles(@RequestParam("files") final MultipartFile[] files,
                                                            @PathVariable("subjectId") final Long subjectId,
                                                            @PathVariable("fileType") final Integer fileType) {
+        subjectService.saveSubjectTeacherAssociationIfNotExists(subjectId, getId());
 
         return Arrays.stream(files)
                      .map(file -> {
