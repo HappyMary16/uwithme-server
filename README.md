@@ -5,8 +5,6 @@
 
 This application is created to manage a university.
 
-Link: https://u-with-me.education
-
 #### Main features:
 * schedule management
 * files management
