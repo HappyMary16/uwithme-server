@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import com.mborodin.uwm.api.RegisterApi;
 import com.mborodin.uwm.api.UserApi;
+import com.mborodin.uwm.api.bot.TelegramData;
 import com.mborodin.uwm.api.bot.TelegramUserData;
 import com.mborodin.uwm.api.enums.Role;
 import com.mborodin.uwm.api.exceptions.EmptyFieldsException;
@@ -50,9 +51,12 @@ public class AuthEndpoint {
     }
 
     @PostMapping("/bot")
-    public void register(@RequestBody final TelegramUserData userData) {
-        userData.setUwmUserId(UserContextHolder.getId());
-        uwmBotClient.authInTelegramBot(userData);
+    public void register(@RequestBody final TelegramData telegramData) {
+        final TelegramUserData telegramUserData = TelegramUserData.builder()
+                .uwmUserId(UserContextHolder.getId())
+                .telegramData(telegramData)
+                .build();
+        uwmBotClient.authInTelegramBot(telegramUserData);
     }
 
     private void validateRegistrationApiValid(final RegisterApi registerApi) {
