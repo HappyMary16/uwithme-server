@@ -21,12 +21,14 @@ public class KeycloakConfig {
 
     @Bean
     public Keycloak keycloak(@Value("${keycloak.resource}") final String clientId,
+                             @Value("${keycloak.credentials.secret}") final String clientSecret,
                              @Value("${keycloak.realm}") final String realm,
                              @Value("${keycloak.auth-server-url}") final String serverUrl,
                              @Value("${oauth.user1.username}") final String username,
                              @Value("${oauth.user1.password}") final String password) {
         return KeycloakBuilder.builder()
                               .clientId(clientId)
+                              .clientSecret(clientSecret)
                               .serverUrl(serverUrl)
                               .scope(SCOPE_OPENID)
                               .realm(realm)
