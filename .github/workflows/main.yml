@@ -29,7 +29,7 @@ jobs:
           path: ./uwithme-docker-files
       - name: Run docker-compose
         working-directory: ./uwithme-docker-files
-        run: docker compose up -d
+        run: docker compose -f docker-compose.dev.yml up -d
 
       - name: Checkout repo
         uses: actions/checkout@v3
